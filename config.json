@@ -1,0 +1,23 @@
+{
+  "binds": {
+    "tall": ",H",
+    "boat-eye": ",J",
+    "planar-abuse": ",Z"
+  },
+  "modes": {
+    "tall": {
+      "size": "350x750"
+    },
+    "boat-eye": {
+      "size": "384x16384",
+      "sensitivity": "-0.9375"
+    },
+    "planar-abuse": {
+      "size": "960x1080"
+    }
+  },
+  "default": {
+    "size": "1920x1080",
+    "sensitivity": "0.0"
+  }
+}
