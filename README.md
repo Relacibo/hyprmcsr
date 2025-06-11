@@ -76,7 +76,7 @@ See [config.json](config.json)
   ```bash
   ./scripts/minecraft.sh
   ```
-  - Only restarts Minecraft and re-applies audio/window handling.
+  - Only starts Minecraft (e.g., when it crashed) and re-applies audio/window handling.
 
 - **Remove keybinds and stop input remapper:**
   ```bash
@@ -150,7 +150,7 @@ You can then open this scene as a projector in OBS and keep it running on a seco
 ## License
 
 - All project code is under the [MIT License](LICENSE).
-- Some components (like libglfw.so or waywall) have their own licenses—see the respective files.
+- Some components (like obs-vkcapture, InputRemapper) have their own licenses—see the respective files.
 
 ---
 
