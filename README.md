@@ -109,17 +109,24 @@ You should install the Flatpak versions of both OBS Studio and PrismLauncher, as
   ```bash
   flatpak install com.obsproject.Studio.Plugin.OBSVkCapture
   ```
+- For more details, see the [obs-vkcapture GitHub page](https://github.com/nowrep/obs-vkcapture).
 
-For more details, see the [obs-vkcapture GitHub page](https://github.com/nowrep/obs-vkcapture).
+**Scene setup for Minecraft:**
+- Create a **Game Capture** source in your main scene that captures Minecraft.
+- Set the transformation of the Game Capture source as follows:
+  - **Bounding box type:** Scale to inner bounds
+  - **Alignment in bounding box:** Center
+  - **Bounding box size:** Set to your monitor's resolution (e.g., 1920x1080 for a 1080p monitor)
 
-## Boat Eye
+### Boat Eye
 
 To use the "Boat Eye" mode, you need to set up a second scene in OBS:
 
 - **Create a new scene** in OBS specifically for Boat Eye.
 - **Add a separate Game Capture source** to this scene, capturing Minecraft as usual.
-- For a 1080p monitor, set the **transformation of the Game Capture source** as follows:
-  - **Position:** 960px, 540px
+- Set the transformation of the Game Capture source as follows:
+  - **Position:** Centered
+  - **Size:** Set the bounding box to **half the width and half the height of your monitor resolution** (e.g., 960x540 for a 1920x1080 monitor)
   - **Alignment:** Center
 
 This ensures the Boat Eye mode is displayed correctly.  
