@@ -35,21 +35,24 @@ Make sure your user is in the appropriate groups (e.g., `input` for input-remapp
    cd hyprmcsr
    ```
 
-2. **Run the install script**
+2. **Configure pipewire**
+  Benenne `example.config.json` um in `config.json`. Change `pipewireLoopback.playbackTarget` in `config.json` to your default output (e.g. headset). You can list your outputs with `pactl list short sinks`. Use the full name in the second column. You can leave this field empty. Then the default output will be used.
+
+3. **Run the install script**
    ```bash
    ./scripts/install.sh
    ```
    - Downloads all required JARs automatically.
    - Sets up Pipewire configuration for audio splitting.
    - Uses values from your `config.json`.
-   - You can rerun that script, if you want to update or you updated `pipewireLoopbackPlaybackTarget` in `config.json`
+   - You can always rerun that script, if you want to update
 
 ---
 
 ## Configuration (`config.json`)
 
 All important settings are made in the `config.json` file in the project root. The NinjaLink config is also read from there.
-See [config.json](config.json)
+See [example.config.json](example.config.json)
 
 **Key fields:**
 - **binds.modeSwitch**: Defines key combinations for different window modes.
@@ -57,7 +60,7 @@ See [config.json](config.json)
 - **inputRemapper**: Devices and presets for mouse and keyboard (for input-remapper).
 - **minecraft.prismInstanceId**: Name or UUID of your PrismLauncher instance.
 - **minecraft.windowTitleRegex**: Regex to detect the Minecraft window.
-- **pipewireLoopbackPlaybackTarget**: Audio output for Pipewire split (e.g., your headset).
+- **pipewireLoopback.playbackTarget**: Audio output for Pipewire split (e.g., your headset).
 
 ---
 
