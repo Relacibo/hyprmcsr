@@ -6,8 +6,9 @@ WINDOW_ADDRESS_FILE="$SCRIPT_PATH/var/window_address"
 
 PRISM_INSTANCE_ID=$(jq -r '.minecraft.prismInstanceId' "$CONFIG_FILE")
 window_regex=$(jq -r '.minecraft.windowTitleRegex' "$CONFIG_FILE")
-
 mkdir -p "$SCRIPT_PATH/var"
+
+# Use wayland
 prismlauncher -l "$PRISM_INSTANCE_ID" & # Start Minecraft
 
 timeout=20

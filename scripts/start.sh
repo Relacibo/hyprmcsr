@@ -23,7 +23,7 @@ fi
 
 PRISM_INSTANCE_NAME=$(jq -r '.minecraft.prismInstanceName' "$CONFIG")
 
-flatpak run com.obsproject.Studio & # Start OBS
+flatpak run com.obsproject.Studio -platform xcb & # Start OBS
 $SCRIPT_PATH/ninjabrain.sh
 sleep 2s # Sleeping to avoid race condition with the sound
 
