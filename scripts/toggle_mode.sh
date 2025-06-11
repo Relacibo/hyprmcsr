@@ -5,8 +5,8 @@ export XDG_RUNTIME_DIR="/run/user/$(id -u)"
 SCRIPT_PATH="$(dirname $(realpath "$0"))"
 CONFIG_FILE="$SCRIPT_PATH/../config.json"
 MODE="$1"
-STATE_FILE="$SCRIPT_PATH/var/window_switcher_state"
-WINDOW_ADDRESS_FILE="$SCRIPT_PATH/var/window_address"
+STATE_FILE="$SCRIPT_PATH/../var/window_switcher_state"
+WINDOW_ADDRESS_FILE="$SCRIPT_PATH/../var/window_address"
 
 if ! command -v jq >/dev/null; then
   echo "jq wird benötigt!"
@@ -53,6 +53,9 @@ WINDOW_ADDRESS=$(cat "$WINDOW_ADDRESS_FILE")
 
 # Größe aus wxh in w und h splitten
 IFS="x" read -r TARGET_WIDTH TARGET_HEIGHT <<< "$TARGET_SIZE"
+echo $TARGET_SIZE
+echo $TARGET_WIDTH
+echo $TARGET_HEIGHT
 
 # Fenstergröße und Sensitivity setzen
 hyprctl --batch "

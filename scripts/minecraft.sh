@@ -2,11 +2,10 @@
 
 SCRIPT_PATH=$(dirname $(realpath "$0"))
 CONFIG_FILE="$SCRIPT_PATH/../config.json"
-WINDOW_ADDRESS_FILE="$SCRIPT_PATH/var/window_address"
+WINDOW_ADDRESS_FILE="$SCRIPT_PATH/../var/window_address"
 
 PRISM_INSTANCE_ID=$(jq -r '.minecraft.prismInstanceId' "$CONFIG_FILE")
 window_regex=$(jq -r '.minecraft.windowTitleRegex' "$CONFIG_FILE")
-mkdir -p "$SCRIPT_PATH/var"
 
 # Use wayland
 prismlauncher -l "$PRISM_INSTANCE_ID" & # Start Minecraft
@@ -40,18 +39,20 @@ hyprctl --batch "
   dispatch setprop address:$window_address norounding 1
 "
 
-# Warte kurz, bis der Audio-Stream da ist
-sleep 2
-
-# Versuche, den passenden PulseAudio-Stream anhand der PID zu finden und umzuleiten
-sink_input_id=$(pactl list sink-inputs | awk -v pid="$window_pid" '
-  $0 ~ "application.process.id = \""pid"\"" {found=1}
-  /Sink Input/ {if(found){print id; exit} id=$3}
-')
-
-if [ -n "$sink_input_id" ]; then
-  pactl move-sink-input "$sink_input_id" virtual_game
-  echo "Minecraft-Sound auf virtual_game umgeleitet."
-else
-  echo "Kein Minecraft-Sink-Input gefunden."
-fi
+for i in {1..20}; do
+  sink_input_id=$(pactl list sink-inputs | awk '
+    BEGIN { id="" }
+    /node.name = "java"/ { java=1 }
+    /media.role = "game"/ { game=1 }
+    /Sink Input/ {
+      if(java && game) { print id; exit }
+      id=$3; java=0; game=0
+    }
+  ')
+  if [ -n "$sink_input_id" ]; then
+    pactl move-sink-input "$sink_input_id" virtual_game
+    echo "Minecraft-Sound auf virtual_game umgeleitet."
+    break
+  fi
+  sleep 1
+done

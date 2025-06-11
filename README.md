@@ -98,11 +98,6 @@ You should install the Flatpak versions of both OBS Studio and PrismLauncher, as
   ```
 - This will allow obs-vkcapture to hook into the Minecraft window for seamless game capture in OBS.
 
-**Limitations:**
-- Currently, the monitor where Minecraft runs must be positioned at the very top-left of your monitor setup.  
-  This is required for the mouse cursor to be captured correctly.
-- This is a known limitation and may be fixed in the future.
-
 **Installation:**
 - Install OBS Studio and PrismLauncher via Flatpak.
 - Install obs-vkcapture for Flatpak OBS:
@@ -111,12 +106,20 @@ You should install the Flatpak versions of both OBS Studio and PrismLauncher, as
   ```
 - For more details, see the [obs-vkcapture GitHub page](https://github.com/nowrep/obs-vkcapture).
 
-**Scene setup for Minecraft:**
+### Minecraft Capture
+
+#### Monitor recording (Recommended)
+Just use the monitor recording with pipewire on which minecraft is running, as it will capture the cursor with no problems.
+
+#### With OBS-Capture
 - Create a **Game Capture** source in your main scene that captures Minecraft.
 - Set the transformation of the Game Capture source as follows:
   - **Bounding box type:** Scale to inner bounds
   - **Alignment in bounding box:** Center
   - **Bounding box size:** Set to your monitor's resolution (e.g., 1920x1080 for a 1080p monitor)
+
+**Limitations:**
+- Currently, the monitor where Minecraft runs must be positioned at the very top-left of your monitor setup, if it is recorded at all...
 
 ### Boat Eye
 
@@ -124,6 +127,7 @@ To use the "Boat Eye" mode, you need to set up a second scene in OBS:
 
 - **Create a new scene** in OBS specifically for Boat Eye.
 - **Add a separate Game Capture source** to this scene, capturing Minecraft as usual.
+- Don't use cursor capturing
 - Set the transformation of the Game Capture source as follows:
   - **Position:** Centered
   - **Size:** Set the bounding box to **half the width and half the height of your monitor resolution** (e.g., 960x540 for a 1920x1080 monitor)
@@ -139,7 +143,7 @@ You can then open this scene as a projector in OBS and keep it running on a seco
 - The scripts are optimized for Hyprland and Pipewire.
 - Most settings (devices, instance names, audio output, etc.) are controlled via `config.json`.
 - Don't run the scripts with `sudo`. The scripts use `sudo`, where needed (input-remapper). That also means, that you have to type in your password, when running `start.sh` and `destroy.sh`
-- You do not necessarily need to run `hyprmcsr.sh`, as it is run by the from the binds, that are created in `start.sh`
+- You do not necessarily need to run `toggle_mode.sh`, as it is run by the from the binds, that are created in `start.sh`
 
 ---
 
