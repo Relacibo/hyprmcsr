@@ -76,7 +76,7 @@ See [config.json](config.json)
   ```bash
   ./scripts/minecraft.sh
   ```
-  - Only restarts Minecraft and re-applies audio/window handling.
+  - Only starts Minecraft (e.g., when it crashed) and re-applies audio/window handling.
 
 - **Remove keybinds and stop input remapper:**
   ```bash
