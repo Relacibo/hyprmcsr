@@ -1,8 +1,8 @@
 #!/bin/bash
 
 SCRIPT_PATH=$(dirname $(realpath "$0"))
-CONFIG_FILE="$SCRIPT_PATH/config.json"
-TEMPLATE_FILE="$SCRIPT_PATH/split-audio.conf"
+CONFIG_FILE="$SCRIPT_PATH/../config.json"
+TEMPLATE_FILE="$SCRIPT_PATH/../split-audio.conf"
 TARGET_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/pipewire/pipewire.conf.d"
 TARGET_FILE="$TARGET_DIR/split-audio.conf"
 
