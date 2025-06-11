@@ -5,8 +5,27 @@
 This project automates the setup of a Minecraft speedrunning environment on Linux using Hyprland, Pipewire, and various helper tools.  
 Configuration is centralized in the `config.json` file.  
 Installation and setup of required JARs, Pipewire configuration, and keybinds are handled automatically via the install script.
+I only tested it on my own system: Fedora 42.
+If you have problems with this library, feel free to write an issue.
 
 ---
+
+## Requirements
+
+Before installing, make sure you have the following dependencies installed on your system:
+
+- **Hyprland** (Wayland compositor)
+- **Pipewire** (with Flatpak support)
+- **OBS Studio** (Flatpak version recommended)
+- **PrismLauncher** (Flatpak version recommended)
+- **obs-vkcapture** (Flatpak plugin for OBS)
+- **input-remapper** (for remapping mouse and keyboard inputs)
+- **jq** (for JSON parsing in shell scripts)
+- **curl** (for downloading JARs and GitHub API requests)
+- **git** (for cloning this repository)
+- **bash** (most scripts are written for bash)
+
+Make sure your user is in the appropriate groups (e.g., `input` for input-remapper) and that you have permission to run `sudo` commands for input-remapper control.
 
 ## Installation
 
