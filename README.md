@@ -150,7 +150,7 @@ You can then open this scene as a projector in OBS and keep it running on a seco
 ## License
 
 - All project code is under the [MIT License](LICENSE).
-- Some components (like libglfw.so or waywall) have their own licenses—see the respective files.
+- Some components (like obs-vkcapture, InputRemapper) have their own licenses—see the respective files.
 
 ---
 
