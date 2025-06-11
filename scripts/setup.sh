@@ -8,8 +8,8 @@ if ! command -v jq >/dev/null; then
   exit 1
 fi
 
-jq -r '.binds | to_entries[] | "\(.key) \(.value)"' "$DIRNAME/../config.json" | while read -r mode key; do
-  hyprctl keyword bind $key,exec,"$DIRNAME/hyprmcsr.sh $mode"
+jq -r '.binds.modes | to_entries[] | "\(.key) \(.value)"' "$DIRNAME/../config.json" | while read -r mode key; do
+  hyprctl keyword bindni $key,exec,"$DIRNAME/hyprmcsr.sh $mode"
 done
 
 echo "Hyprmcsr-Binds aus config.json gesetzt."

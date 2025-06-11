@@ -1,8 +1,10 @@
 {
   "binds": {
-    "tall": ",H",
-    "boat-eye": ",J",
-    "planar-abuse": ",Z"
+    "modes": {
+      "tall": ",H",
+      "boat-eye": ",J",
+      "planar-abuse": ",Z"
+    }
   },
   "modes": {
     "tall": {
