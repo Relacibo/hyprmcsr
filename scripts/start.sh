@@ -28,18 +28,11 @@ PRISM_INSTANCE_NAME=$(jq -r '.minecraft.prismInstanceName' "$CONFIG")
 flatpak run com.obsproject.Studio & # Start OBS
 $SCRIPT_PATH/ninjabrain.sh
 
-# Input Remapper für Mäuse
-jq -c '.inputRemapper.mouses[]' "$CONFIG" | while read -r mouse; do
-  device=$(echo "$mouse" | jq -r '.device')
-  preset=$(echo "$mouse" | jq -r '.preset')
+# Input Remapper für Devices (vereinheitlicht)
+jq -c '.inputRemapper.devices[]' "$CONFIG_FILE" | while read -r device_entry; do
+  device=$(echo "$device_entry" | jq -r '.device')
+  preset=$(echo "$device_entry" | jq -r '.preset')
   sudo input-remapper-control --command start --device "$device" --preset "$preset"
-done
-
-# Input Remapper für Tastaturen
-jq -c '.inputRemapper.keyboards[]' "$CONFIG" | while read -r keyboard; do
-  device=$(echo "$keyboard" | jq -r '.device')
-  preset=$(echo "$keyboard" | jq -r '.preset')
-  input-remapper-control --command start --device "$device" --preset "$preset"
 done
 
 mkdir -p $SCRIPT_PATH/../var

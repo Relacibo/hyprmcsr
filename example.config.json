@@ -20,21 +20,15 @@
       "sensitivity": "-0.9375"
     },
     "planar-abuse": {
-      "size": "960x1080"
+      "size": "1920x420"
     }
   },
   "inputRemapper": {
-    "mouses": [
+    "devices": [
       {
         "device": "Razer Razer Viper V3 Pro",
         "preset": "MCSR"
       },
-      {
-        "device": "Razer Viper V3 Pro",
-        "preset": "MCSR"
-      }
-    ],
-    "keyboards": [
       {
         "device": "Ducky Ducky One 3 TKL ",
         "preset": "MCSR"
