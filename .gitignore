@@ -1,1 +1,3 @@
 jars/*.jar
+ninja-link-config.json
+var/

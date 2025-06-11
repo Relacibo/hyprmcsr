@@ -2,9 +2,11 @@
 
 export XDG_RUNTIME_DIR="/run/user/$(id -u)"
 
-CONFIG_FILE="$(dirname $(realpath "$0"))/../config.json"
-
+SCRIPT_PATH="$(dirname $(realpath "$0"))"
+CONFIG_FILE="$SCRIPT_PATH/../config.json"
 MODE="$1"
+STATE_FILE="$SCRIPT_PATH/var/window_switcher_state"
+WINDOW_ADDRESS_FILE="$SCRIPT_PATH/var/window_address"
 
 if ! command -v jq >/dev/null; then
   echo "jq wird benötigt!"
@@ -12,62 +14,51 @@ if ! command -v jq >/dev/null; then
 fi
 
 if [ -z "$MODE" ]; then
-  echo "Usage: $0 [tall|boat-eye|planar-abuse]"
+  echo "Usage: $0 [tall|boat-eye|planar-abuse|default]"
   exit 1
 fi
 
 # Default-Werte laden
-DEFAULT_SIZE=$(jq -r '.default.size' "$CONFIG_FILE")
-DEFAULT_SENSITIVITY=$(jq -r '.default.sensitivity' "$CONFIG_FILE")
+DEFAULT_SIZE=$(jq -r '.modeSwitch.default.size' "$CONFIG_FILE")
+DEFAULT_SENSITIVITY=$(jq -r '.modeSwitch.default.sensitivity' "$CONFIG_FILE")
 
 # Modus-Werte laden (können null sein)
-TARGET_SIZE=$(jq -r --arg m "$MODE" '.modes[$m].size // empty' "$CONFIG_FILE")
-TARGET_SENSITIVITY=$(jq -r --arg m "$MODE" '.modes[$m].sensitivity // empty' "$CONFIG_FILE")
+TARGET_SIZE=$(jq -r --arg m "$MODE" '.modeSwitch[$m].size // empty' "$CONFIG_FILE")
+TARGET_SENSITIVITY=$(jq -r --arg m "$MODE" '.modeSwitch[$m].sensitivity // empty' "$CONFIG_FILE")
 
 # Fallback auf Default, falls leer
 [ -z "$TARGET_SIZE" ] && TARGET_SIZE="$DEFAULT_SIZE"
 [ -z "$TARGET_SENSITIVITY" ] && TARGET_SENSITIVITY="$DEFAULT_SENSITIVITY"
 
-if [ "$TARGET_SIZE" == "null" ] || [ "$TARGET_SENSITIVITY" == "null" ]; then
-  echo "Unbekannter Modus: $MODE"
+# Aktuellen State lesen
+CURRENT_STATE=""
+[ -f "$STATE_FILE" ] && CURRENT_STATE=$(cat "$STATE_FILE")
+
+# Wenn der gewünschte Modus bereits aktiv ist, auf Default zurückschalten
+if [ "$CURRENT_STATE" = "$MODE" ]; then
+  TARGET_SIZE="$DEFAULT_SIZE"
+  TARGET_SENSITIVITY="$DEFAULT_SENSITIVITY"
+  MODE="default"
+fi
+
+# State aktualisieren
+echo "$MODE" > "$STATE_FILE"
+
+# Fensteradresse aus Datei lesen
+if [ ! -f "$WINDOW_ADDRESS_FILE" ]; then
+  echo "Fensteradresse nicht gefunden: $WINDOW_ADDRESS_FILE"
   exit 1
 fi
+WINDOW_ADDRESS=$(cat "$WINDOW_ADDRESS_FILE")
 
 # Größe aus wxh in w und h splitten
 IFS="x" read -r TARGET_WIDTH TARGET_HEIGHT <<< "$TARGET_SIZE"
-IFS="x" read -r DEFAULT_WIDTH DEFAULT_HEIGHT <<< "$DEFAULT_SIZE"
 
-client_info=$(hyprctl clients -j | jq -r '
-  .[] |
-  select(.title | test("^Minecraft")) |
-  "\(.address) \(.size[0])x\(.size[1]) \(.workspace.id)"
-')
-
-if [ -z "$client_info" ]; then
-  echo "Kein Minecraft-Fenster gefunden."
-  exit 1
-fi
-
-window_address=$(echo "$client_info" | awk '{print $1}')
-window_size=$(echo "$client_info" | awk '{print $2}')
-workspace_id=$(echo "$client_info" | awk '{print $3}')
-
-if [ "$window_size" == "$TARGET_SIZE" ]; then
-  hyprctl --batch "
-    dispatch workspace $workspace_id;
-    dispatch focuswindow address:$window_address;
-    dispatch setfloating;
-    dispatch resizewindowpixel exact $DEFAULT_WIDTH $DEFAULT_HEIGHT,address:$window_address;
-    dispatch centerwindow address:$window_address;
-    keyword input:sensitivity $DEFAULT_SENSITIVITY
-  "
-else
-  hyprctl --batch "
-    dispatch workspace $workspace_id;
-    dispatch focuswindow address:$window_address;
-    dispatch setfloating;
-    dispatch resizewindowpixel exact $TARGET_WIDTH $TARGET_HEIGHT,address:$window_address;
-    dispatch centerwindow address:$window_address;
-    keyword input:sensitivity $TARGET_SENSITIVITY
-  "
-fi
+# Fenstergröße und Sensitivity setzen
+hyprctl --batch "
+  dispatch focuswindow address:$WINDOW_ADDRESS;
+  dispatch setfloating;
+  dispatch resizewindowpixel exact $TARGET_WIDTH $TARGET_HEIGHT,address:$WINDOW_ADDRESS;
+  dispatch centerwindow address:$WINDOW_ADDRESS;
+  keyword input:sensitivity $TARGET_SENSITIVITY
+"

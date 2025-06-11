@@ -9,9 +9,8 @@ if ! command -v jq >/dev/null; then
   exit 1
 fi
 
-jq -r '.binds[]' "$CONFIG_FILE" | while read -r key; do
+jq -r '.binds.modeSwitch | to_entries[] | select(.key != "default") | .value' "$CONFIG_FILE" | while read -r key; do
   hyprctl keyword unbind $key
 done
 
 echo "Hyprmcsr-Binds entfernt."
-

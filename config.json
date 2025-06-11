@@ -1,12 +1,16 @@
 {
   "binds": {
-    "modes": {
+    "modeSwitch": {
       "tall": ",H",
       "boat-eye": ",J",
       "planar-abuse": ",Z"
     }
   },
-  "modes": {
+  "modeSwitch": {
+    "default": {
+      "size": "1920x1080",
+      "sensitivity": "0.0"
+    },
     "tall": {
       "size": "350x750"
     },
@@ -18,8 +22,27 @@
       "size": "960x1080"
     }
   },
-  "default": {
-    "size": "1920x1080",
-    "sensitivity": "0.0"
-  }
+  "inputRemapper": {
+    "mouses": [
+      {
+        "device": "Razer Razer Viper V3 Pro",
+        "preset": "MCSR"
+      },
+      {
+        "device": "Razer Viper V3 Pro",
+        "preset": "MCSR"
+      }
+    ],
+    "keyboards": [
+      {
+        "device": "Ducky Ducky One 3 TKL ",
+        "preset": "MCSR"
+      }
+    ]
+  },
+  "minecraft": {
+    "prismInstanceName": "1.16.1",
+    "windowTitleRegex": "^Minecraft"
+  },
+  "pipewireLoopbackPlaybackTarget": "alsa_output.usb-SteelSeries_Arctis_7_-00.iec958-stereo"
 }
