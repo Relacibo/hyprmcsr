@@ -1,5 +1,6 @@
 {
   "binds": {
+    "toggleBinds": ",HOME",
     "modeSwitch": {
       "tall": ",H",
       "boat-eye": ",J",

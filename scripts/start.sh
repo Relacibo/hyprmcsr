@@ -12,12 +12,12 @@ fi
 
 echo "default" > "$SCRIPT_PATH/../var/window_switcher_state"
 
-# Binds setzen
-jq -r '.binds.modeSwitch | to_entries[] | "\(.key) \(.value)"' "$CONFIG_FILE" | while read -r mode key; do
-  hyprctl keyword bindni $key,exec,"$SCRIPT_PATH/toggle_mode.sh $mode"
-done
+$SCRIPT_PATH/toggle_binds.sh 1
 
-echo "Hyprmcsr-Binds aus config.json gesetzt."
+toggle_binds_key=$(jq -r '.binds.toggleBinds' "$CONFIG_FILE")
+if [ -n "$toggle_binds_key" ] && [ "$toggle_binds_key" != "null" ]; then
+  hyprctl keyword bind $toggle_binds_key,exec,"$SCRIPT_PATH/toggle_binds.sh"
+fi
 
 if [ "$1" = "--coop" ]; then
   $SCRIPT_PATH/ninjalink.sh &
