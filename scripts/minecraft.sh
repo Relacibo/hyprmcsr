@@ -40,15 +40,12 @@ hyprctl --batch "
 "
 
 for i in {1..20}; do
-  sink_input_id=$(pactl list sink-inputs | awk '
-    BEGIN { id="" }
-    /node.name = "java"/ { java=1 }
-    /media.role = "game"/ { game=1 }
-    /Sink Input/ {
-      if(java && game) { print id; exit }
-      id=$3; java=0; game=0
-    }
-  ')
+  sink_input_id=$(pactl -f json list sink-inputs | jq -r '
+    .[] | select(
+      ((.properties."application.name" == "java") or (.properties."node.name" == "java"))
+      and ((.properties."media.role" // "" | ascii_downcase) == "game")
+    ) | .index
+  ' | head -n1)
   if [ -n "$sink_input_id" ]; then
     pactl move-sink-input "$sink_input_id" virtual_game
     echo "Minecraft-Sound auf virtual_game umgeleitet."

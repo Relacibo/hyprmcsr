@@ -51,7 +51,7 @@ Make sure your user is in the appropriate groups (e.g., `input` for input-remapp
 
 ## Configuration (`config.json`)
 
-All important settings are made in the `config.json` file in the project root. The NinjaLink config is also read from there.
+All important settings are made in the `config.json` file in the project root. The NinjaLink config (`ninja-link-config.json`) is also read from there.
 See [example.config.json](example.config.json)
 
 **Key fields:**
