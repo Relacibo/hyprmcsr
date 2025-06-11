@@ -41,7 +41,7 @@
     ]
   },
   "minecraft": {
-    "prismInstanceName": "1.16.1",
+    "prismInstanceId": "1.16.1",
     "windowTitleRegex": "^Minecraft"
   },
   "pipewireLoopbackPlaybackTarget": "alsa_output.usb-SteelSeries_Arctis_7_-00.iec958-stereo"

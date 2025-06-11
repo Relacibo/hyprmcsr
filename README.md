@@ -1,53 +1,134 @@
-# some-waywall-stuff
-But I don't know if it is allowed like this... I will probably change this...
+# hyprmcsr
 
-## Instructions
-- `git clone https://github.com/Relacibo/some-waywall-stuff`
+## Overview
 
-## Prism
-- Use `<full path of this repo>/libglfw.so` for custom glfw in prism which is needed for waywall to work
-- Use `<full path of this repo>/waywall wrap --` as your wrapper command in prism
+This project automates the setup of a Minecraft speedrunning environment on Linux using Hyprland, Pipewire, and various helper tools.  
+Configuration is centralized in the `config.json` file.  
+Installation and setup of required JARs, Pipewire configuration, and keybinds are handled automatically via the install script.
 
-For both see https://tesselslate.github.io/waywall/00_setup.html#instance-setup
+---
 
-## Config
-### waywall
-[init.lua](init.lua)
+## Installation
 
-Belongs in the folder `~/config/waywall/`.
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/Relacibo/hyprmcsr
+   cd hyprmcsr
+   ```
 
-(I use the `razer-cli` to set my dpi. That might be different in your case. Ninjabrain bot does not really work so well yet though...)
+2. **Run the install script**
+   ```bash
+   ./scripts/install.sh
+   ```
+   - Downloads all required JARs automatically.
+   - Sets up Pipewire configuration for audio splitting.
+   - Uses values from your `config.json`.
+   - You can rerun that script, if you want to update or you updated `pipewireLoopbackPlaybackTarget` in `config.json`
 
-I was inspired by this config file: https://github.com/sathya-pramodh/dotfiles/blob/main/waywall/init.lua
+---
 
-See https://tesselslate.github.io/waywall/01_basics.html
+## Configuration (`config.json`)
 
-### scripts
-[setup.sh](scripts/setup.sh)
+All important settings are made in the `config.json` file in the project root. The NinjaLink config is also read from there.
+See [config.json](config.json)
 
-You can also take inspiration from (or even use) my setup-script. Starts minecraft (with splitted sound), obs,
-ninjabrain bot. You first have to download the jars manually from their repositories ([links](jars/README.md)) (You have to uncomment/modify some lines for it to work)
-Use with `--coop` to also start `ninjalink`.
+**Key fields:**
+- **binds.modeSwitch**: Defines key combinations for different window modes.
+- **modeSwitch**: Sets window sizes and sensitivities for each mode.
+- **inputRemapper**: Devices and presets for mouse and keyboard (for input-remapper).
+- **minecraft.prismInstanceId**: Name or UUID of your PrismLauncher instance.
+- **minecraft.windowTitleRegex**: Regex to detect the Minecraft window.
+- **pipewireLoopbackPlaybackTarget**: Audio output for Pipewire split (e.g., your headset).
 
-### Pipewire for splitting audio
-[split-audio.conf](split-audio.conf)
+---
 
-Belongs in the folder `~/.config/pipewire/pipewire.conf.d/`.
+## Usage
 
-Adjust Discord to use the `Discordsound` output.
-In `scripts/setup.sh` prism gets started with `Minecraftsound` as default output which makes minecraft use that output. You have to uncomment the lines in `scripts/setup.sh` for that to work.
-You can then split the audio in obs...
+### Setup and Start
 
-#### Run
-```bash
-<full path of this repo>/scripts/setup.sh [--coop]
-```
+- **Setup and start all tools:**
+  ```bash
+  ./scripts/setup.sh [--coop]
+  ```
+  - Starts OBS, Ninjabrain-Bot, Minecraft (via Prism), sets up keybinds and audio split.
+  - With `--coop`, NinjaLink for coop is started as well.
 
-## Waywall links
-- docs: https://tesselslate.github.io/waywall/index.html
-- source: https://github.com/tesselslate/waywall
+- **Restart Minecraft only:**
+  ```bash
+  ./scripts/minecraft.sh
+  ```
+  - Only restarts Minecraft and re-applies audio/window handling.
 
-## Licenses:
-- [GWJGL](LWJGL-LICENSE.md) for libglfw.so
-- [waywall](waywall-LICENSE) for waywall
-- Everything else: [LICENSE](LICENSE)
+- **Remove keybinds and stop input remapper:**
+  ```bash
+  ./scripts/destroy.sh
+  ```
+  - Removes all keybinds and stops input-remapper.
+
+---
+
+## OBS Capture
+
+For capturing Minecraft, this setup uses [obs-vkcapture](https://github.com/nowrep/obs-vkcapture).  
+You should install the Flatpak versions of both OBS Studio and PrismLauncher, as well as the Flatpak version of obs-vkcapture.
+
+**How to use:**
+- In PrismLauncher, set the wrapper command for your Minecraft instance to:
+  ```
+  obs-gamecapture
+  ```
+- This will allow obs-vkcapture to hook into the Minecraft window for seamless game capture in OBS.
+
+**Limitations:**
+- Currently, the monitor where Minecraft runs must be positioned at the very top-left of your monitor setup.  
+  This is required for the mouse cursor to be captured correctly.
+- This is a known limitation and may be fixed in the future.
+
+**Installation:**
+- Install OBS Studio and PrismLauncher via Flatpak.
+- Install obs-vkcapture for Flatpak OBS:
+  ```bash
+  flatpak install com.obsproject.Studio.Plugin.OBSVkCapture
+  ```
+
+For more details, see the [obs-vkcapture GitHub page](https://github.com/nowrep/obs-vkcapture).
+
+## Boat Eye
+
+To use the "Boat Eye" mode, you need to set up a second scene in OBS:
+
+- **Create a new scene** in OBS specifically for Boat Eye.
+- **Add a separate Game Capture source** to this scene, capturing Minecraft as usual.
+- For a 1080p monitor, set the **transformation of the Game Capture source** as follows:
+  - **Position:** 960px, 540px
+  - **Alignment:** Center
+
+This ensures the Boat Eye mode is displayed correctly.  
+Adjust these values if you use a different monitor resolution.
+
+You can then open this scene as a projector in OBS and keep it running on a secondary monitor while playing.
+
+## Notes
+
+- The scripts are optimized for Hyprland and Pipewire.
+- Most settings (devices, instance names, audio output, etc.) are controlled via `config.json`.
+- Don't run the scripts with `sudo`. The scripts use `sudo`, where needed (input-remapper). That also means, that you have to type in your password, when running `start.sh` and `destroy.sh`
+- You do not necessarily need to run `hyprmcsr.sh`, as it is run by the from the binds, that are created in `start.sh`
+
+---
+
+## Contributers
+- Me ([youtube](https://www.youtube.com/@relacibo), [speedrun.com](https://www.speedrun.com/de-DE/users/Relacibo))
+- Igelway ([youtube](https://www.youtube.com/@MisterKenway), [speedrun.com](https://www.speedrun.com/de-DE/users/Igelway))
+
+## License
+
+- All project code is under the [MIT License](LICENSE).
+- Some components (like libglfw.so or waywall) have their own licenses—see the respective files.
+
+---
+
+**This README and parts of the automation were created with help from [GitHub Copilot](https://github.com/features/copilot).**
+
+**Questions or issues?**  
+Check the script comments or open an issue!

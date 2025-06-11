@@ -4,11 +4,11 @@ SCRIPT_PATH=$(dirname $(realpath "$0"))
 CONFIG_FILE="$SCRIPT_PATH/../config.json"
 WINDOW_ADDRESS_FILE="$SCRIPT_PATH/var/window_address"
 
-PRISM_INSTANCE_NAME=$(jq -r '.minecraft.prismInstanceName' "$CONFIG_FILE")
+PRISM_INSTANCE_ID=$(jq -r '.minecraft.prismInstanceId' "$CONFIG_FILE")
 window_regex=$(jq -r '.minecraft.windowTitleRegex' "$CONFIG_FILE")
 
 mkdir -p "$SCRIPT_PATH/var"
-prismlauncher -l "$PRISM_INSTANCE_NAME" & # Start Minecraft
+prismlauncher -l "$PRISM_INSTANCE_ID" & # Start Minecraft
 
 timeout=20
 elapsed=0
