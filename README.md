@@ -172,7 +172,7 @@ In the `onEnter` and `onExit` fields in your `config.json` (example: [example.co
 
 ## Notes
 
-- The scripts are made for use with Hyprland and Pipewire.
+- The scripts are made for use with Hyprland, Pipewire and Prism.
 - Most settings (devices, instance names, audio output, etc.) are controlled via `config.json`.
 - Don't run the scripts with `sudo`. The scripts use `sudo`, where needed (input-remapper). That also means, that you have to type in your password, when running `start.sh` and `destroy.sh`
 - You do not necessarily need to run `toggle_mode.sh`, as it is run by the from the binds, that are created in `start.sh`
