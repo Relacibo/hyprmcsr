@@ -43,9 +43,8 @@ Make sure your user is in the appropriate groups (e.g., `input` for input-remapp
    ```bash
    ./scripts/install.sh
    ```
-   - Downloads all required JARs automatically.
+   - Downloads all JARs that are listed in `download.jars` in `config.json` automatically.
    - Sets up Pipewire configuration for audio splitting.
-   - Uses values from your `config.json`.
    - You can always rerun that script, if you want to update
 
 ---
@@ -89,7 +88,7 @@ You can use variables like `$SCRIPT_DIR`, `$PROFILE`, `$PREVIOUS_MODE`, and `$NE
   ```bash
   ./scripts/start.sh [--coop]
   ```
-  - Minecraft (via Prism), sets up keybinds and audio split.
+  - Starts Minecraft (via Prism), sets up keybinds.
   - Also executes the items in onStart in `config.json`.
 
 - **Restart Minecraft only:**
