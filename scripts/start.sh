@@ -38,3 +38,15 @@ done
 mkdir -p $SCRIPT_PATH/../var
 
 $SCRIPT_PATH/minecraft.sh
+
+# ...existing code...
+
+# Option aus config lesen (default: true)
+auto_destroy=$(jq -r '.autoDestroyOnExit // true' "$CONFIG_FILE")
+
+if [ "$auto_destroy" = "true" ]; then
+  # Trap für SIGINT und SIGTERM setzen
+  trap "$SCRIPT_PATH/destroy.sh; exit" SIGINT SIGTERM
+  echo "Drücke Strg+C zum Beenden. Beim Beenden wird destroy.sh automatisch ausgeführt."
+  sleep infinity
+fi

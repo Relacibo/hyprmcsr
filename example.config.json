@@ -12,15 +12,21 @@
       "size": "1920x1080",
       "sensitivity": "0.0"
     },
-    "tall": {
-      "size": "350x750"
-    },
-    "boat-eye": {
-      "size": "384x16384",
-      "sensitivity": "-0.9375"
-    },
-    "planar-abuse": {
-      "size": "1920x420"
+    "modes": {
+      "normal": {
+        "size": "1920x1080",
+        "sensitivity": "0.0"
+      },
+      "tall": {
+        "size": "350x750"
+      },
+      "boat-eye": {
+        "size": "384x16384",
+        "sensitivity": "-0.9375"
+      },
+      "planar-abuse": {
+        "size": "1920x420"
+      }
     }
   },
   "inputRemapper": {
@@ -41,5 +47,6 @@
   },
   "pipewireLoopback": {
     "enabled": 0
-  }
+  },
+  "autoDestroyOnExit": true
 }

@@ -39,17 +39,24 @@ hyprctl --batch "
   dispatch setprop address:$window_address norounding 1
 "
 
-for i in {1..20}; do
-  sink_input_id=$(pactl -f json list sink-inputs | jq -r '
-    .[] | select(
-      ((.properties."application.name" == "java") or (.properties."node.name" == "java"))
-      and ((.properties."media.role" // "" | ascii_downcase) == "game")
-    ) | .index
-  ' | head -n1)
-  if [ -n "$sink_input_id" ]; then
-    pactl move-sink-input "$sink_input_id" virtual_game
-    echo "Minecraft-Sound auf virtual_game umgeleitet."
-    break
-  fi
-  sleep 1
-done
+# ...existing code...
+
+# Prüfe, ob pipewireLoopback aktiviert ist
+pipewire_enabled=$(jq -r '.pipewireLoopback.enabled // 0' "$CONFIG_FILE")
+if [ "$pipewire_enabled" = "1" ] || [ "$pipewire_enabled" = "true" ]; then
+  for i in {1..20}; do
+    sink_input_id=$(pactl -f json list sink-inputs | jq -r '
+      .[] | select(
+        ((.properties."application.name" == "java") or (.properties."node.name" == "java"))
+        and ((.properties."media.role" // "" | ascii_downcase) == "game")
+      ) | .index
+    ' | head -n1)
+    if [ -n "$sink_input_id" ]; then
+      pactl move-sink-input "$sink_input_id" virtual_game
+      echo "Minecraft-Sound auf virtual_game umgeleitet."
+      break
+    fi
+    sleep 1
+  done
+fi
+# ...existing code...

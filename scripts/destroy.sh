@@ -10,3 +10,5 @@ if [ -n "$toggle_binds_key" ] && [ "$toggle_binds_key" != "null" ]; then
 fi
 
 $SCRIPT_PATH/toggle_binds.sh 0
+
+rm -rf "$SCRIPT_PATH/../var"
