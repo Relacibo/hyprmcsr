@@ -2,7 +2,7 @@
 
 ## Overview
 
-This project automates the setup of a Minecraft speedrunning environment on Linux using Hyprland, Pipewire, and various helper tools.  
+This project automates the setup of a Minecraft speedrunning environment on Linux using Hyprland, Pipewire, and various helper tools. The focus is on simplicity and making it easy to adapt or extend for your own needs.
 Configuration is centralized in the `config.json` file.  
 Installation and setup of required JARs, Pipewire configuration, and keybinds are handled automatically via the install script.
 I only tested it on my own system: Fedora 42.

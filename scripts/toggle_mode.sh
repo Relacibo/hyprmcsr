@@ -18,10 +18,6 @@ if [ -z "$MODE" ]; then
   exit 1
 fi
 
-# Default-Werte laden
-DEFAULT_SIZE=$(jq -r '.modeSwitch.default.size' "$CONFIG_FILE")
-DEFAULT_SENSITIVITY=$(jq -r '.modeSwitch.default.sensitivity' "$CONFIG_FILE")
-
 # Aktuellen State lesen
 CURRENT_STATE=""
 [ -f "$STATE_FILE" ] && CURRENT_STATE=$(cat "$STATE_FILE")
@@ -36,12 +32,14 @@ fi
 PREVIOUS_MODE="$CURRENT_STATE"
 
 # Werte für den Zielmodus laden (mit Fallback auf default)
+# Beispiel für size und sensitivity:
 TARGET_SIZE=$(jq -r --arg m "$NEXT_MODE" '.modeSwitch.modes[$m].size // .modeSwitch.default.size' "$CONFIG_FILE")
 TARGET_SENSITIVITY=$(jq -r --arg m "$NEXT_MODE" '.modeSwitch.modes[$m].sensitivity // .modeSwitch.default.sensitivity' "$CONFIG_FILE")
+ON_ENTER=$(jq -r --arg m "$NEXT_MODE" '.modeSwitch.modes[$m].onEnter // .modeSwitch.default.onEnter // empty' "$CONFIG_FILE")
+ON_EXIT=$(jq -r --arg m "$PREVIOUS_MODE" '.modeSwitch.modes[$m].onExit // .modeSwitch.default.onExit // empty' "$CONFIG_FILE")
 
 # onExit des aktuellen Modus ausführen (falls vorhanden und Moduswechsel)
 if [ -n "$PREVIOUS_MODE" ] && [ "$PREVIOUS_MODE" != "$NEXT_MODE" ]; then
-  ON_EXIT=$(jq -r --arg m "$PREVIOUS_MODE" '.modeSwitch.modes[$m].onExit // empty' "$CONFIG_FILE")
   if [ -n "$ON_EXIT" ]; then
     PREVIOUS_MODE="$PREVIOUS_MODE" NEXT_MODE="$NEXT_MODE" "$ON_EXIT"
   fi
@@ -52,12 +50,10 @@ echo "$NEXT_MODE" > "$STATE_FILE"
 
 # onEnter des neuen Modus ausführen (falls vorhanden und Moduswechsel)
 if [ "$PREVIOUS_MODE" != "$NEXT_MODE" ]; then
-  ON_ENTER=$(jq -r --arg m "$NEXT_MODE" '.modeSwitch.modes[$m].onEnter // empty' "$CONFIG_FILE")
   if [ -n "$ON_ENTER" ]; then
     PREVIOUS_MODE="$PREVIOUS_MODE" NEXT_MODE="$NEXT_MODE" "$ON_ENTER"
   fi
 fi
-
 
 # Größe aus wxh in w und h splitten
 IFS="x" read -r TARGET_WIDTH TARGET_HEIGHT <<< "$TARGET_SIZE"

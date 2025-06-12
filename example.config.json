@@ -10,7 +10,9 @@
   "modeSwitch": {
     "default": {
       "size": "1920x1080",
-      "sensitivity": "0.0"
+      "sensitivity": "0.0",
+      "onExit": "echo Leaving $PREVIOUS_MODE",
+      "onEnter": "echo Entering $NEXT_MODE"
     },
     "modes": {
       "normal": {
