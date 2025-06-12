@@ -43,6 +43,7 @@
     ]
   },
   "minecraft": {
+    "prismPrefixOverride": "~/.local/share/PrismLauncher",
     "prismInstanceId": "1.16.1",
     "windowTitleRegex": "^Minecraft\\* 1.16.1",
     "observeLog": {
