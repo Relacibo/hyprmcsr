@@ -52,16 +52,32 @@ Make sure your user is in the appropriate groups (e.g., `input` for input-remapp
 
 ## Configuration (`config.json`)
 
-All important settings are made in the `config.json` file in the project root. The NinjaLink config (`ninja-link-config.json`) is also read from there.
-See [example.config.json](example.config.json)
+All important settings are made in the `config.json` file in the project root.  
+See [example.config.json](example.config.json) for a full example.
 
 **Key fields:**
-- **binds.modeSwitch**: Defines key combinations for different window modes.
-- **modeSwitch**: Sets window sizes and sensitivities for each mode.
-- **inputRemapper**: Devices and presets for mouse and keyboard (for input-remapper).
+
+- **onStart**: Array of shell commands/scripts to run in the background when starting (e.g. starting helper tools, OBS, etc.).  
+  The variables `$SCRIPT_DIR` and `$PROFILE` are available in each command.
+- **onDestroy**: Array of shell commands/scripts to run in the background when stopping (e.g. cleanup, notifications, killing helper tools).  
+  The variables `$SCRIPT_DIR` and `$PROFILE` are available in each command.
+- **binds.toggleBinds**: Key combination to toggle binds.
+- **binds.modeSwitch**: Key combinations for switching between window modes.
+- **modeSwitch.default**: Default window size, sensitivity, and optional `onEnter`/`onExit` arrays for commands to run when entering or exiting a mode.
+- **modeSwitch.modes**: Per-mode overrides for size, sensitivity, and `onEnter`/`onExit` commands.
+- **inputRemapper.devices**: List of devices and presets for input-remapper.
+- **minecraft.prismPrefixOverride**: (Optional) Path to your PrismLauncher data directory.
 - **minecraft.prismInstanceId**: Name or UUID of your PrismLauncher instance.
 - **minecraft.windowTitleRegex**: Regex to detect the Minecraft window.
-- **pipewireLoopback.playbackTarget**: Audio output for Pipewire split (e.g., your headset).
+- **minecraft.observeLog.enabled**: Enable or disable log observation for Minecraft state.
+- **pipewireLoopback.enabled**: Enable or disable Pipewire audio loopback/splitting.
+- **pipewireLoopback.playbackTarget**: Audio output for Pipewire split (e.g., your headset).  
+  Tip: You can leave this field empty. If loopback is enabled, running `install.sh` will automatically detect and set your default output here.
+- **download.jar**: Array of GitHub repositories (or URLs in the future) for required JARs to be downloaded automatically.
+- **autoDestroyOnExit**: If true, runs cleanup automatically when the main script exits.
+
+**Tip:**  
+You can use variables like `$SCRIPT_DIR`, `$PROFILE`, `$PREVIOUS_MODE`, and `$NEXT_MODE` in your shell commands in `onStart`, `onDestroy`, `onEnter`, and `onExit`.
 
 ---
 
@@ -71,22 +87,23 @@ See [example.config.json](example.config.json)
 
 - **Setup and start all tools:**
   ```bash
-  ./scripts/setup.sh [--coop]
+  ./scripts/start.sh [--coop]
   ```
-  - Starts OBS, Ninjabrain-Bot, Minecraft (via Prism), sets up keybinds and audio split.
-  - With `--coop`, NinjaLink for coop is started as well.
+  - Minecraft (via Prism), sets up keybinds and audio split.
+  - Also executes the items in onStart in `config.json`.
 
 - **Restart Minecraft only:**
   ```bash
   ./scripts/minecraft.sh
   ```
-  - Only starts Minecraft (e.g., when it crashed) and re-applies audio/window handling.
+  - Only starts Minecraft (e.g., when it crashed) and re-applies audio/window handling. You have to restart it like this, otherwise the binds/audio splitting will not work.
 
 - **Remove keybinds and stop input remapper:**
   ```bash
   ./scripts/destroy.sh
   ```
-  - Removes all keybinds and stops input-remapper.
+  - Removes all keybinds and stops input-remapper. (Doesn't need to be called, if `autoDestroyOnExit` is true, which it is on default.)
+  - Calls the scripts in onDestroy in `config.json`
 
 ---
 
