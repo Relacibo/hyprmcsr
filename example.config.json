@@ -21,7 +21,9 @@
       },
       "boat-eye": {
         "size": "384x16384",
-        "sensitivity": "-0.9375"
+        "sensitivity": "-0.9375",
+        "onEnter": "# razer-cli --dpi 100; obs-cli sceneitem show BoatEyeScene GameCapture",
+        "onExit": "# razer-cli --dpi 1800; obs-cli sceneitem hide BoatEyeScene GameCapture"
       },
       "planar-abuse": {
         "size": "1920x420"
@@ -42,10 +44,13 @@
   },
   "minecraft": {
     "prismInstanceId": "1.16.1",
-    "windowTitleRegex": "^Minecraft\\* 1.16.1"
+    "windowTitleRegex": "^Minecraft\\* 1.16.1",
+    "observeLog": {
+      "enabled": true
+    }
   },
   "pipewireLoopback": {
-    "enabled": 0
+    "enabled": false
   },
   "autoDestroyOnExit": true
 }

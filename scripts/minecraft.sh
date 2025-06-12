@@ -42,8 +42,8 @@ hyprctl --batch "
 # ...existing code...
 
 # Prüfe, ob pipewireLoopback aktiviert ist
-pipewire_enabled=$(jq -r '.pipewireLoopback.enabled // 0' "$CONFIG_FILE")
-if [ "$pipewire_enabled" = "1" ] || [ "$pipewire_enabled" = "true" ]; then
+pipewire_enabled=$(jq -r '.pipewireLoopback.enabled // false' "$CONFIG_FILE")
+if [ "$pipewire_enabled" = "true" ]; then
   for i in {1..20}; do
     sink_input_id=$(pactl -f json list sink-inputs | jq -r '
       .[] | select(

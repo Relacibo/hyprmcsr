@@ -9,6 +9,8 @@ if [ -n "$toggle_binds_key" ] && [ "$toggle_binds_key" != "null" ]; then
   hyprctl keyword unbind $toggle_binds_key
 fi
 
-$SCRIPT_DIR/toggle_binds.sh 0
+jq -r '.binds.modeSwitch | to_entries[] | "\(.key) \(.value)"' "$CONFIG_FILE" | while read -r mode key; do
+  hyprctl keyword unbind $key
+done
 
 rm -rf "$SCRIPT_DIR/../var"

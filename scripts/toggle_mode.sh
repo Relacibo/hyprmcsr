@@ -8,6 +8,9 @@ MODE="$1"
 STATE_FILE="$SCRIPT_DIR/../var/window_switcher_state"
 WINDOW_ADDRESS=$(cat "$SCRIPT_DIR/../var/window_address")
 
+BINDS_ENABLED_FILE="$SCRIPT_DIR/../var/binds_enabled"
+[ "$(cat "$BINDS_ENABLED_FILE" 2>/dev/null || echo 0)" = "1" ] || exit 0
+
 if ! command -v jq >/dev/null; then
   echo "jq wird benötigt!"
   exit 1

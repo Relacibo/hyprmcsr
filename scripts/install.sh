@@ -4,7 +4,7 @@ SCRIPT_DIR=$(dirname $(realpath "$0"))
 CONFIG_FILE="$SCRIPT_DIR/../config.json"
 TEMPLATE_FILE="$SCRIPT_DIR/../split-audio.conf"
 PIPEWIRE_CONFIG_FOLDER="${XDG_CONFIG_HOME:-$HOME/.config}/pipewire/pipewire.conf.d"
-PW_ENABLED=$(jq -r '.pipewireLoopback.enabled // 0' "$CONFIG_FILE")
+PW_ENABLED=$(jq -r '.pipewireLoopback.enabled // false' "$CONFIG_FILE")
 SPLIT_AUDIO_CONF="$PIPEWIRE_CONFIG_FOLDER/split-audio.conf"
 
 JARS_DIR="$SCRIPT_DIR/../jars"
@@ -16,13 +16,8 @@ JAR_REPOS=(
 )
 
 
-if [ "$PW_ENABLED" = "0" ]; then
-  if [ -f "$SPLIT_AUDIO_CONF" ]; then
-    rm "$SPLIT_AUDIO_CONF"
-    echo "split-audio.conf removed (pipewireLoopback disabled)."
-  fi
-else
-  # Wert aus config.json holen
+if [ "$PW_ENABLED" = "true" ]; then
+# Wert aus config.json holen
   PW_TARGET=$(jq -r '.pipewireLoopback.playbackTarget' "$CONFIG_FILE")
   if [ -z "$PW_TARGET" ] || [ "$PW_TARGET" = "null" ]; then
     # Default sink ermitteln
@@ -42,11 +37,15 @@ else
     jq --arg target "$PW_TARGET" '.pipewireLoopback.playbackTarget = $target' "$CONFIG_FILE" > "$tmp_config" && mv "$tmp_config" "$CONFIG_FILE"
     echo "playbackTarget in config.json auf $PW_TARGET gesetzt."
   fi
-
   mkdir -p "$PIPEWIRE_CONFIG_FOLDER"
   # Template ersetzen und schreiben
   sed "s|{{PW_TARGET}}|$PW_TARGET|g" "$TEMPLATE_FILE" > "$SPLIT_AUDIO_CONF"
   echo "split-audio.conf wurde mit Ziel $PW_TARGET nach $SPLIT_AUDIO_CONF geschrieben."
+else
+  if [ -f "$SPLIT_AUDIO_CONF" ]; then
+    rm "$SPLIT_AUDIO_CONF"
+    echo "split-audio.conf removed (pipewireLoopback disabled)."
+  fi
 fi
 
 for repo in "${JAR_REPOS[@]}"; do

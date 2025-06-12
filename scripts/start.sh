@@ -12,7 +12,9 @@ fi
 
 echo "default" > "$SCRIPT_DIR/../var/window_switcher_state"
 
-$SCRIPT_DIR/toggle_binds.sh 1
+jq -r '.binds.modeSwitch | to_entries[] | "\(.key) \(.value)"' "$CONFIG_FILE" | while read -r mode key; do
+    hyprctl keyword bindni $key,exec,"$SCRIPT_DIR/toggle_mode.sh $mode"
+done
 
 toggle_binds_key=$(jq -r '.binds.toggleBinds' "$CONFIG_FILE")
 if [ -n "$toggle_binds_key" ] && [ "$toggle_binds_key" != "null" ]; then
@@ -22,8 +24,6 @@ fi
 if [ "$1" = "--coop" ]; then
   $SCRIPT_DIR/ninjalink.sh &
 fi
-
-PRISM_INSTANCE_NAME=$(jq -r '.minecraft.prismInstanceName' "$CONFIG")
 
 flatpak run com.obsproject.Studio & # Start OBS
 $SCRIPT_DIR/ninjabrain.sh
@@ -39,14 +39,18 @@ mkdir -p $SCRIPT_DIR/../var
 
 $SCRIPT_DIR/minecraft.sh
 
-# ...existing code...
+OBSERVE_LOG=$(jq -r '.minecraft.observeLog.enabled // 1' "$CONFIG_FILE")
+if [ "$OBSERVE_LOG" = "true" ]; then
+  $SCRIPT_DIR/observe_log.sh &
+  LOG_MONITOR_PID=$!
+fi
 
 # Option aus config lesen (default: true)
 auto_destroy=$(jq -r '.autoDestroyOnExit // true' "$CONFIG_FILE")
 
 if [ "$auto_destroy" = "true" ]; then
   # Trap für SIGINT und SIGTERM setzen
-  trap "$SCRIPT_DIR/destroy.sh; exit" SIGINT SIGTERM
+  trap 'kill $LOG_MONITOR_PID 2>/dev/null; $SCRIPT_DIR/destroy.sh; exit' SIGINT SIGTERM
   echo "Drücke Strg+C zum Beenden. Beim Beenden wird destroy.sh automatisch ausgeführt."
   sleep infinity
 fi
