@@ -4,6 +4,7 @@
     "$SCRIPT_DIR/run_jar.sh Ninjabrain-Bot",
     "flatpak run com.obsproject.Studio"
   ],
+  "onDestroy": [],
   "binds": {
     "toggleBinds": ",HOME",
     "modeSwitch": {

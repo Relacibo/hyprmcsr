@@ -12,5 +12,12 @@ fi
 jq -r '.binds.modeSwitch | to_entries[] | "\(.key) \(.value)"' "$CONFIG_FILE" | while read -r mode key; do
   hyprctl keyword unbind $key
 done
+PROFILE=$(cat "$SCRIPT_DIR/../var/profile" 2>/dev/null || echo "default")
+on_destroy_cmds=$(jq -r '.onDestroy[]?' "$CONFIG_FILE")
+if [ -n "$on_destroy_cmds" ]; then
+  while IFS= read -r cmd; do
+    SCRIPT_DIR="$SCRIPT_DIR" PROFILE="$PROFILE" bash -c "$cmd" &
+  done <<< "$on_destroy_cmds"
+fi
 
 rm -rf "$SCRIPT_DIR/../var"

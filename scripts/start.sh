@@ -29,6 +29,7 @@ if [ -n "$toggle_binds_key" ] && [ "$toggle_binds_key" != "null" ]; then
 fi
 PROFILE="${1:-default}"
 export PROFILE
+echo "$PROFILE" > "$SCRIPT_DIR/../var/profile"
 
 # Run onStart commands from config.json (all in background)
 on_start_cmds=$(jq -r '.onStart[]?' "$CONFIG_FILE")
