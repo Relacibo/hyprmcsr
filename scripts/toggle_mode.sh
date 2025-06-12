@@ -38,11 +38,31 @@ CURRENT_STATE=""
 if [ "$CURRENT_STATE" = "$MODE" ]; then
   TARGET_SIZE="$DEFAULT_SIZE"
   TARGET_SENSITIVITY="$DEFAULT_SENSITIVITY"
-  MODE="default"
+  NEXT_MODE="default"
+else
+  NEXT_MODE="$MODE"
+fi
+
+PREVIOUS_MODE="$CURRENT_STATE"
+
+# onExit des aktuellen Modus ausführen (falls vorhanden und Moduswechsel)
+if [ -n "$PREVIOUS_MODE" ] && [ "$PREVIOUS_MODE" != "$NEXT_MODE" ]; then
+  ON_EXIT=$(jq -r --arg m "$PREVIOUS_MODE" '.modeSwitch[$m].onExit // empty' "$CONFIG_FILE")
+  if [ -n "$ON_EXIT" ]; then
+    PREVIOUS_MODE="$PREVIOUS_MODE" NEXT_MODE="$NEXT_MODE" "$ON_EXIT"
+  fi
 fi
 
 # State aktualisieren
-echo "$MODE" > "$STATE_FILE"
+echo "$NEXT_MODE" > "$STATE_FILE"
+
+# onEnter des neuen Modus ausführen (falls vorhanden und Moduswechsel)
+if [ "$PREVIOUS_MODE" != "$NEXT_MODE" ]; then
+  ON_ENTER=$(jq -r --arg m "$NEXT_MODE" '.modeSwitch[$m].onEnter // empty' "$CONFIG_FILE")
+  if [ -n "$ON_ENTER" ]; then
+    PREVIOUS_MODE="$PREVIOUS_MODE" NEXT_MODE="$NEXT_MODE" "$ON_ENTER"
+  fi
+fi
 
 # Fensteradresse aus Datei lesen
 if [ ! -f "$WINDOW_ADDRESS_FILE" ]; then
@@ -53,9 +73,6 @@ WINDOW_ADDRESS=$(cat "$WINDOW_ADDRESS_FILE")
 
 # Größe aus wxh in w und h splitten
 IFS="x" read -r TARGET_WIDTH TARGET_HEIGHT <<< "$TARGET_SIZE"
-echo $TARGET_SIZE
-echo $TARGET_WIDTH
-echo $TARGET_HEIGHT
 
 # Fenstergröße und Sensitivity setzen
 hyprctl --batch "
