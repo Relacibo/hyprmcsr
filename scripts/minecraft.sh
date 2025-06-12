@@ -1,8 +1,8 @@
 #!/bin/bash
 
-SCRIPT_PATH=$(dirname $(realpath "$0"))
-CONFIG_FILE="$SCRIPT_PATH/../config.json"
-WINDOW_ADDRESS_FILE="$SCRIPT_PATH/../var/window_address"
+SCRIPT_DIR=$(dirname $(realpath "$0"))
+CONFIG_FILE="$SCRIPT_DIR/../config.json"
+WINDOW_ADDRESS_FILE="$SCRIPT_DIR/../var/window_address"
 
 PRISM_INSTANCE_ID=$(jq -r '.minecraft.prismInstanceId' "$CONFIG_FILE")
 window_regex=$(jq -r '.minecraft.windowTitleRegex' "$CONFIG_FILE")

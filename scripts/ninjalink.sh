@@ -1,8 +1,8 @@
 #!/bin/sh
-SCRIPT_PATH=$(dirname $(realpath "$0"))
-JAR_PATH=$SCRIPT_PATH/../jars
+SCRIPT_DIR=$(dirname $(realpath "$0"))
+JAR_PATH=$SCRIPT_DIR/../jars
 FILE_PATH=$(find $JAR_PATH -type f -name NinjaLink-*.jar)
 
-cd $SCRIPT_PATH/..
+cd $SCRIPT_DIR/..
 java -jar "$FILE_PATH" &
 

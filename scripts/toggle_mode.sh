@@ -2,11 +2,11 @@
 
 export XDG_RUNTIME_DIR="/run/user/$(id -u)"
 
-SCRIPT_PATH="$(dirname "$(realpath "$0")")"
-CONFIG_FILE="$SCRIPT_PATH/../config.json"
+SCRIPT_DIR="$(dirname "$(realpath "$0")")"
+CONFIG_FILE="$SCRIPT_DIR/../config.json"
 MODE="$1"
-STATE_FILE="$SCRIPT_PATH/../var/window_switcher_state"
-WINDOW_ADDRESS=$(cat "$SCRIPT_PATH/../var/window_address")
+STATE_FILE="$SCRIPT_DIR/../var/window_switcher_state"
+WINDOW_ADDRESS=$(cat "$SCRIPT_DIR/../var/window_address")
 
 if ! command -v jq >/dev/null; then
   echo "jq wird benötigt!"
@@ -41,7 +41,7 @@ ON_EXIT=$(jq -r --arg m "$PREVIOUS_MODE" '.modeSwitch.modes[$m].onExit // .modeS
 # onExit des aktuellen Modus ausführen (falls vorhanden und Moduswechsel)
 if [ -n "$PREVIOUS_MODE" ] && [ "$PREVIOUS_MODE" != "$NEXT_MODE" ]; then
   if [ -n "$ON_EXIT" ]; then
-    PREVIOUS_MODE="$PREVIOUS_MODE" NEXT_MODE="$NEXT_MODE" "$ON_EXIT"
+    SCRIPT_DIR="$SCRIPT_DIR" PREVIOUS_MODE="$PREVIOUS_MODE" NEXT_MODE="$NEXT_MODE" bash -c "$ON_EXIT"
   fi
 fi
 
@@ -51,7 +51,7 @@ echo "$NEXT_MODE" > "$STATE_FILE"
 # onEnter des neuen Modus ausführen (falls vorhanden und Moduswechsel)
 if [ "$PREVIOUS_MODE" != "$NEXT_MODE" ]; then
   if [ -n "$ON_ENTER" ]; then
-    PREVIOUS_MODE="$PREVIOUS_MODE" NEXT_MODE="$NEXT_MODE" "$ON_ENTER"
+    SCRIPT_DIR="$SCRIPT_DIR" PREVIOUS_MODE="$PREVIOUS_MODE" NEXT_MODE="$NEXT_MODE" bash -c "$ON_ENTER"
   fi
 fi
 

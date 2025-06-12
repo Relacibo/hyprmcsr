@@ -1,9 +1,9 @@
 #!/bin/bash
 # filepath: /home/reinhard/git/hyprmcsr/scripts/toggle_binds.sh
 
-SCRIPT_PATH=$(dirname "$(realpath "$0")")
-CONFIG_FILE="$SCRIPT_PATH/../config.json"
-STATE_FILE="$SCRIPT_PATH/../var/binds_enabled"
+SCRIPT_DIR=$(dirname "$(realpath "$0")")
+CONFIG_FILE="$SCRIPT_DIR/../config.json"
+STATE_FILE="$SCRIPT_DIR/../var/binds_enabled"
 
 if ! command -v jq >/dev/null; then
   echo "jq is required!"
@@ -12,7 +12,7 @@ fi
 
 activate_binds() {
   jq -r '.binds.modeSwitch | to_entries[] | "\(.key) \(.value)"' "$CONFIG_FILE" | while read -r mode key; do
-    hyprctl keyword bindni $key,exec,"$SCRIPT_PATH/toggle_mode.sh $mode"
+    hyprctl keyword bindni $key,exec,"$SCRIPT_DIR/toggle_mode.sh $mode"
   done
   echo 1 > "$STATE_FILE"
   echo "Hyprland binds activated."

@@ -1,13 +1,13 @@
 #!/bin/bash
 
-SCRIPT_PATH=$(dirname $(realpath "$0"))
-CONFIG_FILE="$SCRIPT_PATH/../config.json"
-TEMPLATE_FILE="$SCRIPT_PATH/../split-audio.conf"
+SCRIPT_DIR=$(dirname $(realpath "$0"))
+CONFIG_FILE="$SCRIPT_DIR/../config.json"
+TEMPLATE_FILE="$SCRIPT_DIR/../split-audio.conf"
 PIPEWIRE_CONFIG_FOLDER="${XDG_CONFIG_HOME:-$HOME/.config}/pipewire/pipewire.conf.d"
 PW_ENABLED=$(jq -r '.pipewireLoopback.enabled // 0' "$CONFIG_FILE")
 SPLIT_AUDIO_CONF="$PIPEWIRE_CONFIG_FOLDER/split-audio.conf"
 
-JARS_DIR="$SCRIPT_PATH/../jars"
+JARS_DIR="$SCRIPT_DIR/../jars"
 # Liste der GitHub-Repos (owner/repo)
 JAR_REPOS=(
   "tildejustin/modcheck"
