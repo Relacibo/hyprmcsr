@@ -1,4 +1,9 @@
 {
+  "onStart": [
+    "if [ \"$PROFILE\" = \"coop\" ]; then $SCRIPT_DIR/run_jar.sh NinjaLink fi",
+    "$SCRIPT_DIR/run_jar.sh Ninjabrain-Bot",
+    "flatpak run com.obsproject.Studio"
+  ],
   "binds": {
     "toggleBinds": ",HOME",
     "modeSwitch": {
@@ -11,8 +16,8 @@
     "default": {
       "size": "1920x1080",
       "sensitivity": "0.0",
-      "onExit": "# notify-send Leaving $PREVIOUS_MODE",
-      "onEnter": "# notify-send Entering $NEXT_MODE"
+      "onExit": ["# notify-send Leaving $PREVIOUS_MODE"],
+      "onEnter": ["# notify-send Entering $NEXT_MODE"]
     },
     "modes": {
       "normal": {},
@@ -22,8 +27,14 @@
       "boat-eye": {
         "size": "384x16384",
         "sensitivity": "-0.9375",
-        "onEnter": "# razer-cli --dpi 100; obs-cli sceneitem show BoatEyeScene GameCapture",
-        "onExit": "# razer-cli --dpi 1800; obs-cli sceneitem hide BoatEyeScene GameCapture"
+        "onEnter": [
+          "razer-cli --dpi 100",
+          "obs-cli item show --scene BoatEyeScene GameCapture"
+        ],
+        "onExit": [
+          "razer-cli --dpi 1800",
+          "obs-cli item hide --scene BoatEyeScene GameCapture"
+        ]
       },
       "planar-abuse": {
         "size": "1920x420"
@@ -52,6 +63,13 @@
   },
   "pipewireLoopback": {
     "enabled": false
+  },
+  "download": {
+    "jar": [
+      "tildejustin/modcheck",
+      "Ninjabrain1/Ninjabrain-Bot",
+      "DuncanRuns/NinjaLink"
+    ]
   },
   "autoDestroyOnExit": true
 }

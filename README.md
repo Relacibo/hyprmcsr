@@ -12,12 +12,13 @@ If you have problems with this library, feel free to write an issue.
 
 ## Requirements
 
-Before installing, make sure you have the following dependencies installed on your system:
+Before installing, make sure you have the following dependencies installed on your system and in your PATH:
 
 - **Hyprland** (Wayland compositor)
 - **Pipewire** (with Flatpak support)
-- **OBS Studio** (Flatpak version recommended)
-- **PrismLauncher** (Flatpak version recommended)
+- **OBS Studio** (Flatpak version)
+- **java**
+- **PrismLauncher** (Flatpak version)
 - **obs-vkcapture** (Flatpak plugin for OBS)
 - **input-remapper** (for remapping mouse and keyboard inputs)
 - **jq** (for JSON parsing in shell scripts)
@@ -36,7 +37,7 @@ Make sure your user is in the appropriate groups (e.g., `input` for input-remapp
    ```
 
 2. **Configure pipewire**
-  Benenne `example.config.json` um in `config.json`. Change `pipewireLoopback.playbackTarget` in `config.json` to your default output (e.g. headset). You can list your outputs with `pactl list short sinks`. Use the full name in the second column. You can leave this field empty. Then the default output will be used.
+   Rename `example.config.json` to `config.json`. Change `pipewireLoopback.playbackTarget` in `config.json` to your default output (e.g. headset). You can list your outputs with `pactl list short sinks`. Use the full name in the second column. You can leave this field empty; the default output will be used.
 
 3. **Run the install script**
    ```bash
@@ -141,9 +142,21 @@ Adjust these values if you use a different monitor resolution.
 
 You can then open this scene as a projector in OBS and keep it running on a secondary monitor while playing.
 
+---
+
+## Optional Tools
+
+In the `onEnter` and `onExit` fields in your `config.json` (example: [example.config.json](example.config.json)) I use the following tools, for automation:
+
+- [**razer-cli**](https://github.com/lolei/razer-cli)  
+  Command-line tool to set DPI and other settings for Razer mice.
+
+- [**obs-cli**](https://github.com/pschmitt/obs-cli)  
+  Command-line client for OBS Studio, allowing you to control scenes, sources, and more from scripts.  
+
 ## Notes
 
-- The scripts are optimized for Hyprland and Pipewire.
+- The scripts are made for use with Hyprland and Pipewire.
 - Most settings (devices, instance names, audio output, etc.) are controlled via `config.json`.
 - Don't run the scripts with `sudo`. The scripts use `sudo`, where needed (input-remapper). That also means, that you have to type in your password, when running `start.sh` and `destroy.sh`
 - You do not necessarily need to run `toggle_mode.sh`, as it is run by the from the binds, that are created in `start.sh`
@@ -164,4 +177,4 @@ You can then open this scene as a projector in OBS and keep it running on a seco
 **This README and parts of the automation were created with help from [GitHub Copilot](https://github.com/features/copilot).**
 
 **Questions or issues?**  
-Check the script comments or open an issue!
+Check the script comments or [open an issue](https://github.com/Relacibo/hyprmcsr/issues)!

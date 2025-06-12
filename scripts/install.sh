@@ -7,14 +7,6 @@ PIPEWIRE_CONFIG_FOLDER="${XDG_CONFIG_HOME:-$HOME/.config}/pipewire/pipewire.conf
 PW_ENABLED=$(jq -r '.pipewireLoopback.enabled // false' "$CONFIG_FILE")
 SPLIT_AUDIO_CONF="$PIPEWIRE_CONFIG_FOLDER/split-audio.conf"
 
-JARS_DIR="$SCRIPT_DIR/../jars"
-# Liste der GitHub-Repos (owner/repo)
-JAR_REPOS=(
-  "tildejustin/modcheck"
-  "Ninjabrain1/Ninjabrain-Bot"
-  "DuncanRuns/NinjaLink"
-)
-
 
 if [ "$PW_ENABLED" = "true" ]; then
 # Wert aus config.json holen
@@ -48,14 +40,24 @@ else
   fi
 fi
 
-for repo in "${JAR_REPOS[@]}"; do
-  api_url="https://api.github.com/repos/$repo/releases/latest"
-  release_json=$(curl -s "$api_url")
-  jar_url=$(echo "$release_json" | jq -r '.assets[] | select(.name | endswith(".jar")) | .browser_download_url' | head -n1)
-  jar_name=$(basename "$jar_url")
+JARS_DIR="$SCRIPT_DIR/../jars"
+mapfile -t JAR_REPOS < <(jq -r '.download.jar[]?' "$CONFIG_FILE")
+
+for entry in "${JAR_REPOS[@]}"; do
+  if [[ "$entry" == */* ]]; then
+    # GitHub-Repo (owner/repo)
+    api_url="https://api.github.com/repos/$entry/releases/latest"
+    release_json=$(curl -s "$api_url")
+    jar_url=$(echo "$release_json" | jq -r '.assets[] | select(.name | endswith(".jar")) | .browser_download_url' | head -n1)
+    jar_name=$(basename "$jar_url")
+  else
+    # (Platz für spätere URL-Logik)
+    echo "Unknown JAR source: $entry"
+    continue
+  fi
 
   if [ -z "$jar_url" ] || [ "$jar_url" = "null" ]; then
-    echo "Keine JAR im Latest Release von $repo gefunden."
+    echo "Keine JAR im Latest Release von $entry gefunden."
     continue
   fi
 

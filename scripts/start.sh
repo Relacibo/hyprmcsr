@@ -10,6 +10,13 @@ if ! command -v jq >/dev/null; then
   exit 1
 fi
 
+if [ "$1" = "--coop" ]; then
+  PROFILE="coop"
+else
+  PROFILE="${1:-default}"
+fi
+export PROFILE
+
 echo "default" > "$SCRIPT_DIR/../var/window_switcher_state"
 
 jq -r '.binds.modeSwitch | to_entries[] | "\(.key) \(.value)"' "$CONFIG_FILE" | while read -r mode key; do
@@ -20,13 +27,16 @@ toggle_binds_key=$(jq -r '.binds.toggleBinds' "$CONFIG_FILE")
 if [ -n "$toggle_binds_key" ] && [ "$toggle_binds_key" != "null" ]; then
   hyprctl keyword bind $toggle_binds_key,exec,"$SCRIPT_DIR/toggle_binds.sh"
 fi
+PROFILE="${1:-default}"
+export PROFILE
 
-if [ "$1" = "--coop" ]; then
-  $SCRIPT_DIR/ninjalink.sh &
+# Run onStart commands from config.json (all in background)
+on_start_cmds=$(jq -r '.onStart[]?' "$CONFIG_FILE")
+if [ -n "$on_start_cmds" ]; then
+  while IFS= read -r cmd; do
+    SCRIPT_DIR="$SCRIPT_DIR" PROFILE="$PROFILE" bash -c "$cmd" &
+  done <<< "$on_start_cmds"
 fi
-
-flatpak run com.obsproject.Studio & # Start OBS
-$SCRIPT_DIR/ninjabrain.sh
 
 # Input Remapper für Devices (vereinheitlicht)
 jq -c '.inputRemapper.devices[]' "$CONFIG_FILE" | while read -r device_entry; do

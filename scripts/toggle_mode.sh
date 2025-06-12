@@ -12,7 +12,7 @@ BINDS_ENABLED_FILE="$SCRIPT_DIR/../var/binds_enabled"
 [ "$(cat "$BINDS_ENABLED_FILE" 2>/dev/null || echo 0)" = "1" ] || exit 0
 
 if ! command -v jq >/dev/null; then
-  echo "jq wird benötigt!"
+  echo "jq is required!"
   exit 1
 fi
 
@@ -21,11 +21,11 @@ if [ -z "$MODE" ]; then
   exit 1
 fi
 
-# Aktuellen State lesen
+# Read current state
 CURRENT_STATE=""
 [ -f "$STATE_FILE" ] && CURRENT_STATE=$(cat "$STATE_FILE")
 
-# Wenn der gewünschte Modus bereits aktiv ist, auf "normal" zurückschalten
+# Toggle to normal if already in this mode
 if [ "$CURRENT_STATE" = "$MODE" ]; then
   NEXT_MODE="normal"
 else
@@ -34,34 +34,33 @@ fi
 
 PREVIOUS_MODE="$CURRENT_STATE"
 
-# Werte für den Zielmodus laden (mit Fallback auf default)
-# Beispiel für size und sensitivity:
+# Load target values (with fallback to default)
 TARGET_SIZE=$(jq -r --arg m "$NEXT_MODE" '.modeSwitch.modes[$m].size // .modeSwitch.default.size' "$CONFIG_FILE")
 TARGET_SENSITIVITY=$(jq -r --arg m "$NEXT_MODE" '.modeSwitch.modes[$m].sensitivity // .modeSwitch.default.sensitivity' "$CONFIG_FILE")
-ON_ENTER=$(jq -r --arg m "$NEXT_MODE" '.modeSwitch.modes[$m].onEnter // .modeSwitch.default.onEnter // empty' "$CONFIG_FILE")
-ON_EXIT=$(jq -r --arg m "$PREVIOUS_MODE" '.modeSwitch.modes[$m].onExit // .modeSwitch.default.onExit // empty' "$CONFIG_FILE")
 
-# onExit des aktuellen Modus ausführen (falls vorhanden und Moduswechsel)
+# onExit: run all commands in array (if any and mode changes)
 if [ -n "$PREVIOUS_MODE" ] && [ "$PREVIOUS_MODE" != "$NEXT_MODE" ]; then
-  if [ -n "$ON_EXIT" ]; then
-    SCRIPT_DIR="$SCRIPT_DIR" PREVIOUS_MODE="$PREVIOUS_MODE" NEXT_MODE="$NEXT_MODE" bash -c "$ON_EXIT"
-  fi
+  jq -r --arg m "$PREVIOUS_MODE" '.modeSwitch.modes[$m].onExit[]? // .modeSwitch.default.onExit[]? // empty' "$CONFIG_FILE" | while IFS= read -r cmd; do
+    [ -z "$cmd" ] && continue
+    SCRIPT_DIR="$SCRIPT_DIR" PREVIOUS_MODE="$PREVIOUS_MODE" NEXT_MODE="$NEXT_MODE" bash -c "$cmd" &
+  done
 fi
 
-# State aktualisieren
+# Update state
 echo "$NEXT_MODE" > "$STATE_FILE"
 
-# onEnter des neuen Modus ausführen (falls vorhanden und Moduswechsel)
+# onEnter: run all commands in array (if any and mode changes)
 if [ "$PREVIOUS_MODE" != "$NEXT_MODE" ]; then
-  if [ -n "$ON_ENTER" ]; then
-    SCRIPT_DIR="$SCRIPT_DIR" PREVIOUS_MODE="$PREVIOUS_MODE" NEXT_MODE="$NEXT_MODE" bash -c "$ON_ENTER"
-  fi
+  jq -r --arg m "$NEXT_MODE" '.modeSwitch.modes[$m].onEnter[]? // .modeSwitch.default.onEnter[]? // empty' "$CONFIG_FILE" | while IFS= read -r cmd; do
+    [ -z "$cmd" ] && continue
+    SCRIPT_DIR="$SCRIPT_DIR" PREVIOUS_MODE="$PREVIOUS_MODE" NEXT_MODE="$NEXT_MODE" bash -c "$cmd" &
+  done
 fi
 
-# Größe aus wxh in w und h splitten
+# Split size (e.g. 1920x1080)
 IFS="x" read -r TARGET_WIDTH TARGET_HEIGHT <<< "$TARGET_SIZE"
 
-# Fenstergröße und Sensitivity setzen
+# Set window size and sensitivity
 hyprctl --batch "
   dispatch focuswindow address:$WINDOW_ADDRESS;
   dispatch setfloating;
