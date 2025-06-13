@@ -121,6 +121,7 @@ You can use variables like `$SCRIPT_DIR`, `$PROFILE`, `$PREVIOUS_MODE`, `$NEXT_M
     ```
     This will keep the 50 newest worlds with that prefix and delete the rest.
   - **Tip:** You can also call this script from your `onDestroy` array in `config.json` to automatically clean up old worlds when exiting.
+  - Just make sure to escape the double quotes with backslashes, for example: "onDestroy": ["./scripts/delete_old_worlds.sh \"^Random Speedrun \" 50"]
 
 ---
 
@@ -193,7 +194,7 @@ In the `onEnter` and `onExit` fields in your `config.json` (example: [example.co
 - The scripts are made for use with Hyprland, Pipewire and Prism.
 - Most settings (devices, instance names, audio output, etc.) are controlled via `config.json`.
 - Don't run the scripts with `sudo`. The scripts use `sudo`, where needed (input-remapper). That also means, that you have to type in your password, when running `start.sh` and `destroy.sh`
-- You do not necessarily need to run `toggle_mode.sh`, as it is run by the from the binds, that are created in `start.sh`
+- You do not necessarily need to run `toggle_mode.sh`, as it is run by the binds, that are created in `start.sh`
 
 ---
 
