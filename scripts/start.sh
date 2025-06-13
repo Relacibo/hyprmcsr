@@ -27,6 +27,18 @@ toggle_binds_key=$(jq -r '.binds.toggleBinds' "$CONFIG_FILE")
 if [ -n "$toggle_binds_key" ] && [ "$toggle_binds_key" != "null" ]; then
   hyprctl keyword bind $toggle_binds_key,exec,"$SCRIPT_DIR/toggle_binds.sh"
 fi
+
+# Custom binds aus config.json anlegen
+custom_binds=$(jq -r '.binds.custom | to_entries[] | "\(.key) \(.value|@json)"' "$CONFIG_FILE")
+if [ -n "$custom_binds" ]; then
+  while IFS= read -r entry; do
+    bind=$(echo "$entry" | awk '{print $1}')
+    cmds=$(echo "$entry" | cut -d' ' -f2-)
+    # Übergib das Array als JSON-String an den Wrapper
+    hyprctl keyword bind "$bind,exec,$SCRIPT_DIR/custom_bind_wrapper.sh '$cmds'"
+  done <<< "$custom_binds"
+fi
+
 PROFILE="${1:-default}"
 export PROFILE
 echo "$PROFILE" > "$SCRIPT_DIR/../var/profile"

@@ -11,6 +11,9 @@
       "tall": ",H",
       "boat-eye": ",J",
       "planar-abuse": ",Z"
+    },
+    "custom": {
+      ",J": ["# notify-send $WINDOW_ADDRESS"]
     }
   },
   "modeSwitch": {
