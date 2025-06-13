@@ -43,7 +43,6 @@ WINDOW_TITLE_REGEX=$(jq -r '.minecraft.windowTitleRegex // "Minecraft"' "$CONFIG
       ' | head -n1)
       if [ -n "$sink_input_id" ]; then
         pactl move-sink-input "$sink_input_id" virtual_game
-        echo "Minecraft-Sound auf virtual_game umgeleitet."
         break
       fi
       sleep 1
@@ -62,9 +61,12 @@ WINDOW_TITLE_REGEX=$(jq -r '.minecraft.windowTitleRegex // "Minecraft"' "$CONFIG
   fi
 ) &
 
-wrapper_cmd=$(jq -r '.minecraft.wrapperCommand // empty' "$CONFIG_FILE")
-if [ -n "$wrapper_cmd" ] && [ "$wrapper_cmd" != "default" ] && [ "$wrapper_cmd" != "null" ]; then
-  exec $wrapper_cmd "$@"
+inner_wrapper_cmd=$(jq -r '.minecraft.prismReplaceWrapperCommand.innerWrapperCommand // empty' "$CONFIG_FILE")
+
+if [ -n "$inner_wrapper_cmd" ] && [ "$inner_wrapper_cmd" != "null" ] && [ "$inner_wrapper_cmd" != "empty" ]; then
+  echo "hyprmcsr: Using inner wrapper command: $inner_wrapper_cmd"
+  exec $inner_wrapper_cmd "$@"
 else
+  echo "hyprmcsr: Calling minecraft without wrapper command."
   exec "$@"
 fi
