@@ -16,7 +16,7 @@ MINECRAFT_ROOT=$(jq -r '.minecraft.minecraftRootFolderOverride // empty' "$CONFI
 if [ -z "$MINECRAFT_ROOT" ] || [ "$MINECRAFT_ROOT" = "null" ]; then
   MINECRAFT_ROOT=$(grep '^OverrideMinecraftDir=' "$PRISM_INSTANCE_CONFIG" 2>/dev/null | cut -d= -f2-)
   if [ -z "$MINECRAFT_ROOT" ]; then
-    MINECRAFT_ROOT="$PRISM_PREFIX/instances/$PRISM_INSTANCE_ID/.minecraft"
+    MINECRAFT_ROOT="$PRISM_PREFIX/instances/$PRISM_INSTANCE_ID/minecraft"
   fi
 fi
 export MINECRAFT_ROOT
