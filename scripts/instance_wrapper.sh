@@ -2,6 +2,7 @@
 SCRIPT_DIR="$(dirname "$(realpath "$0")")"
 source "$SCRIPT_DIR/env_prism.sh"
 source "$SCRIPT_DIR/env_runtime.sh"
+WINDOW_TITLE_REGEX=$(jq -r '.minecraft.windowTitleRegex // "Minecraft"' "$CONFIG_FILE")
 
 # Starte parallele Aktionen im Subprozess
 (
