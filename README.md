@@ -57,12 +57,17 @@ See [example.config.json](example.config.json) for a full example.
 **Key fields:**
 
 - **onStart**: Array of shell commands/scripts to run in the background when starting (e.g. starting helper tools, OBS, etc.).  
-  The variables `$SCRIPT_DIR` and `$PROFILE` are available in each command.
+  The variables `$SCRIPT_DIR`, `$PROFILE`, and `$WINDOW_ADDRESS` are available in each command.
 - **onDestroy**: Array of shell commands/scripts to run in the background when stopping (e.g. cleanup, notifications, killing helper tools).  
-  The variables `$SCRIPT_DIR` and `$PROFILE` are available in each command.
+  The variables `$SCRIPT_DIR`, `$PROFILE`, and `$WINDOW_ADDRESS` are available in each command.  
+  You can, for example, call `./scripts/delete_old_worlds.sh` here to automatically clean up old worlds when exiting.
 - **binds.toggleBinds**: Key combination to toggle binds.
 - **binds.modeSwitch**: Key combinations for switching between window modes.
-- **modeSwitch.default**: Default window size, sensitivity, and optional `onEnter`/`onExit` arrays for commands to run when entering or exiting a mode.
+- **binds.custom**:  
+  Define your own keybinds and associated commands here.  
+  The commands will be executed with the environment variables `$WINDOW_ADDRESS`, `$SCRIPT_DIR`, and `$PROFILE` set.
+- **modeSwitch.default**: Default window size, sensitivity, and optional `onEnter`/`onExit` arrays for commands to run when entering or exiting a mode.  
+  Here, too, `$SCRIPT_DIR`, `$PROFILE`, and `$WINDOW_ADDRESS` are available.
 - **modeSwitch.modes**: Per-mode overrides for size, sensitivity, and `onEnter`/`onExit` commands.
 - **inputRemapper.devices**: List of devices and presets for input-remapper.
 - **minecraft.prismPrefixOverride**: (Optional) Path to your PrismLauncher data directory.
@@ -76,7 +81,7 @@ See [example.config.json](example.config.json) for a full example.
 - **autoDestroyOnExit**: If true, runs cleanup automatically when the main script exits.
 
 **Tip:**  
-You can use variables like `$SCRIPT_DIR`, `$PROFILE`, `$PREVIOUS_MODE`, and `$NEXT_MODE` in your shell commands in `onStart`, `onDestroy`, `onEnter`, and `onExit`.
+You can use variables like `$SCRIPT_DIR`, `$PROFILE`, `$PREVIOUS_MODE`, `$NEXT_MODE`, and `$WINDOW_ADDRESS` in your shell commands in `onStart`, `onDestroy`, `onEnter`, `onExit`, and custom binds.
 
 ---
 
@@ -103,6 +108,19 @@ You can use variables like `$SCRIPT_DIR`, `$PROFILE`, `$PREVIOUS_MODE`, and `$NE
   ```
   - Removes all keybinds and stops input-remapper. (Doesn't need to be called, if `autoDestroyOnExit` is true, which it is on default.)
   - Calls the scripts in onDestroy in `config.json`
+
+- **Delete old Minecraft worlds:**
+  ```bash
+  ./scripts/delete_old_worlds.sh <regex> <keep_n>
+  ```
+  - Deletes all worlds in the saves folder of the current Prism instance that match `<regex>`, except for the `<keep_n>` newest ones.
+  - By default, Minecraft worlds created by this setup have the prefix `Random Speedrun `.  
+    Example:  
+    ```bash
+    ./scripts/delete_old_worlds.sh "^Random Speedrun " 50
+    ```
+    This will keep the 50 newest worlds with that prefix and delete the rest.
+  - **Tip:** You can also call this script from your `onDestroy` array in `config.json` to automatically clean up old worlds when exiting.
 
 ---
 
