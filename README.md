@@ -107,6 +107,15 @@ See [example.config.json](example.config.json) and [example.default.profile.json
   - If `enabled` is `false`, **you must manually ensure that `instance_wrapper.sh` is set as the WrapperCommand in your PrismLauncher instance and that the environment variable `HYPRMCSR_PROFILE` is set correctly when launching Minecraft.**
   - `innerWrapperCommand` can be any wrapper tool (e.g. `"obs-gamecapture"`).
   - If you don't need a wrapper, you can omit this field.
+- **minecraft.minecraftRootFolderOverride**: (Optional)  
+  Set this to the absolute path of your `.minecraft` folder if you want to override the default detection.  
+  Example:  
+  ```json
+  "minecraft": {
+    "minecraftRootFolderOverride": "/home/username/custom_minecraft_folder"
+  }
+  ```
+  If not set, the scripts will use the PrismLauncher instance config or the default path.
 
 **Tip:**  
 You can use variables like `$SCRIPT_DIR`, `$PROFILE`, `$HYPRMCSR_PROFILE`, `$PREVIOUS_MODE`, `$NEXT_MODE`, `$WINDOW_ADDRESS`, `$PRISM_INSTANCE_ID`, and `$MINECRAFT_ROOT` in your shell commands in `onStart`, `onDestroy`, `onEnter`, `onExit`, `minecraft.onStart`, and custom binds.
