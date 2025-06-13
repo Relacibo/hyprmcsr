@@ -3,7 +3,6 @@ set -e
 
 SCRIPT_DIR=$(dirname "$(realpath "$0")")
 CONFIG_FILE="$SCRIPT_DIR/../config.json"
-PRISM_INSTANCE_ID=$(jq -r '.minecraft.prismInstanceId' "$CONFIG_FILE")
 
 # PrismLauncher-Pfad bestimmen (wie in observe_log.sh)
 PRISM_PREFIX=$(jq -r '.minecraft.prismPrefixOverride // "~/.local/share/PrismLauncher"' "$CONFIG_FILE")
