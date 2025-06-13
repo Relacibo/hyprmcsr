@@ -53,6 +53,34 @@ Make sure your user is in the appropriate groups (e.g., `input` for input-remapp
 
 ---
 
+## Add hyprmcsr to your PATH
+
+To use the `hyprmcsr` command from anywhere, add the `bin` directory of this project to your `PATH`.  
+For example, add the following line to your `~/.bashrc` (or `~/.zshrc`):
+
+```bash
+export PATH="$PATH:/home/username/git/hyprmcsr/bin"
+```
+
+Replace `/home/username/git/hyprmcsr` with the actual path to your cloned repository.
+
+After saving the file, reload your shell configuration:
+
+```bash
+source ~/.bashrc
+```
+
+Now you can simply run commands like:
+
+```bash
+hyprmcsr start
+hyprmcsr destroy
+hyprmcsr modcheck
+```
+from anywhere in your terminal.
+
+---
+
 ## Configuration
 
 ### Global config: `config.json`
@@ -81,16 +109,16 @@ See [example.config.json](example.config.json) and [example.default.profile.json
 - **minecraft.prismInstanceId**: Name or UUID of your PrismLauncher instance.
 - **minecraft.windowTitleRegex**: Regex to detect the Minecraft window.
 - **minecraft.observeLog.enabled**: Enable or disable log observation for Minecraft state.
-- **minecraft.onStart**: Array of shell commands/scripts to run after Minecraft has started (executed by `after_minecraft_start.sh`).
+- **minecraft.onStart**: Array of shell commands/scripts to run after Minecraft has started (executed by `instance_wrapper.sh`).
 - **pipewireLoopback.enabled**: Enable or disable Pipewire audio loopback/splitting.
 - **pipewireLoopback.playbackTarget**: Audio output for Pipewire split (e.g., your headset).  
   Tip: You can leave this field empty. If loopback is enabled, running `install.sh` will automatically detect and set your default output here.
 - **download.jar**: Array of GitHub repositories (or URLs in the future) for required JARs to be downloaded automatically.
 - **autoDestroyOnExit**: If true, runs cleanup automatically when the main script exits.
 - **minecraft.autoStart**:  
-  If `true` (default), Minecraft will be started automatically by `start.sh`.  
+  If `true` (default), Minecraft will be started automatically by `hyprmcsr.sh`.  
   If `false`, you must start Minecraft yourself via PrismLauncher (GUI or CLI).  
-  In both cases, all post-launch actions (window handling, audio, etc.) are handled by `after_minecraft_start.sh` after Minecraft starts.
+  In both cases, all post-launch actions (window handling, audio, etc.) are handled by `instance_wrapper.sh` after Minecraft starts.
 - **minecraft.prismReplaceWrapperCommand**:  
   Controls whether the instance wrapper is set automatically and which inner wrapper (like obs-gamecapture) is used.  
   Example:
@@ -128,7 +156,7 @@ You can use variables like `$SCRIPT_DIR`, `$PROFILE`, `$HYPRMCSR_PROFILE`, `$PRE
 
 - **Setup and start all tools:**
   ```bash
-  ./scripts/start.sh [--coop]
+  ./scripts/hyprmcsr.sh [--coop]
   ```
   - Sets up keybinds, input remapper, and environment.
   - Automatically sets the `instance_wrapper.sh` as the "WrapperCommand" in your PrismLauncher instance config.
@@ -269,8 +297,8 @@ In the `onEnter` and `onExit` fields in your profile config (example: [example.d
 
 - The scripts are made for use with Hyprland, Pipewire and Prism.
 - Most settings (devices, instance names, audio output, etc.) are controlled via your profile config.
-- Don't run the scripts with `sudo`. The scripts use `sudo`, where needed (input-remapper). That also means, that you have to type in your password, when running `start.sh` and `destroy.sh`
-- You do not necessarily need to run `toggle_mode.sh`, as it is run by the from the binds, that are created in `start.sh`
+- Don't run the scripts with `sudo`. The scripts use `sudo`, where needed (input-remapper). That also means, that you have to type in your password, when running `hyprmcsr.sh`( and `destroy.sh`)
+- You do not necessarily need to run `toggle_mode.sh`, as it is run by the from the binds, that are created in `hyprmcsr.sh`
 - Minecraft can now be started **directly via PrismLauncher** (GUI or CLI). The script `instance_wrapper.sh` is automatically set as the "WrapperCommand" in your PrismLauncher instance and handles all post-launch automation (window handling, audio, etc.).
 
 ---
