@@ -1,12 +1,10 @@
 #!/bin/bash
-source "$(dirname "$(realpath "$0")")/env_setup.sh"
-
-BINDS_ENABLED_FILE="$STATE_DIR/binds_enabled"
+source "$(dirname "$(realpath "$0")")/env_runtime.sh"
 
 if [ $# -ge 1 ]; then
   # Argument als Wert setzen (nur 0 oder 1 zulassen)
   if [ "$1" = "0" ] || [ "$1" = "1" ]; then
-    echo "$1" > "$BINDS_ENABLED_FILE"
+    echo "$1" > "$STATE_DIR/binds_enabled"
     exit 0
   else
     echo "Ungültiges Argument: $1 (nur 0 oder 1 erlaubt)"
@@ -15,9 +13,8 @@ if [ $# -ge 1 ]; then
 fi
 
 # Toggle-Modus
-binds_enabled=$(cat "$BINDS_ENABLED_FILE" 2>/dev/null || echo 0)
-if [ "$binds_enabled" = "1" ]; then
-  echo 0 > "$BINDS_ENABLED_FILE"
+if [ "$BINDS_ENABLED" = "1" ]; then
+  echo 0 > "$STATE_DIR/binds_enabled"
 else
-  echo 1 > "$BINDS_ENABLED_FILE"
+  echo 1 > "$STATE_DIR/binds_enabled"
 fi

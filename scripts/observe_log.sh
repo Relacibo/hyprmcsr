@@ -1,10 +1,9 @@
 #!/bin/bash
-source "$(dirname "$(realpath "$0")")/env_setup.sh"
 
-PRISM_PREFIX=$(jq -r '.minecraft.prismPrefixOverride // "~/.local/share/PrismLauncher"' "$CONFIG_FILE")
-PRISM_PREFIX="${PRISM_PREFIX/#\~/$HOME}"
-PRISM_INSTANCE_ID=$(jq -r '.minecraft.prismInstanceId' "$CONFIG_FILE")
-LOGFILE="$PRISM_PREFIX/instances/$PRISM_INSTANCE_ID/.minecraft/logs/latest.log"
+SCRIPT_DIR="$(dirname "$(realpath "$0")")"
+source "$SCRIPT_DIR/env_prism.sh"
+
+LOGFILE="$MINECRAFT_ROOT/logs/latest.log"
 
 tail -F "$LOGFILE" | while read -r line; do
   if [[ "$line" == *"StateOutput State: wall"* ]]; then

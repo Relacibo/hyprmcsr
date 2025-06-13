@@ -1,13 +1,10 @@
 #!/bin/bash
 set -e
 
-source "$(dirname "$(realpath "$0")")/env_setup.sh"
+SCRIPT_DIR="$(dirname "$(realpath "$0")")"
+source "$SCRIPT_DIR/env_prism.sh"
 
-# PrismLauncher path from config
-PRISM_PREFIX=$(jq -r '.minecraft.prismPrefixOverride // "~/.local/share/PrismLauncher"' "$CONFIG_FILE")
-PRISM_PREFIX="${PRISM_PREFIX/#\~/$HOME}"
-PRISM_INSTANCE_ID=$(jq -r '.minecraft.prismInstanceId' "$CONFIG_FILE")
-SAVES_DIR="$PRISM_PREFIX/instances/$PRISM_INSTANCE_ID/.minecraft/saves"
+SAVES_DIR="$MINECRAFT_ROOT/saves"
 
 # Argument check
 if [ $# -lt 2 ]; then
