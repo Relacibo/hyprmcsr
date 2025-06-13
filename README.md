@@ -194,8 +194,6 @@ You can use variables like `$SCRIPT_DIR`, `$PROFILE`, `$HYPRMCSR_PROFILE`, `$PRE
 For capturing Minecraft, this setup uses [obs-vkcapture](https://github.com/nowrep/obs-vkcapture).  
 You should install the Flatpak versions of both OBS Studio and PrismLauncher, as well as the Flatpak version of obs-vkcapture.
 
-**How to use:**
-
 **Installation:**
 - Install OBS Studio and PrismLauncher via Flatpak.
 - Install obs-vkcapture for Flatpak OBS:
