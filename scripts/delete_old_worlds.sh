@@ -7,13 +7,19 @@ source "$SCRIPT_DIR/env_prism.sh"
 SAVES_DIR="$MINECRAFT_ROOT/saves"
 
 # Argument check
-if [ $# -lt 2 ]; then
+if [ $# -ne 2 ]; then
   echo "Usage: $0 <regex> <keep_n>"
   exit 1
 fi
 
 REGEX="$1"
 KEEP_N="$2"
+
+# Prüfe, ob KEEP_N eine Zahl ist
+if ! [[ "$KEEP_N" =~ ^[0-9]+$ ]]; then
+  echo "Error: <keep_n> must be a number."
+  exit 1
+fi
 
 if [ ! -d "$SAVES_DIR" ]; then
   echo "Saves directory not found: $SAVES_DIR"
