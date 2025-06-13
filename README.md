@@ -122,7 +122,7 @@ You can use variables like `$SCRIPT_DIR`, `$PROFILE`, `$PREVIOUS_MODE`, `$NEXT_M
     This will keep the 50 newest worlds with that prefix and delete the rest.
   - **Tip:** You can also call this script from your `onDestroy` array in `config.json` to automatically clean up old worlds when exiting. Just make sure to escape the double quotes with backslashes, for example: 
     ```bash
-    "onDestroy": ["./scripts/delete_old_worlds.sh \"^Random Speedrun \" 50"]
+    "onDestroy": ["$SCRIPT_DIR/scripts/delete_old_worlds.sh \"^Random Speedrun \" 50"]
     ```
 
 ---
