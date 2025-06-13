@@ -209,6 +209,52 @@ You can then open this scene as a projector in OBS and keep it running on a seco
 
 ---
 
+## PrismLauncher & Minecraft Setup
+
+### LWJGL Version
+
+For best compatibility with modern Linux systems, Wayland, and input handling, you should always use the latest stable version of LWJGL (Lightweight Java Game Library) in your PrismLauncher Minecraft instance.
+
+**Why?**  
+Older versions of LWJGL may not register certain simultaneous keypresses (for example, pressing multiple movement keys at once), or may have issues with input and graphics on Wayland.
+
+**How to update LWJGL in PrismLauncher:**
+1. Open PrismLauncher and select your Minecraft instance.
+2. Click on "Edit Instance".
+3. Go to "Version" → "LWJGL Version".
+4. Select the latest available LWJGL version (preferably 3.3.x or newer).
+5. Save and launch Minecraft again.
+
+**Important:**  
+Do **not** manually set a wrapper script in the PrismLauncher GUI for your Minecraft instance if your profile config has `"prismReplaceWrapperCommand.enabled": true` (or if you omit this field).  
+The automation will automatically set `instance_wrapper.sh` as the WrapperCommand for you.
+
+If you want to use a specific wrapper (like `obs-gamecapture`), set it as `"innerWrapperCommand"` in your profile config under `"prismReplaceWrapperCommand"`.  
+**Do not** set it directly in the PrismLauncher GUI, as it will be overwritten by the automation.
+
+If you want to manage the wrapper manually, set `"prismReplaceWrapperCommand.enabled": false` in your config.  
+Then you can set any wrapper you like in the PrismLauncher GUI (e.g., `obs-gamecapture`).
+
+---
+
+### Mod Management with modcheck.sh
+
+You can use the included script `modcheck.sh` to automatically download and update all required mods for your setup.
+
+**How to use:**
+```bash
+./scripts/modcheck.sh
+```
+This will run the ModCheck tool (if present in your `jars` directory) and ensure all necessary mods are downloaded and up to date for your current Minecraft instance.
+
+If you are missing the ModCheck JAR, simply rerun the install script:
+```bash
+./scripts/install.sh
+```
+This will download all required JARs as specified in your config.
+
+---
+
 ## Optional Tools
 
 In the `onEnter` and `onExit` fields in your profile config (example: [example.default.profile.json](example.default.profile.json)) I use the following tools, for automation:
