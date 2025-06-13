@@ -7,7 +7,6 @@ PIPEWIRE_CONFIG_FOLDER="${XDG_CONFIG_HOME:-$HOME/.config}/pipewire/pipewire.conf
 PW_ENABLED=$(jq -r '.pipewireLoopback.enabled // false' "$CONFIG_FILE")
 SPLIT_AUDIO_CONF="$PIPEWIRE_CONFIG_FOLDER/split-audio.conf"
 
-
 if [ "$PW_ENABLED" = "true" ]; then
 # Wert aus config.json holen
   PW_TARGET=$(jq -r '.pipewireLoopback.playbackTarget' "$CONFIG_FILE")

@@ -3,7 +3,6 @@ sudo bash -c :
 
 SCRIPT_DIR=$(dirname $(realpath "$0"))
 CONFIG_FILE="$SCRIPT_DIR/../config.json"
-WINDOW_ADDRESS_FILE="$SCRIPT_DIR/../var/window_address"
 
 if ! command -v jq >/dev/null; then
   echo "jq wird benötigt!"
@@ -17,6 +16,7 @@ else
 fi
 export PROFILE
 
+mkdir -p "$SCRIPT_DIR/../var"
 echo "default" > "$SCRIPT_DIR/../var/window_switcher_state"
 
 jq -r '.binds.modeSwitch | to_entries[] | "\(.key) \(.value)"' "$CONFIG_FILE" | while read -r mode key; do
@@ -31,14 +31,6 @@ PROFILE="${1:-default}"
 export PROFILE
 echo "$PROFILE" > "$SCRIPT_DIR/../var/profile"
 
-# Run onStart commands from config.json (all in background)
-on_start_cmds=$(jq -r '.onStart[]?' "$CONFIG_FILE")
-if [ -n "$on_start_cmds" ]; then
-  while IFS= read -r cmd; do
-    SCRIPT_DIR="$SCRIPT_DIR" PROFILE="$PROFILE" bash -c "$cmd" &
-  done <<< "$on_start_cmds"
-fi
-
 # Input Remapper für Devices (vereinheitlicht)
 jq -c '.inputRemapper.devices[]' "$CONFIG_FILE" | while read -r device_entry; do
   device=$(echo "$device_entry" | jq -r '.device')
@@ -46,9 +38,16 @@ jq -c '.inputRemapper.devices[]' "$CONFIG_FILE" | while read -r device_entry; do
   sudo input-remapper-control --command start --device "$device" --preset "$preset"
 done
 
-mkdir -p $SCRIPT_DIR/../var
-
 $SCRIPT_DIR/minecraft.sh
+
+# Run onStart commands from config.json (all in background)
+WINDOW_ADDRESS=$(cat "$SCRIPT_DIR/../var/window_address" 2>/dev/null || echo "")
+on_start_cmds=$(jq -r '.onStart[]?' "$CONFIG_FILE")
+if [ -n "$on_start_cmds" ]; then
+  while IFS= read -r cmd; do
+    WINDOW_ADDRESS="$WINDOW_ADDRESS" SCRIPT_DIR="$SCRIPT_DIR" PROFILE="$PROFILE" bash -c "$cmd" &
+  done <<< "$on_start_cmds"
+fi
 
 OBSERVE_LOG=$(jq -r '.minecraft.observeLog.enabled // 1' "$CONFIG_FILE")
 if [ "$OBSERVE_LOG" = "true" ]; then

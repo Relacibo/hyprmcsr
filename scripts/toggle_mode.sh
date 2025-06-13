@@ -42,21 +42,12 @@ TARGET_SENSITIVITY=$(jq -r --arg m "$NEXT_MODE" '.modeSwitch.modes[$m].sensitivi
 if [ -n "$PREVIOUS_MODE" ] && [ "$PREVIOUS_MODE" != "$NEXT_MODE" ]; then
   jq -r --arg m "$PREVIOUS_MODE" '.modeSwitch.modes[$m].onExit[]? // .modeSwitch.default.onExit[]? // empty' "$CONFIG_FILE" | while IFS= read -r cmd; do
     [ -z "$cmd" ] && continue
-    SCRIPT_DIR="$SCRIPT_DIR" PREVIOUS_MODE="$PREVIOUS_MODE" NEXT_MODE="$NEXT_MODE" bash -c "$cmd" &
+    WINDOW_ADDRESS="$WINDOW_ADDRESS" SCRIPT_DIR="$SCRIPT_DIR" PREVIOUS_MODE="$PREVIOUS_MODE" NEXT_MODE="$NEXT_MODE" bash -c "$cmd" &
   done
 fi
 
 # Update state
 echo "$NEXT_MODE" > "$STATE_FILE"
-
-PROFILE=$(cat "$SCRIPT_DIR/../var/profile" 2>/dev/null || echo "default")
-# onEnter: run all commands in array (if any and mode changes)
-if [ "$PREVIOUS_MODE" != "$NEXT_MODE" ]; then
-  jq -r --arg m "$NEXT_MODE" '.modeSwitch.modes[$m].onEnter[]? // .modeSwitch.default.onEnter[]? // empty' "$CONFIG_FILE" | while IFS= read -r cmd; do
-    [ -z "$cmd" ] && continue
-    SCRIPT_DIR="$SCRIPT_DIR" PROFILE="$PROFILE" PREVIOUS_MODE="$PREVIOUS_MODE" NEXT_MODE="$NEXT_MODE" bash -c "$cmd" &
-  done
-fi
 
 # Split size (e.g. 1920x1080)
 IFS="x" read -r TARGET_WIDTH TARGET_HEIGHT <<< "$TARGET_SIZE"
@@ -70,3 +61,12 @@ hyprctl --batch "
   keyword input:sensitivity $TARGET_SENSITIVITY;
   dispatch focuswindow address:$WINDOW_ADDRESS
 "
+
+PROFILE=$(cat "$SCRIPT_DIR/../var/profile" 2>/dev/null || echo "default")
+# onEnter: run all commands in array (if any and mode changes)
+if [ "$PREVIOUS_MODE" != "$NEXT_MODE" ]; then
+  jq -r --arg m "$NEXT_MODE" '.modeSwitch.modes[$m].onEnter[]? // .modeSwitch.default.onEnter[]? // empty' "$CONFIG_FILE" | while IFS= read -r cmd; do
+    [ -z "$cmd" ] && continue
+    WINDOW_ADDRESS="$WINDOW_ADDRESS" SCRIPT_DIR="$SCRIPT_DIR" PROFILE="$PROFILE" PREVIOUS_MODE="$PREVIOUS_MODE" NEXT_MODE="$NEXT_MODE" bash -c "$cmd" &
+  done
+fi

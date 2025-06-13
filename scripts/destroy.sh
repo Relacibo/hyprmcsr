@@ -3,6 +3,7 @@ sudo input-remapper-control --command stop-all
 
 SCRIPT_DIR=$(dirname $(realpath "$0"))
 CONFIG_FILE="$SCRIPT_DIR/../config.json"
+WINDOW_ADDRESS=$(cat "$SCRIPT_DIR/../var/window_address" 2>/dev/null || echo "")
 
 toggle_binds_key=$(jq -r '.binds.toggleBinds' "$CONFIG_FILE")
 if [ -n "$toggle_binds_key" ] && [ "$toggle_binds_key" != "null" ]; then
@@ -16,7 +17,7 @@ PROFILE=$(cat "$SCRIPT_DIR/../var/profile" 2>/dev/null || echo "default")
 on_destroy_cmds=$(jq -r '.onDestroy[]?' "$CONFIG_FILE")
 if [ -n "$on_destroy_cmds" ]; then
   while IFS= read -r cmd; do
-    SCRIPT_DIR="$SCRIPT_DIR" PROFILE="$PROFILE" bash -c "$cmd" &
+    WINDOW_ADDRESS="$WINDOW_ADDRESS" SCRIPT_DIR="$SCRIPT_DIR" PROFILE="$PROFILE" bash -c "$cmd" &
   done <<< "$on_destroy_cmds"
 fi
 
