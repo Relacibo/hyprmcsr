@@ -36,14 +36,16 @@ fi
 TARGET_SIZE=$(jq -r --arg m "$NEXT_MODE" '.modeSwitch.modes[$m].size // .modeSwitch.default.size' "$CONFIG_FILE")
 TARGET_SENSITIVITY=$(jq -r --arg m "$NEXT_MODE" '.modeSwitch.modes[$m].sensitivity // .modeSwitch.default.sensitivity' "$CONFIG_FILE")
 
-# onExit: run all commands in array (if any and mode changes)
-(
-  export WINDOW_ADDRESS SCRIPT_DIR HYPRMCSR_PROFILE PRISM_INSTANCE_ID MINECRAFT_ROOT PREVIOUS_MODE NEXT_MODE
-  jq -r --arg m "$PREVIOUS_MODE" '.modeSwitch.modes[$m].onExit[]? // .modeSwitch.default.onExit[]? // empty' "$CONFIG_FILE" | while IFS= read -r cmd; do
-    [ -z "$cmd" ] && continue
-    bash -c "$cmd" &
-  done
-)
+# onExit: run all commands in array (nur wenn PREVIOUS_MODE gesetzt ist)
+if [ -n "$PREVIOUS_MODE" ]; then
+  (
+    export WINDOW_ADDRESS SCRIPT_DIR HYPRMCSR_PROFILE PRISM_INSTANCE_ID MINECRAFT_ROOT PREVIOUS_MODE NEXT_MODE
+    jq -r --arg m "$PREVIOUS_MODE" '.modeSwitch.modes[$m].onExit[]? // .modeSwitch.default.onExit[]? // empty' "$CONFIG_FILE" | while IFS= read -r cmd; do
+      [ -z "$cmd" ] && continue
+      bash -c "$cmd" &
+    done
+  )
+fi
 
 # Update state
 echo "$NEXT_MODE" > "$STATE_FILE"
