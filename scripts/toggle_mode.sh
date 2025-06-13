@@ -27,20 +27,23 @@ fi
 
 PREVIOUS_MODE="$CURRENT_MODE"
 
+# Wenn sich der Modus nicht ändert, Skript beenden
+if [ "$PREVIOUS_MODE" = "$NEXT_MODE" ]; then
+  exit 0
+fi
+
 # Load target values (with fallback to default)
 TARGET_SIZE=$(jq -r --arg m "$NEXT_MODE" '.modeSwitch.modes[$m].size // .modeSwitch.default.size' "$CONFIG_FILE")
 TARGET_SENSITIVITY=$(jq -r --arg m "$NEXT_MODE" '.modeSwitch.modes[$m].sensitivity // .modeSwitch.default.sensitivity' "$CONFIG_FILE")
 
 # onExit: run all commands in array (if any and mode changes)
-if [ -n "$PREVIOUS_MODE" ] && [ "$PREVIOUS_MODE" != "$NEXT_MODE" ]; then
-  (
-    export WINDOW_ADDRESS SCRIPT_DIR HYPRMCSR_PROFILE PRISM_INSTANCE_ID MINECRAFT_ROOT PREVIOUS_MODE NEXT_MODE
-    jq -r --arg m "$PREVIOUS_MODE" '.modeSwitch.modes[$m].onExit[]? // .modeSwitch.default.onExit[]? // empty' "$CONFIG_FILE" | while IFS= read -r cmd; do
-      [ -z "$cmd" ] && continue
-      bash -c "$cmd" &
-    done
-  )
-fi
+(
+  export WINDOW_ADDRESS SCRIPT_DIR HYPRMCSR_PROFILE PRISM_INSTANCE_ID MINECRAFT_ROOT PREVIOUS_MODE NEXT_MODE
+  jq -r --arg m "$PREVIOUS_MODE" '.modeSwitch.modes[$m].onExit[]? // .modeSwitch.default.onExit[]? // empty' "$CONFIG_FILE" | while IFS= read -r cmd; do
+    [ -z "$cmd" ] && continue
+    bash -c "$cmd" &
+  done
+)
 
 # Update state
 echo "$NEXT_MODE" > "$STATE_FILE"
@@ -59,12 +62,10 @@ hyprctl --batch "
 "
 
 # onEnter: run all commands in array (if any and mode changes)
-if [ "$PREVIOUS_MODE" != "$NEXT_MODE" ]; then
-  (
-    export WINDOW_ADDRESS SCRIPT_DIR PROFILE HYPRMCSR_PROFILE PRISM_INSTANCE_ID MINECRAFT_ROOT PREVIOUS_MODE NEXT_MODE
-    jq -r --arg m "$NEXT_MODE" '.modeSwitch.modes[$m].onEnter[]? // .modeSwitch.default.onEnter[]? // empty' "$CONFIG_FILE" | while IFS= read -r cmd; do
-      [ -z "$cmd" ] && continue
-      bash -c "$cmd" &
-    done
-  )
-fi
+(
+  export WINDOW_ADDRESS SCRIPT_DIR PROFILE HYPRMCSR_PROFILE PRISM_INSTANCE_ID MINECRAFT_ROOT PREVIOUS_MODE NEXT_MODE
+  jq -r --arg m "$NEXT_MODE" '.modeSwitch.modes[$m].onEnter[]? // .modeSwitch.default.onEnter[]? // empty' "$CONFIG_FILE" | while IFS= read -r cmd; do
+    [ -z "$cmd" ] && continue
+    bash -c "$cmd" &
+  done
+)
