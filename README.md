@@ -181,7 +181,10 @@ You can use variables like `$SCRIPT_DIR`, `$PROFILE`, `$HYPRMCSR_PROFILE`, `$PRE
     ./scripts/delete_old_worlds.sh "^Random Speedrun " 50
     ```
     This will keep the 50 newest worlds with that prefix and delete the rest.
-  - **Tip:** You can also call this script from your `onDestroy` array in your profile config to automatically clean up old worlds when exiting.
+  - **Tip:** You can also call this script from your `onDestroy` array in your `<profile>.profile.json` to automatically clean up old worlds when exiting. Just make sure to escape the double quotes with backslashes, for example: 
+    ```bash
+    "onDestroy": ["$SCRIPT_DIR/scripts/delete_old_worlds.sh \"^Random Speedrun \" 50"]
+    ```
 
 ---
 
@@ -297,8 +300,9 @@ In the `onEnter` and `onExit` fields in your profile config (example: [example.d
 
 - The scripts are made for use with Hyprland, Pipewire and Prism.
 - Most settings (devices, instance names, audio output, etc.) are controlled via your profile config.
-- Don't run the scripts with `sudo`. The scripts use `sudo`, where needed (input-remapper). That also means, that you have to type in your password, when running `hyprmcsr.sh`( and `destroy.sh`)
-- You do not necessarily need to run `toggle_mode.sh`, as it is run by the from the binds, that are created in `hyprmcsr.sh`
+- Don't run the scripts with `sudo`. The scripts use `sudo`, where needed (input-remapper). That also means, that you have to type in your password, when running `start.sh`( and `destroy.sh`)
+- You can use the hyprmcsr script in the bin folder to run the scripts
+- You do not necessarily need to run scripts like `toggle_mode.sh` or `observe_log.sh` manually, as it is run by the binds, that are created in `start.sh`.
 - Minecraft can now be started **directly via PrismLauncher** (GUI or CLI). The script `instance_wrapper.sh` is automatically set as the "WrapperCommand" in your PrismLauncher instance and handles all post-launch automation (window handling, audio, etc.).
 
 ---
