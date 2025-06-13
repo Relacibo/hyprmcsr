@@ -1,17 +1,32 @@
 #!/bin/bash
 
-SCRIPT_DIR=$(dirname $(realpath "$0"))
-CONFIG_FILE="$SCRIPT_DIR/../config.json"
+SCRIPT_DIR=$(dirname "$(realpath "$0")")
+CONFIG_ROOT="${XDG_CONFIG_HOME:-$HOME/.config}/hyprmcsr"
+GLOBAL_CONFIG_FILE="$CONFIG_ROOT/config.json"
+PROFILE_CONFIG_FILE="$CONFIG_ROOT/default.profile.json"
+EXAMPLE_GLOBAL="$SCRIPT_DIR/../example.config.json"
+EXAMPLE_PROFILE="$SCRIPT_DIR/../example.default.profile.json"
 TEMPLATE_FILE="$SCRIPT_DIR/../split-audio.conf"
 PIPEWIRE_CONFIG_FOLDER="${XDG_CONFIG_HOME:-$HOME/.config}/pipewire/pipewire.conf.d"
-PW_ENABLED=$(jq -r '.pipewireLoopback.enabled // false' "$CONFIG_FILE")
+PW_ENABLED=$(jq -r '.pipewireLoopback.enabled // false' "$GLOBAL_CONFIG_FILE" 2>/dev/null || echo "false")
 SPLIT_AUDIO_CONF="$PIPEWIRE_CONFIG_FOLDER/split-audio.conf"
 
+# Copy example configs if not present
+mkdir -p "$CONFIG_ROOT"
+if [ ! -f "$GLOBAL_CONFIG_FILE" ]; then
+  cp "$EXAMPLE_GLOBAL" "$GLOBAL_CONFIG_FILE"
+  echo "Copied example.config.json to $GLOBAL_CONFIG_FILE."
+fi
+if [ ! -f "$PROFILE_CONFIG_FILE" ]; then
+  cp "$EXAMPLE_PROFILE" "$PROFILE_CONFIG_FILE"
+  echo "Copied example.default.profile.json to $PROFILE_CONFIG_FILE."
+fi
+
 if [ "$PW_ENABLED" = "true" ]; then
-# Wert aus config.json holen
-  PW_TARGET=$(jq -r '.pipewireLoopback.playbackTarget' "$CONFIG_FILE")
+  # Get value from config.json
+  PW_TARGET=$(jq -r '.pipewireLoopback.playbackTarget' "$GLOBAL_CONFIG_FILE")
   if [ -z "$PW_TARGET" ] || [ "$PW_TARGET" = "null" ]; then
-    # Default sink ermitteln
+    # Get default sink
     if command -v pactl &>/dev/null && pactl get-default-sink &>/dev/null; then
       PW_TARGET=$(pactl get-default-sink)
     else
@@ -19,19 +34,19 @@ if [ "$PW_ENABLED" = "true" ]; then
     fi
 
     if [ -z "$PW_TARGET" ]; then
-      echo "Konnte keinen Default Sink finden!"
+      echo "Could not find default sink!"
       exit 1
     fi
 
-    # playbackTarget in config.json aktualisieren
+    # Update playbackTarget in config.json
     tmp_config=$(mktemp)
-    jq --arg target "$PW_TARGET" '.pipewireLoopback.playbackTarget = $target' "$CONFIG_FILE" > "$tmp_config" && mv "$tmp_config" "$CONFIG_FILE"
-    echo "playbackTarget in config.json auf $PW_TARGET gesetzt."
+    jq --arg target "$PW_TARGET" '.pipewireLoopback.playbackTarget = $target' "$GLOBAL_CONFIG_FILE" > "$tmp_config" && mv "$tmp_config" "$GLOBAL_CONFIG_FILE"
+    echo "Set playbackTarget in config.json to $PW_TARGET."
   fi
   mkdir -p "$PIPEWIRE_CONFIG_FOLDER"
-  # Template ersetzen und schreiben
+  # Replace template and write
   sed "s|{{PW_TARGET}}|$PW_TARGET|g" "$TEMPLATE_FILE" > "$SPLIT_AUDIO_CONF"
-  echo "split-audio.conf wurde mit Ziel $PW_TARGET nach $SPLIT_AUDIO_CONF geschrieben."
+  echo "split-audio.conf written to $SPLIT_AUDIO_CONF with target $PW_TARGET."
 else
   if [ -f "$SPLIT_AUDIO_CONF" ]; then
     rm "$SPLIT_AUDIO_CONF"
@@ -39,33 +54,39 @@ else
   fi
 fi
 
-JARS_DIR="$SCRIPT_DIR/../jars"
-mapfile -t JAR_REPOS < <(jq -r '.download.jar[]?' "$CONFIG_FILE")
+DOWNLOAD_ROOT=$(jq -r '.download.root // empty' "$GLOBAL_CONFIG_FILE")
+if [ -z "$DOWNLOAD_ROOT" ] || [ "$DOWNLOAD_ROOT" = "null" ]; then
+  DOWNLOAD_ROOT="$SCRIPT_DIR/../download"
+fi
+JARS_DIR="$DOWNLOAD_ROOT/jar"
+mkdir -p "$JARS_DIR"
+
+mapfile -t JAR_REPOS < <(jq -r '.download.jar[]?' "$GLOBAL_CONFIG_FILE")
 
 for entry in "${JAR_REPOS[@]}"; do
   if [[ "$entry" == */* ]]; then
-    # GitHub-Repo (owner/repo)
+    # GitHub repo (owner/repo)
     api_url="https://api.github.com/repos/$entry/releases/latest"
     release_json=$(curl -s "$api_url")
     jar_url=$(echo "$release_json" | jq -r '.assets[] | select(.name | endswith(".jar")) | .browser_download_url' | head -n1)
     jar_name=$(basename "$jar_url")
   else
-    # (Platz für spätere URL-Logik)
+    # (Placeholder for future URL logic)
     echo "Unknown JAR source: $entry"
     continue
   fi
 
   if [ -z "$jar_url" ] || [ "$jar_url" = "null" ]; then
-    echo "Keine JAR im Latest Release von $entry gefunden."
+    echo "No JAR found in latest release of $entry."
     continue
   fi
 
   if [ -f "$JARS_DIR/$jar_name" ]; then
-    echo "$jar_name ist bereits aktuell vorhanden."
+    echo "$jar_name already present."
   else
-    echo "Lade $jar_url herunter..."
+    echo "Downloading $jar_url..."
     curl -L "$jar_url" -o "$JARS_DIR/$jar_name"
   fi
 done
 
-echo "Alle JARs wurden überprüft und ggf. aktualisiert."
+echo "All JARs checked and updated if necessary."

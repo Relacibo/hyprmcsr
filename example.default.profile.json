@@ -1,0 +1,81 @@
+{
+  "onStart": [
+    "if [ \"$PROFILE\" = \"coop\" ]; then JAR_WORKDIR=\"$HOME/.config/NinjaLink\" $SCRIPT_DIR/run_jar.sh NinjaLink fi",
+    "$SCRIPT_DIR/run_jar.sh Ninjabrain-Bot",
+    "flatpak run com.obsproject.Studio"
+  ],
+  "onDestroy": [],
+  "binds": {
+    "toggleBinds": ",HOME",
+    "modeSwitch": {
+      "tall": ",H",
+      "boat-eye": ",J",
+      "planar-abuse": ",Z"
+    },
+    "custom": {
+      ",J": [
+        "# notify-send $WINDOW_ADDRESS"
+      ]
+    }
+  },
+  "modeSwitch": {
+    "default": {
+      "size": "1920x1080",
+      "sensitivity": "0.0",
+      "onExit": [
+        "# notify-send Leaving $PREVIOUS_MODE"
+      ],
+      "onEnter": [
+        "# notify-send Entering $NEXT_MODE"
+      ]
+    },
+    "modes": {
+      "normal": {},
+      "tall": {
+        "size": "350x750"
+      },
+      "boat-eye": {
+        "size": "384x16384",
+        "sensitivity": "-0.9375",
+        "onEnter": [
+          "# razer-cli --dpi 100",
+          "# obs-cli item show --scene BoatEyeScene GameCapture"
+        ],
+        "onExit": [
+          "# razer-cli --dpi 1800",
+          "# obs-cli item hide --scene BoatEyeScene GameCapture"
+        ]
+      },
+      "planar-abuse": {
+        "size": "1920x420"
+      }
+    }
+  },
+  "inputRemapper": {
+    "devices": [
+      {
+        "device": "Razer Razer Viper V3 Pro",
+        "preset": "MCSR"
+      },
+      {
+        "device": "Ducky Ducky One 3 TKL ",
+        "preset": "MCSR"
+      }
+    ]
+  },
+  "minecraft": {
+    "autoStart": true,
+    "onStart": [],
+    "prismPrefixOverride": "~/.local/share/PrismLauncher",
+    "prismInstanceId": "1.16.1",
+    "windowTitleRegex": "^Minecraft\\* 1.16.1",
+    "prismReplaceWrapperCommand": {
+      "enabled": true,
+      "innerWrapperCommand": "obs-gamecapture"
+    },
+    "observeLog": {
+      "enabled": true
+    }
+  },
+  "autoDestroyOnExit": true
+}

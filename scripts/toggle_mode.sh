@@ -1,14 +1,11 @@
 #!/bin/bash
+source "$(dirname "$(realpath "$0")")/env_setup.sh"
 
-export XDG_RUNTIME_DIR="/run/user/$(id -u)"
-
-SCRIPT_DIR="$(dirname "$(realpath "$0")")"
-CONFIG_FILE="$SCRIPT_DIR/../config.json"
 MODE="$1"
-STATE_FILE="$SCRIPT_DIR/../var/window_switcher_state"
-WINDOW_ADDRESS=$(cat "$SCRIPT_DIR/../var/window_address")
+STATE_FILE="$STATE_DIR/window_switcher_state"
+WINDOW_ADDRESS=$(cat "$STATE_DIR/window_address" 2>/dev/null || echo "")
 
-BINDS_ENABLED_FILE="$SCRIPT_DIR/../var/binds_enabled"
+BINDS_ENABLED_FILE="$STATE_DIR/binds_enabled"
 [ "$(cat "$BINDS_ENABLED_FILE" 2>/dev/null || echo 0)" = "1" ] || exit 0
 
 if ! command -v jq >/dev/null; then
@@ -40,10 +37,13 @@ TARGET_SENSITIVITY=$(jq -r --arg m "$NEXT_MODE" '.modeSwitch.modes[$m].sensitivi
 
 # onExit: run all commands in array (if any and mode changes)
 if [ -n "$PREVIOUS_MODE" ] && [ "$PREVIOUS_MODE" != "$NEXT_MODE" ]; then
-  jq -r --arg m "$PREVIOUS_MODE" '.modeSwitch.modes[$m].onExit[]? // .modeSwitch.default.onExit[]? // empty' "$CONFIG_FILE" | while IFS= read -r cmd; do
-    [ -z "$cmd" ] && continue
-    WINDOW_ADDRESS="$WINDOW_ADDRESS" SCRIPT_DIR="$SCRIPT_DIR" PREVIOUS_MODE="$PREVIOUS_MODE" NEXT_MODE="$NEXT_MODE" bash -c "$cmd" &
-  done
+  (
+    export WINDOW_ADDRESS SCRIPT_DIR HYPRMCSR_PROFILE PRISM_INSTANCE_ID MINECRAFT_ROOT PREVIOUS_MODE NEXT_MODE
+    jq -r --arg m "$PREVIOUS_MODE" '.modeSwitch.modes[$m].onExit[]? // .modeSwitch.default.onExit[]? // empty' "$CONFIG_FILE" | while IFS= read -r cmd; do
+      [ -z "$cmd" ] && continue
+      bash -c "$cmd" &
+    done
+  )
 fi
 
 # Update state
@@ -62,11 +62,14 @@ hyprctl --batch "
   dispatch focuswindow address:$WINDOW_ADDRESS
 "
 
-PROFILE=$(cat "$SCRIPT_DIR/../var/profile" 2>/dev/null || echo "default")
+PROFILE=$(cat "$STATE_DIR/profile" 2>/dev/null || echo "default")
 # onEnter: run all commands in array (if any and mode changes)
 if [ "$PREVIOUS_MODE" != "$NEXT_MODE" ]; then
-  jq -r --arg m "$NEXT_MODE" '.modeSwitch.modes[$m].onEnter[]? // .modeSwitch.default.onEnter[]? // empty' "$CONFIG_FILE" | while IFS= read -r cmd; do
-    [ -z "$cmd" ] && continue
-    WINDOW_ADDRESS="$WINDOW_ADDRESS" SCRIPT_DIR="$SCRIPT_DIR" PROFILE="$PROFILE" PREVIOUS_MODE="$PREVIOUS_MODE" NEXT_MODE="$NEXT_MODE" bash -c "$cmd" &
-  done
+  (
+    export WINDOW_ADDRESS SCRIPT_DIR PROFILE HYPRMCSR_PROFILE PRISM_INSTANCE_ID MINECRAFT_ROOT PREVIOUS_MODE NEXT_MODE
+    jq -r --arg m "$NEXT_MODE" '.modeSwitch.modes[$m].onEnter[]? // .modeSwitch.default.onEnter[]? // empty' "$CONFIG_FILE" | while IFS= read -r cmd; do
+      [ -z "$cmd" ] && continue
+      bash -c "$cmd" &
+    done
+  )
 fi

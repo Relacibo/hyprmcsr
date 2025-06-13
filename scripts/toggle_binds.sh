@@ -1,7 +1,7 @@
 #!/bin/bash
-SCRIPT_DIR=$(dirname "$(realpath "$0")")
-VAR_DIR="$SCRIPT_DIR/../var"
-BINDS_ENABLED_FILE="$VAR_DIR/binds_enabled"
+source "$(dirname "$(realpath "$0")")/env_setup.sh"
+
+BINDS_ENABLED_FILE="$STATE_DIR/binds_enabled"
 
 if [ $# -ge 1 ]; then
   # Argument als Wert setzen (nur 0 oder 1 zulassen)
