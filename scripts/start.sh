@@ -1,47 +1,67 @@
 #!/bin/bash
 sudo bash -c :
 
-SCRIPT_DIR=$(dirname $(realpath "$0"))
-CONFIG_FILE="$SCRIPT_DIR/../config.json"
+SCRIPT_DIR="$(dirname "$(realpath "$0")")"
+
+# Profil bestimmen (vor dem Laden der env-Files!)
+if [ "$1" = "--coop" ]; then
+  export HYPRMCSR_PROFILE="coop"
+else
+  export HYPRMCSR_PROFILE="${1:-default}"
+fi
+
+source "$SCRIPT_DIR/env_core.sh"
+source "$SCRIPT_DIR/env_prism.sh"
 
 if ! command -v jq >/dev/null; then
   echo "jq wird benötigt!"
   exit 1
 fi
 
-if [ "$1" = "--coop" ]; then
-  PROFILE="coop"
-else
-  PROFILE="${1:-default}"
-fi
-export PROFILE
-
-mkdir -p "$SCRIPT_DIR/../var"
-echo "default" > "$SCRIPT_DIR/../var/window_switcher_state"
+echo "default" > "$STATE_DIR/window_switcher_state"
+echo "$HYPRMCSR_PROFILE" > "$STATE_DIR/profile"
 
 jq -r '.binds.modeSwitch | to_entries[] | "\(.key) \(.value)"' "$CONFIG_FILE" | while read -r mode key; do
-    hyprctl keyword bindni $key,exec,"$SCRIPT_DIR/toggle_mode.sh $mode"
+    hyprctl keyword bindni $key,exec,"HYPRMCSR_PROFILE=\"$HYPRMCSR_PROFILE\" $SCRIPT_DIR/toggle_mode.sh $mode"
 done
 
 toggle_binds_key=$(jq -r '.binds.toggleBinds' "$CONFIG_FILE")
 if [ -n "$toggle_binds_key" ] && [ "$toggle_binds_key" != "null" ]; then
-  hyprctl keyword bind $toggle_binds_key,exec,"$SCRIPT_DIR/toggle_binds.sh"
+  hyprctl keyword bind $toggle_binds_key,exec,"HYPRMCSR_PROFILE=\"$HYPRMCSR_PROFILE\" $SCRIPT_DIR/toggle_binds.sh"
 fi
 
-# Custom binds aus config.json anlegen
+# prismReplaceWrapperCommand auswerten
+PRISM_REPLACE_WRAPPER_ENABLED=$(jq -r '.minecraft.prismReplaceWrapperCommand.enabled // true' "$CONFIG_FILE")
+INNER_WRAPPER_CMD=$(jq -r '.minecraft.prismReplaceWrapperCommand.innerWrapperCommand // empty' "$CONFIG_FILE")
+
+if [ "$PRISM_REPLACE_WRAPPER_ENABLED" = "true" ]; then
+  if [ -n "$INNER_WRAPPER_CMD" ] && [ "$INNER_WRAPPER_CMD" != "null" ]; then
+    if [ -f "$PRISM_INSTANCE_CONFIG" ]; then
+      if grep -q "^WrapperCommand=" "$PRISM_INSTANCE_CONFIG"; then
+        sed -i "s|^WrapperCommand=.*|WrapperCommand=$SCRIPT_DIR/instance_wrapper.sh|" "$PRISM_INSTANCE_CONFIG"
+      else
+        echo "WrapperCommand=$SCRIPT_DIR/instance_wrapper.sh" >> "$PRISM_INSTANCE_CONFIG"
+      fi
+    fi
+    # Optional: Schreibe innerWrapperCommand in die profile.json, falls benötigt
+  fi
+fi
+
+# Minecraft autostart (can be disabled in profile config)
+MC_AUTOSTART=$(jq -r '.minecraft.autoStart // true' "$CONFIG_FILE")
+if [ "$MC_AUTOSTART" = "true" ]; then
+  prismlauncher -l "$PRISM_INSTANCE_ID" &
+fi
+
+# Custom binds aus config.json anlegen (mit allen relevanten Umgebungsvariablen)
 custom_binds=$(jq -r '.binds.custom | to_entries[] | "\(.key) \(.value|@json)"' "$CONFIG_FILE")
 if [ -n "$custom_binds" ]; then
   while IFS= read -r entry; do
     bind=$(echo "$entry" | awk '{print $1}')
     cmds=$(echo "$entry" | cut -d' ' -f2-)
-    # Übergib das Array als JSON-String an den Wrapper
-    hyprctl keyword bind "$bind,exec,$SCRIPT_DIR/custom_bind_wrapper.sh '$cmds'"
+    hyprctl keyword bind "$bind,exec,HYPRMCSR_PROFILE=\"$HYPRMCSR_PROFILE\" PRISM_INSTANCE_ID=\"$PRISM_INSTANCE_ID\" MINECRAFT_ROOT=\"$MINECRAFT_ROOT\" $SCRIPT_DIR/custom_bind_wrapper.sh '$cmds'"
   done <<< "$custom_binds"
 fi
-
-PROFILE="${1:-default}"
-export PROFILE
-echo "$PROFILE" > "$SCRIPT_DIR/../var/profile"
 
 # Input Remapper für Devices (vereinheitlicht)
 jq -c '.inputRemapper.devices[]' "$CONFIG_FILE" | while read -r device_entry; do
@@ -50,21 +70,24 @@ jq -c '.inputRemapper.devices[]' "$CONFIG_FILE" | while read -r device_entry; do
   sudo input-remapper-control --command start --device "$device" --preset "$preset"
 done
 
-$SCRIPT_DIR/minecraft.sh
-
-# Run onStart commands from config.json (all in background)
-WINDOW_ADDRESS=$(cat "$SCRIPT_DIR/../var/window_address" 2>/dev/null || echo "")
+# Run onStart commands from config.json (alle im Hintergrund, mit allen relevanten Umgebungsvariablen)
 on_start_cmds=$(jq -r '.onStart[]?' "$CONFIG_FILE")
 if [ -n "$on_start_cmds" ]; then
-  while IFS= read -r cmd; do
-    WINDOW_ADDRESS="$WINDOW_ADDRESS" SCRIPT_DIR="$SCRIPT_DIR" PROFILE="$PROFILE" bash -c "$cmd" &
-  done <<< "$on_start_cmds"
+  (
+    export SCRIPT_DIR PROFILE HYPRMCSR_PROFILE PRISM_INSTANCE_ID MINECRAFT_ROOT WINDOW_ADDRESS
+    while IFS= read -r cmd; do
+      bash -c "$cmd" &
+    done <<< "$on_start_cmds"
+  )
 fi
 
 OBSERVE_LOG=$(jq -r '.minecraft.observeLog.enabled // 1' "$CONFIG_FILE")
 if [ "$OBSERVE_LOG" = "true" ]; then
-  $SCRIPT_DIR/observe_log.sh &
-  LOG_MONITOR_PID=$!
+  (
+    export HYPRMCSR_PROFILE PRISM_INSTANCE_ID MINECRAFT_ROOT
+    $SCRIPT_DIR/observe_log.sh &
+    LOG_MONITOR_PID=$!
+  )
 fi
 
 # Option aus config lesen (default: true)

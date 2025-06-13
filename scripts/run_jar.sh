@@ -1,7 +1,15 @@
 #!/bin/bash
 
 SCRIPT_DIR=$(dirname "$(realpath "$0")")
-JARS_DIR="$SCRIPT_DIR/../jars"
+CONFIG_ROOT="${XDG_CONFIG_HOME:-$HOME/.config}/hyprmcsr"
+GLOBAL_CONFIG_FILE="$CONFIG_ROOT/config.json"
+
+# Download-Root ggf. aus globaler Config lesen, sonst Default
+DOWNLOAD_ROOT=$(jq -r '.download.root // empty' "$GLOBAL_CONFIG_FILE")
+if [ -z "$DOWNLOAD_ROOT" ] || [ "$DOWNLOAD_ROOT" = "null" ]; then
+  DOWNLOAD_ROOT="$SCRIPT_DIR/../download"
+fi
+JARS_DIR="$DOWNLOAD_ROOT/jar"
 
 if [ $# -lt 1 ]; then
   echo "Usage: $0 <prefix> [args...]"
@@ -19,5 +27,9 @@ if [ -z "$JAR_FILE" ]; then
   exit 2
 fi
 
-cd "$SCRIPT_DIR/.."
+# Arbeitsverzeichnis bestimmen
+WORKDIR="${JAR_WORKDIR:-/tmp/hyprmcsr-jar}"
+mkdir -p "$WORKDIR"
+cd "$WORKDIR"
+
 java -jar "$JAR_FILE" "$@"

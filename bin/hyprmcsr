@@ -1,0 +1,55 @@
+#!/bin/bash
+
+# Standardwerte
+HYPRMCSR_PROFILE=""
+PROFILE=""
+
+usage() {
+  echo "Usage: $0 [-h HYPRMCSR_PROFILE] [-p PROFILE] <command> [args...]"
+  echo "Commands: start, destroy, delete-old-worlds, install, modcheck, run-jar"
+  exit 1
+}
+
+# Argumente parsen
+while [[ "$1" =~ ^- ]]; do
+  case "$1" in
+    -h)
+      shift
+      HYPRMCSR_PROFILE="$1"
+      ;;
+    -p)
+      shift
+      PROFILE="$1"
+      ;;
+    *)
+      usage
+      ;;
+  esac
+  shift
+done
+
+CMD="$1"
+shift
+
+if [ -z "$CMD" ]; then
+  usage
+fi
+
+# Mapping von Kebab-Case zu Skriptname
+SCRIPT_NAME=$(echo "$CMD" | tr '-' '_').sh
+
+# Verzeichnis, in dem die eigentlichen Skripte liegen
+SCRIPT_DIR="$(dirname "$(realpath "$0")")/../scripts"
+
+SCRIPT_PATH="$SCRIPT_DIR/$SCRIPT_NAME"
+
+if [ ! -f "$SCRIPT_PATH" ]; then
+  echo "Unknown command: $CMD"
+  usage
+fi
+
+# Umgebungsvariablen setzen, falls angegeben
+[ -n "$HYPRMCSR_PROFILE" ] && export HYPRMCSR_PROFILE="$HYPRMCSR_PROFILE"
+[ -n "$PROFILE" ] && set -- "$PROFILE" "$@"
+
+exec "$SCRIPT_PATH" "$@"

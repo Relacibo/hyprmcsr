@@ -1,0 +1,19 @@
+#!/bin/bash
+
+CONFIG_ROOT="${XDG_CONFIG_HOME:-$HOME/.config}/hyprmcsr"
+mkdir -p "$CONFIG_ROOT"
+
+HYPRMCSR_PROFILE="${HYPRMCSR_PROFILE:-default}"
+CONFIG_FILE="$CONFIG_ROOT/${HYPRMCSR_PROFILE}.profile.json"
+
+if [ -n "$XDG_RUNTIME_DIR" ]; then
+  STATE_DIR="$XDG_RUNTIME_DIR/hyprmcsr/$HYPRMCSR_PROFILE"
+else
+  STATE_DIR="/tmp/hyprmcsr-$USER/$HYPRMCSR_PROFILE"
+fi
+mkdir -p "$STATE_DIR"
+
+export CONFIG_ROOT
+export HYPRMCSR_PROFILE
+export CONFIG_FILE
+export STATE_DIR
