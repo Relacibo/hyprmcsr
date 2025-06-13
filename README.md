@@ -156,7 +156,7 @@ You can use variables like `$SCRIPT_DIR`, `$PROFILE`, `$HYPRMCSR_PROFILE`, `$PRE
 
 - **Setup and start all tools:**
   ```bash
-  ./scripts/hyprmcsr.sh [--coop]
+  hyprmcsr start [-p coop]
   ```
   - Sets up keybinds, input remapper, and environment.
   - Automatically sets the `instance_wrapper.sh` as the "WrapperCommand" in your PrismLauncher instance config.
@@ -165,20 +165,21 @@ You can use variables like `$SCRIPT_DIR`, `$PROFILE`, `$HYPRMCSR_PROFILE`, `$PRE
 
 - **Remove keybinds and stop input remapper:**
   ```bash
-  ./scripts/destroy.sh
+  hyprmcsr destroy
   ```
   - Removes all keybinds and stops input-remapper.
   - Calls the scripts in onDestroy in your profile config.
+  - Will be automatically called on default, but also can be turned off.
 
 - **Delete old Minecraft worlds:**
   ```bash
-  ./scripts/delete_old_worlds.sh <regex> <keep_n>
+  hyprmcsr delete_old_worlds.sh <regex> <keep_n>
   ```
   - Deletes all worlds in the saves folder of the current Prism instance that match `<regex>`, except for the `<keep_n>` newest ones.
   - By default, Minecraft worlds created by this setup have the prefix `Random Speedrun `.  
     Example:  
     ```bash
-    ./scripts/delete_old_worlds.sh "^Random Speedrun " 50
+    hyprmcsr delete_old_worlds.sh "^Random Speedrun " 50
     ```
     This will keep the 50 newest worlds with that prefix and delete the rest.
   - **Tip:** You can also call this script from your `onDestroy` array in your `<profile>.profile.json` to automatically clean up old worlds when exiting. Just make sure to escape the double quotes with backslashes, for example: 
@@ -194,11 +195,6 @@ For capturing Minecraft, this setup uses [obs-vkcapture](https://github.com/nowr
 You should install the Flatpak versions of both OBS Studio and PrismLauncher, as well as the Flatpak version of obs-vkcapture.
 
 **How to use:**
-- In PrismLauncher, set the wrapper command for your Minecraft instance to:
-  ```
-  obs-gamecapture
-  ```
-- This will allow obs-vkcapture to hook into the Minecraft window for seamless game capture in OBS.
 
 **Installation:**
 - Install OBS Studio and PrismLauncher via Flatpak.
