@@ -9,7 +9,7 @@ DOWNLOAD_ROOT=$(jq -r '.download.root // empty' "$GLOBAL_CONFIG_FILE")
 if [ -z "$DOWNLOAD_ROOT" ] || [ "$DOWNLOAD_ROOT" = "null" ]; then
   DOWNLOAD_ROOT="$SCRIPT_DIR/../download"
 fi
-JARS_DIR="$DOWNLOAD_ROOT/jars"
+JARS_DIR="$DOWNLOAD_ROOT/jar"
 
 if [ $# -lt 1 ]; then
   echo "Usage: $0 <prefix> [args...]"
