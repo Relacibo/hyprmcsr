@@ -39,8 +39,6 @@ hyprctl --batch "
   dispatch setprop address:$window_address norounding 1
 "
 
-# ...existing code...
-
 # Prüfe, ob pipewireLoopback aktiviert ist
 pipewire_enabled=$(jq -r '.pipewireLoopback.enabled // false' "$CONFIG_FILE")
 if [ "$pipewire_enabled" = "true" ]; then
@@ -59,4 +57,3 @@ if [ "$pipewire_enabled" = "true" ]; then
     sleep 1
   done
 fi
-# ...existing code...
