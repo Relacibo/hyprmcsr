@@ -14,10 +14,12 @@ cd hyprmcsr
 For convenience, add the `bin/` directory to your `PATH` so you can use the `hyprmcsr` CLI from anywhere:
 
 ```bash
-export PATH="$PATH:$(pwd)/bin"
+export PATH="$PATH:/path/to/hyprmcsr/bin"
 ```
 
-You can also add this line to your `.bashrc` or `.zshrc` for persistence.
+Replace `/path/to/hyprmcsr` with the absolute path to your cloned repository.
+
+To make this change permanent, add the above line to your `.bashrc` or `.zshrc` (using the absolute path, not `$(pwd)`).
 
 > For more details, see [hyprmcsr CLI](./cli.md).
 
@@ -29,7 +31,7 @@ hyprmcsr install
 This command will:
 - Download required JARs
 - Create default configuration files
-- Setup the audio-splitting, if enabled in the *.profile.json (Is disabled by default)
+- Set up audio splitting, if enabled in your `*.profile.json` (disabled by default)
 
 ## 4. Configuration files
 
