@@ -13,10 +13,17 @@ export PRISM_INSTANCE_CONFIG
 
 # Prüfe auf expliziten Override für den Minecraft-Root-Ordner
 MINECRAFT_ROOT=$(jq -r '.minecraft.minecraftRootFolderOverride // empty' "$CONFIG_FILE")
-if [ -z "$MINECRAFT_ROOT" ] || [ "$MINECRAFT_ROOT" = "null" ]; then
+if [ -n "$MINECRAFT_ROOT" ] && [ "$MINECRAFT_ROOT" != "null" ]; then
+  # Wenn relativer Pfad, dann relativ zu $PRISM_PREFIX/instances/$PRISM_INSTANCE_ID auflösen
+  case "$MINECRAFT_ROOT" in
+    /*) ;; # absolut, nichts tun
+    ~*) MINECRAFT_ROOT="${MINECRAFT_ROOT/#\~/$HOME}" ;; # ~ ersetzen
+    *) MINECRAFT_ROOT="$PRISM_PREFIX/instances/$PRISM_INSTANCE_ID/$MINECRAFT_ROOT" ;;
+  esac
+else
   MINECRAFT_ROOT=$(grep '^OverrideMinecraftDir=' "$PRISM_INSTANCE_CONFIG" 2>/dev/null | cut -d= -f2-)
   if [ -z "$MINECRAFT_ROOT" ]; then
-    MINECRAFT_ROOT="$PRISM_PREFIX/instances/$PRISM_INSTANCE_ID/minecraft"
+    MINECRAFT_ROOT="$PRISM_PREFIX/instances/$PRISM_INSTANCE_ID/.minecraft"
   fi
 fi
 export MINECRAFT_ROOT
