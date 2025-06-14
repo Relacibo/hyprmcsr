@@ -1,8 +1,8 @@
 #!/bin/bash
 
-# Standardwerte
-HYPRMCSR_PROFILE=""
-PROFILE=""
+# Standardwerte ggf. aus Environment übernehmen
+HYPRMCSR_PROFILE="${HYPRMCSR_PROFILE:-}"
+PROFILE="${PROFILE:-}"
 
 usage() {
   echo "Usage: $0 [-h HYPRMCSR_PROFILE] [-p PROFILE] <command> [args...]"
