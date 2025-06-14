@@ -14,6 +14,8 @@ hyprmcsr can automatically download and update required JARs for your speedrun s
 - Their download sources are preconfigured in the default profile.
 - They are automatically started via the `onStart` section in your config, so you don't need to launch them manually.
 
+> For more information about the Ninjabrain Bot, see [linux-mcsr Ninjabrain Bot](https://its-saanvi.github.io/linux-mcsr/minecraft/ninjabrain.html).
+> 
 ## ModCheck
 
 - **ModCheck** is a tool to verify your Minecraft mods for speedrun legality.
@@ -25,7 +27,6 @@ hyprmcsr can automatically download and update required JARs for your speedrun s
 
   This will launch the ModCheck GUI with your current instance's mods folder preselected.
 
-> For more information about these tools, see [linux-mcsr tools](https://its-saanvi.github.io/linux-mcsr/tools.html).
 
 ---
 
