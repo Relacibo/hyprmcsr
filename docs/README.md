@@ -7,7 +7,6 @@ This documentation will guide you through the setup and usage of hyprmcsr on a m
 - For a general Linux MCSR guide, see [linux-mcsr by Saanvi](https://its-saanvi.github.io/linux-mcsr/).
   Most sections might be useful for this toolkit as well, **except** for the parts about Resetti, audio stream splitting, keymap rebinds, and configuring i3 or GNOME on Xorg. 
   These aspects are either handled differently or automatically by hyprmcsr.
-- For a **detailed explanation of every configuration option**, see the [README](../README.md).
 
 ## Table of Contents
 
