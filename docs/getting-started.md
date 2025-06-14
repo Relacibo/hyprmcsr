@@ -16,6 +16,7 @@ This documentation will guide you through the setup and usage of hyprmcsr on a m
 - [Hyprland Setup](./hyprland-setup.md)
 - [Cloning and Installation](./cloning-and-installation.md)
 - [hyprmcsr CLI](./cli.md)
+- [PrismLauncher](./prismlauncher.md)
 - [Audio Splitting](./audio-splitting.md)
 - [Keybinds and Modes](./keybinds-and-modes.md)
 - [OBS Setup](./obs-setup.md)
