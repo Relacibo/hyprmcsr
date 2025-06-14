@@ -10,7 +10,7 @@ hyprmcsr can automatically download and update required JARs for your speedrun s
 
 ## Ninjabrain Bot, NinjaLink, PaceMan-Tracker
 
-[Ninjabrain Bot](https://github.com/Ninjabrain1/Ninjabrain-Bot), [NinjaLink](https://github.com/DuncanRuns/NinjaLink) and [PaceMan-Tracker](https://github.com/PaceMan-MCSR/PaceMan-Tracker) are examples of jar files, that you might want have into the `onStart` section in your profile config.
+[Ninjabrain Bot](https://github.com/Ninjabrain1/Ninjabrain-Bot), [NinjaLink](https://github.com/DuncanRuns/NinjaLink) and [PaceMan-Tracker](https://github.com/PaceMan-MCSR/PaceMan-Tracker) are examples of jar files, that you might want have in the `onStart` section of your profile config.
   
 ## ModCheck
 
