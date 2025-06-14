@@ -17,7 +17,7 @@ Now you can use `hyprmcsr` from anywhere in your terminal.
 - `hyprmcsr start`  
   Main command. Start your configured profile and all automation (window management, audio splitting, input remapping, etc.).
 
-- `hyprmcsr delete-old-worlds \"^Random Speedrun\" 50`  
+- `hyprmcsr delete-old-worlds "^Random Speedrun" 50`  
   Deletes all minecraft speedrun saves except the last 50. If you like, you can put this in your onDestroy array in you `<profile>.profile.json`
 
 - `hyprmcsr install`  
