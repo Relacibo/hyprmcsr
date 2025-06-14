@@ -9,4 +9,4 @@ hyprmcsr manages all important keybinds for you:
 All binds are defined in your profile config under the `binds` section.
 
 **Tip:**  
-You can use environment variables like `$WINDOW_ADDRESS`, `$SCRIPT_DIR`, etc. in your custom commands.
+You can use environment variables like `$WINDOW_ADDRESS`, `$SCRIPT_DIR`, `$PROFILE`, `HYPRMCSR_PROFILE` etc. in your custom commands.
