@@ -2,7 +2,7 @@
 
 > **Note:**  
 > This project and its documentation are still experimental and under active development.  
-> [See the full documentation in the `docs/` folder.](./docs/getting-started.md)
+> [See the full documentation in the `docs/` folder.](./docs/README.md)
 
 ## Overview
 
