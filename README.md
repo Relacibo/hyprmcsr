@@ -139,11 +139,12 @@ See [example.config.json](example.config.json) and [example.default.profile.json
   - `innerCommand` can be any wrapper tool (e.g., `"obs-gamecapture"`).
   - If you don't need a wrapper, you can omit this field.
 - **minecraft.minecraftRootFolderOverride**: (Optional)  
-  Set this to the absolute path of your `.minecraft` folder if you want to override the default detection.  
+  Set this to the absolute **or relative** path of your `.minecraft` folder if you want to override the default detection.  
+  If you use a **relative path**, it will be resolved relative to the detected PrismLauncher instance folder.  
   Example:  
   ```json
   "minecraft": {
-    "minecraftRootFolderOverride": "/home/username/custom_minecraft_folder"
+    "minecraftRootFolderOverride": ".minecraft"
   }
   ```
   If not set, the scripts will use the PrismLauncher instance config or the default path.
