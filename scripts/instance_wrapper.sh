@@ -47,22 +47,26 @@ before_sinks=$(pactl -f json list sink-inputs | jq '.[].index' | sort)
   # Sound-Splitting: Suche nach neuem sink-input mit "Minecraft", "java" oder "game" im Namen/Role
   pipewire_enabled=$(jq -r '.pipewireLoopback.enabled // false' "$CONFIG_FILE")
   if [ "$pipewire_enabled" = "true" ]; then
-    for i in {1..20}; do
-      after_sinks=$(pactl -f json list sink-inputs | jq '.[].index' | sort)
-      new_sink=$(comm -13 <(echo "$before_sinks") <(echo "$after_sinks") | head -n1)
-      if [ -n "$new_sink" ]; then
-        sink_info=$(pactl -f json list sink-inputs | jq -r --arg idx "$new_sink" '.[] | select(.index == ($idx | tonumber))')
-        name_check=$(echo "$sink_info" | jq -r '(.properties."application.name" // "") + " " + (.properties."media.name" // "")')
-        node_name=$(echo "$sink_info" | jq -r '.properties."node.name" // ""')
-        media_role=$(echo "$sink_info" | jq -r '.properties."media.role" // ""')
-        if echo "$name_check $node_name $media_role" | grep -Eqi "minecraft|java|game"; then
-          pactl move-sink-input "$new_sink" virtual_game
-          break
-        fi
+  for i in {1..20}; do
+    after_sinks=$(pactl -f json list sink-inputs | jq '.[].index' | sort)
+    new_sink=$(comm -13 <(echo "$before_sinks") <(echo "$after_sinks") | head -n1)
+    if [ -n "$new_sink" ]; then
+      # Filter: node.name == "java" AND media.role == "game"
+      sink_info=$(pactl -f json list sink-inputs | jq -r --arg idx "$new_sink" '
+        .[] | select(
+          .index == ($idx | tonumber)
+          and (.properties."node.name" // "" | test("java"; "i"))
+          and (.properties."media.role" // "" | test("game"; "i"))
+        )
+      ')
+      if [ -n "$sink_info" ]; then
+        pactl move-sink-input "$new_sink" virtual_game
+        break
       fi
-      sleep 1
-    done
-  fi
+    fi
+    sleep 1
+  done
+fi
 
   # minecraft.onStart ausführen (alle im Hintergrund, mit allen relevanten Umgebungsvariablen)
   mc_on_start_cmds=$(jq -r '.minecraft.onStart[]?' "$CONFIG_FILE")
