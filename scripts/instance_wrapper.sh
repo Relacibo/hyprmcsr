@@ -1,4 +1,6 @@
 #!/bin/bash
+# filepath: /home/reinhard/git/hyprmcsr/scripts/instance_wrapper.sh
+
 SCRIPT_DIR="$(dirname "$(realpath "$0")")"
 source "$SCRIPT_DIR/env_prism.sh"
 source "$SCRIPT_DIR/env_runtime.sh"
@@ -17,11 +19,11 @@ before_sinks=$(pactl -f json list sink-inputs | jq '.[].index' | sort)
   window_pid=""
   MC_PID=""
 
-  # Suche nach neuer Java-PID und Fenster mit passender Klasse
+  # Suche nach neuer Java-PID und Fenster mit passender Klasse (robust: prüfe alle neuen PIDs)
   while [ $elapsed -lt $timeout ]; do
     after_pids=$(pgrep -u "$USER" java | sort)
-    new_pid=$(comm -13 <(echo "$before_pids") <(echo "$after_pids") | head -n1)
-    if [ -n "$new_pid" ]; then
+    new_pids=$(comm -13 <(echo "$before_pids") <(echo "$after_pids"))
+    for new_pid in $new_pids; do
       window_info=$(hyprctl clients -j | jq -r --arg pid "$new_pid" --arg regex "$WINDOW_CLASS_REGEX" '
         .[] | select(.pid == ($pid | tonumber) and (.class | test($regex))) | "\(.address) \(.pid)"
       ')
@@ -30,9 +32,9 @@ before_sinks=$(pactl -f json list sink-inputs | jq '.[].index' | sort)
       if [ -n "$window_address" ]; then
         MC_PID="$new_pid"
         echo "$window_address" > "$STATE_DIR/window_address"
-        break
+        break 2  # verlasse beide Schleifen
       fi
-    fi
+    done
     sleep 1
     elapsed=$((elapsed + 1))
   done
@@ -44,29 +46,28 @@ before_sinks=$(pactl -f json list sink-inputs | jq '.[].index' | sort)
     "
   fi
 
-  # Sound-Splitting: Suche nach neuem sink-input mit "Minecraft", "java" oder "game" im Namen/Role
+  # Sound-Splitting: Suche nach neuem sink-input mit node.name == "java" UND media.role == "game"
   pipewire_enabled=$(jq -r '.pipewireLoopback.enabled // false' "$CONFIG_FILE")
   if [ "$pipewire_enabled" = "true" ]; then
-  for i in {1..20}; do
-    after_sinks=$(pactl -f json list sink-inputs | jq '.[].index' | sort)
-    new_sink=$(comm -13 <(echo "$before_sinks") <(echo "$after_sinks") | head -n1)
-    if [ -n "$new_sink" ]; then
-      # Filter: node.name == "java" AND media.role == "game"
-      sink_info=$(pactl -f json list sink-inputs | jq -r --arg idx "$new_sink" '
-        .[] | select(
-          .index == ($idx | tonumber)
-          and (.properties."node.name" // "" | test("java"; "i"))
-          and (.properties."media.role" // "" | test("game"; "i"))
-        )
-      ')
-      if [ -n "$sink_info" ]; then
-        pactl move-sink-input "$new_sink" virtual_game
-        break
-      fi
-    fi
-    sleep 1
-  done
-fi
+    for i in {1..20}; do
+      after_sinks=$(pactl -f json list sink-inputs | jq '.[].index' | sort)
+      new_sinks=$(comm -13 <(echo "$before_sinks") <(echo "$after_sinks"))
+      for new_sink in $new_sinks; do
+        sink_info=$(pactl -f json list sink-inputs | jq -r --arg idx "$new_sink" '
+          .[] | select(
+            .index == ($idx | tonumber)
+            and (.properties."node.name" // "" | test("java"; "i"))
+            and (.properties."media.role" // "" | test("game"; "i"))
+          )
+        ')
+        if [ -n "$sink_info" ]; then
+          pactl move-sink-input "$new_sink" virtual_game
+          break 2  # verlasse beide Schleifen
+        fi
+      done
+      sleep 1
+    done
+  fi
 
   # minecraft.onStart ausführen (alle im Hintergrund, mit allen relevanten Umgebungsvariablen)
   mc_on_start_cmds=$(jq -r '.minecraft.onStart[]?' "$CONFIG_FILE")
