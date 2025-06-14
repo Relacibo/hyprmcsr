@@ -11,7 +11,7 @@ You can install PrismLauncher via Flatpak with:
 flatpak install flathub org.prismlauncher.PrismLauncher
 ```
 
-For more details and tips, see the [PrismLauncher section in the linux-mcsr guide](https://its-saanvi.github.io/linux-mcsr/launcher.html).
+For more details and tips, see the [PrismLauncher section in the linux-mcsr guide](https://its-saanvi.github.io/linux-mcsr/minecraft/mmc.html).
 
 After installation, launch PrismLauncher and set up your Minecraft instances as usual.  
 hyprmcsr will automatically detect and use your configured PrismLauncher instance.
