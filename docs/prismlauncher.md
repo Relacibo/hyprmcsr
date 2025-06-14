@@ -37,4 +37,4 @@ If you want to use a specific wrapper (like `obs-gamecapture`), set it as `"inne
 **Do not** set it directly in the PrismLauncher GUI, as it will be overwritten by the automation.
 
 If you want to manage the wrapper manually, set `"prismWrapperCommand.autoReplace": false` in your config.
-Then you can set any wrapper you like in the PrismLauncher GUI (e.g., `obs-gamecapture`).
+Then you can set any wrapper you like in the PrismLauncher GUI (e.g., `obs-gamecapture`). But `hyprmcsr -h <profile> instance-wrapper` still needs to be one of the wrapper commands.
