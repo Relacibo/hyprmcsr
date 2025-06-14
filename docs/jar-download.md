@@ -8,15 +8,14 @@ hyprmcsr can automatically download and update required JARs for your speedrun s
 - On first install (or when you run `hyprmcsr install`), all listed JARs are downloaded from their respective sources.
 - Updates are handled automatically if you re-run the install command.
 
-## Ninjabrain Bot & NinjaLink
+## Ninjabrain Bot, NinjaLink, PaceMan-Tracker
 
-- **Ninjabrain Bot** and **NinjaLink** are supported out of the box.
-- Their download sources are preconfigured in the default profile.
-- They are automatically started via the `onStart` section in your config, so you don't need to launch them manually.
+- [Ninjabrain Bot](https://github.com/Ninjabrain1/Ninjabrain-Bot), [NinjaLink](https://github.com/DuncanRuns/NinjaLink) and [PaceMan-Tracker](https://github.com/PaceMan-MCSR/PaceMan-Tracker) are examples of jar files, that you might want have into the `onStart` section in your profile config.
+- Their download sources are preconfigured in the default profile. They will be downloaded when running `hyprmcsr install`
   
 ## ModCheck
 
-- **ModCheck** is a tool to verify your Minecraft mods for speedrun legality.
+- [ModCheck](https://github.com/tildejustin/modcheck) is a tool to verify your Minecraft mods for speedrun legality.
 - You can run it at any time with:
 
   ```bash
