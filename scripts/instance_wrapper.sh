@@ -19,20 +19,21 @@ before_sinks=$(pactl -f json list sink-inputs | jq '.[].index' | sort)
   window_pid=""
   MC_PID=""
 
-  # Suche nach neuer Java-PID und Fenster mit passender Klasse (robust: prüfe alle neuen PIDs)
+  # Suche nach neuer Java-PID und Fenster mit passender Klasse (vereinfacht, ohne pending_pids)
   while [ $elapsed -lt $timeout ]; do
     after_pids=$(pgrep -u "$USER" java | sort)
     new_pids=$(comm -13 <(echo "$before_pids") <(echo "$after_pids"))
-    for new_pid in $new_pids; do
-      window_info=$(hyprctl clients -j | jq -r --arg pid "$new_pid" --arg regex "$WINDOW_CLASS_REGEX" '
+    for pid in $new_pids; do
+      window_info=$(hyprctl clients -j | jq -r --arg pid "$pid" --arg regex "$WINDOW_CLASS_REGEX" '
         .[] | select(.pid == ($pid | tonumber) and (.class | test($regex))) | "\(.address) \(.pid)"
       ')
       window_address=$(echo "$window_info" | awk '{print $1}')
       window_pid=$(echo "$window_info" | awk '{print $2}')
       if [ -n "$window_address" ]; then
-        MC_PID="$new_pid"
+        MC_PID="$pid"
         echo "$window_address" > "$STATE_DIR/window_address"
-        break 2  # verlasse beide Schleifen
+        found=1
+        break 2
       fi
     done
     sleep 1
@@ -65,6 +66,7 @@ before_sinks=$(pactl -f json list sink-inputs | jq '.[].index' | sort)
           break 2  # verlasse beide Schleifen
         fi
       done
+      before_sinks="$after_sinks"   # Update Referenz für nächste Runde
       sleep 1
     done
   fi
@@ -89,3 +91,4 @@ if [ -n "$inner_wrapper_cmd" ] && [ "$inner_wrapper_cmd" != "null" ] && [ "$inne
 else
   exec "$@"
 fi
+
