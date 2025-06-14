@@ -77,7 +77,7 @@ before_sinks=$(pactl -f json list sink-inputs | jq '.[].index' | sort)
 ) &
 
 # Starte Minecraft (ggf. mit innerem Wrapper) im Vordergrund!
-inner_wrapper_cmd=$(jq -r '.minecraft.prismReplaceWrapperCommand.innerWrapperCommand // empty' "$CONFIG_FILE")
+inner_wrapper_cmd=$(jq -r '.minecraft.prismWrapperCommand.innerCommand // empty' "$CONFIG_FILE")
 
 if [ -n "$inner_wrapper_cmd" ] && [ "$inner_wrapper_cmd" != "null" ] && [ "$inner_wrapper_cmd" != "empty" ]; then
   exec $inner_wrapper_cmd "$@"
