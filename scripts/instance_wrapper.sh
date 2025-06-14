@@ -4,19 +4,10 @@ source "$SCRIPT_DIR/env_prism.sh"
 source "$SCRIPT_DIR/env_runtime.sh"
 WINDOW_TITLE_REGEX=$(jq -r '.minecraft.windowTitleRegex // "Minecraft"' "$CONFIG_FILE")
 
-# Starte Minecraft (ggf. mit innerem Wrapper) und ermittle die PID
-inner_wrapper_cmd=$(jq -r '.minecraft.prismReplaceWrapperCommand.innerWrapperCommand // empty' "$CONFIG_FILE")
-
-if [ -n "$inner_wrapper_cmd" ] && [ "$inner_wrapper_cmd" != "null" ] && [ "$inner_wrapper_cmd" != "empty" ]; then
-  echo "hyprmcsr: Using inner wrapper command: $inner_wrapper_cmd"
-  $inner_wrapper_cmd "$@" &
-else
-  echo "hyprmcsr: Calling minecraft without wrapper command."
-  "$@" &
-fi
-
-MC_PID=$!
-echo "hyprmcsr: Started Minecraft with PID $MC_PID"
+# Vor dem Start: Liste aller Java-PIDs merken
+before_pids=$(pgrep -u "$USER" java | sort)
+# Vor dem Start: Liste aller sink-input-IDs merken
+before_sinks=$(pactl -f json list sink-inputs | jq '.[].index' | sort)
 
 # Starte parallele Aktionen im Subprozess
 (
@@ -24,17 +15,23 @@ echo "hyprmcsr: Started Minecraft with PID $MC_PID"
   elapsed=0
   window_address=""
   window_pid=""
+  MC_PID=""
 
-  # Suche das Fenster mit passender PID
+  # Suche nach neuer Java-PID und Fenster mit passendem Titel
   while [ $elapsed -lt $timeout ]; do
-    window_info=$(hyprctl clients -j | jq -r --arg pid "$MC_PID" '
-      .[] | select(.pid == ($pid | tonumber)) | "\(.address) \(.pid)"
-    ')
-    window_address=$(echo "$window_info" | awk '{print $1}')
-    window_pid=$(echo "$window_info" | awk '{print $2}')
-    if [ -n "$window_address" ]; then
-      echo "$window_address" > "$STATE_DIR/window_address"
-      break
+    after_pids=$(pgrep -u "$USER" java | sort)
+    new_pid=$(comm -13 <(echo "$before_pids") <(echo "$after_pids") | head -n1)
+    if [ -n "$new_pid" ]; then
+      window_info=$(hyprctl clients -j | jq -r --arg pid "$new_pid" --arg regex "$WINDOW_TITLE_REGEX" '
+        .[] | select(.pid == ($pid | tonumber) and (.title | test($regex))) | "\(.address) \(.pid)"
+      ')
+      window_address=$(echo "$window_info" | awk '{print $1}')
+      window_pid=$(echo "$window_info" | awk '{print $2}')
+      if [ -n "$window_address" ]; then
+        MC_PID="$new_pid"
+        echo "$window_address" > "$STATE_DIR/window_address"
+        break
+      fi
     fi
     sleep 1
     elapsed=$((elapsed + 1))
@@ -47,19 +44,21 @@ echo "hyprmcsr: Started Minecraft with PID $MC_PID"
     "
   fi
 
-  # Sound-Splitting: Suche nach sink-input mit passender PID
+  # Sound-Splitting: Suche nach neuem sink-input mit "Minecraft", "java" oder "game" im Namen/Role
   pipewire_enabled=$(jq -r '.pipewireLoopback.enabled // false' "$CONFIG_FILE")
   if [ "$pipewire_enabled" = "true" ]; then
     for i in {1..20}; do
-      sink_input_id=$(pactl -f json list sink-inputs | jq -r --arg pid "$MC_PID" '
-        .[] | select(
-          ((.properties."application.process.id" // "")|tostring) == $pid
-        ) | .index
-      ' | head -n1)
-      if [ -n "$sink_input_id" ]; then
-        pactl move-sink-input "$sink_input_id" virtual_game
-        echo "hyprmcsr: Moved sink-input $sink_input_id (PID $MC_PID) to virtual_game"
-        break
+      after_sinks=$(pactl -f json list sink-inputs | jq '.[].index' | sort)
+      new_sink=$(comm -13 <(echo "$before_sinks") <(echo "$after_sinks") | head -n1)
+      if [ -n "$new_sink" ]; then
+        sink_info=$(pactl -f json list sink-inputs | jq -r --arg idx "$new_sink" '.[] | select(.index == ($idx | tonumber))')
+        name_check=$(echo "$sink_info" | jq -r '(.properties."application.name" // "") + " " + (.properties."media.name" // "")')
+        node_name=$(echo "$sink_info" | jq -r '.properties."node.name" // ""')
+        media_role=$(echo "$sink_info" | jq -r '.properties."media.role" // ""')
+        if echo "$name_check $node_name $media_role" | grep -Eqi "minecraft|java|game"; then
+          pactl move-sink-input "$new_sink" virtual_game
+          break
+        fi
       fi
       sleep 1
     done
@@ -77,5 +76,11 @@ echo "hyprmcsr: Started Minecraft with PID $MC_PID"
   fi
 ) &
 
-# Warten auf Minecraft-Prozess
-wait $MC_PID
+# Starte Minecraft (ggf. mit innerem Wrapper) im Vordergrund!
+inner_wrapper_cmd=$(jq -r '.minecraft.prismReplaceWrapperCommand.innerWrapperCommand // empty' "$CONFIG_FILE")
+
+if [ -n "$inner_wrapper_cmd" ] && [ "$inner_wrapper_cmd" != "null" ] && [ "$inner_wrapper_cmd" != "empty" ]; then
+  exec $inner_wrapper_cmd "$@"
+else
+  exec "$@"
+fi

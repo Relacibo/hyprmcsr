@@ -3,13 +3,15 @@ sudo -v
 
 SCRIPT_DIR="$(dirname "$(realpath "$0")")"
 
-# Profil bestimmen (vor dem Laden der env-Files!)
-if [ "$1" = "--coop" ]; then
-  export HYPRMCSR_PROFILE="coop"
+# Allgemeine Profil-Logik
+if [[ "$1" == --* ]]; then
+  export PROFILE="${1#--}"
+  shift
 else
-  export HYPRMCSR_PROFILE="${1:-default}"
+  export PROFILE=""
 fi
 
+export HYPRMCSR_PROFILE="${1:-default}"
 source "$SCRIPT_DIR/env_core.sh"
 source "$SCRIPT_DIR/env_prism.sh"
 
@@ -37,13 +39,19 @@ INNER_WRAPPER_CMD=$(jq -r '.minecraft.prismReplaceWrapperCommand.innerWrapperCom
 if [ "$PRISM_REPLACE_WRAPPER_ENABLED" = "true" ]; then
   if [ -n "$INNER_WRAPPER_CMD" ] && [ "$INNER_WRAPPER_CMD" != "null" ]; then
     if [ -f "$PRISM_INSTANCE_CONFIG" ]; then
+      WRAPPER_CMD="$SCRIPT_DIR/../bin/hyprmcsr -h $HYPRMCSR_PROFILE instance-wrapper"
       if grep -q "^WrapperCommand=" "$PRISM_INSTANCE_CONFIG"; then
-        sed -i "s|^WrapperCommand=.*|WrapperCommand=$SCRIPT_DIR/instance_wrapper.sh|" "$PRISM_INSTANCE_CONFIG"
+        sed -i "s|^WrapperCommand=.*|WrapperCommand=$WRAPPER_CMD|" "$PRISM_INSTANCE_CONFIG"
       else
-        echo "WrapperCommand=$SCRIPT_DIR/instance_wrapper.sh" >> "$PRISM_INSTANCE_CONFIG"
+        echo "WrapperCommand=$WRAPPER_CMD" >> "$PRISM_INSTANCE_CONFIG"
+      fi
+      # Benutzerdefinierte Befehle aktivieren
+      if grep -q "^UseCustomCommands=" "$PRISM_INSTANCE_CONFIG"; then
+        sed -i "s|^UseCustomCommands=.*|UseCustomCommands=true|" "$PRISM_INSTANCE_CONFIG"
+      else
+        echo "UseCustomCommands=true" >> "$PRISM_INSTANCE_CONFIG"
       fi
     fi
-    # Optional: Schreibe innerWrapperCommand in die profile.json, falls benötigt
   fi
 fi
 
