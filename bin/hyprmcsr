@@ -6,9 +6,20 @@ PROFILE="${PROFILE:-}"
 
 usage() {
   echo "Usage: $0 [-h HYPRMCSR_PROFILE] [-p PROFILE] <command> [args...]"
-  echo "Commands: start, destroy, delete-old-worlds, install, modcheck, run-jar"
+  echo "Commands: start, destroy, delete-old-worlds, install, modcheck, run-jar, version"
   exit 1
 }
+
+# Version ausgeben, wenn --version oder version als Befehl
+if [[ "$1" == "--version" || "$1" == "version" ]]; then
+  VERSION_FILE="$(dirname "$(realpath "$0")")/../VERSION"
+  if [ -f "$VERSION_FILE" ]; then
+    cat "$VERSION_FILE"
+  else
+    echo "unknown version"
+  fi
+  exit 0
+fi
 
 # Argumente parsen
 while [[ "$1" =~ ^- ]]; do
