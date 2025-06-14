@@ -38,9 +38,9 @@ before_sinks=$(pactl -f json list sink-inputs | jq '.[].index' | sort)
   done
 
   if [ -n "$window_address" ]; then
-    hyprctl -qr --batch "
+    hyprctl -q --batch "
       dispatch setprop address:$window_address noanim 1;
-      dispatch setprop address:$window_address norounding 1
+      dispatch setprop address:$window_address norounding 1;
     "
   fi
 
