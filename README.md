@@ -1,5 +1,9 @@
 # hyprmcsr
 
+> **Note:**  
+> This project and its documentation are still experimental and under active development.  
+> [See the full documentation in the `docs/` folder.](./docs/getting-started.md)
+
 ## Overview
 
 This project automates the setup of a Minecraft speedrunning environment on Linux using Hyprland, Pipewire, and various helper tools. The focus is on simplicity and making it easy to adapt or extend for your own needs.
