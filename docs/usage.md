@@ -12,6 +12,10 @@ hyprmcsr start [-p <profile>]
 - You can restart Minecraft yourself, if it crashes via PrismLauncher (GUI or CLI).
 - All post-launch actions (window handling, audio, etc.) are now handled by `instance_wrapper.sh` after Minecraft starts.
 
+> **Important:**  
+> Do **not** press any keys or mouse buttons while input-remapper is applying or removing remaps!  
+> Otherwise, unexpected errors or malfunctions with your input devices may occur.
+
 ## Remove keybinds and stop input remapper
 
 ```bash
