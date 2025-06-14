@@ -3,6 +3,9 @@
 Hyprland is required for this project.  
 It is a modern Wayland compositor that enables advanced window management and performance optimizations.
 
+> **Note:**  
+> hyprmcsr has so far only been tested on **Fedora 42**. Other distributions are supported in principle, but may require additional troubleshooting.
+
 ## Supported Distributions
 
 Hyprland works best on:
