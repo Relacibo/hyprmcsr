@@ -24,5 +24,4 @@ hyprmcsr can automatically download and update required JARs for your speedrun s
   ```
 
   This will launch the ModCheck GUI with your current instance's mods folder preselected.
-
-> For more information about these tools, see [linux-mcsr tools](https://its-saanvi.github.io/linux-mcsr/tools.html).
+  

@@ -5,7 +5,7 @@ Welcome to **hyprmcsr** – the Linux Minecraft speedrunning automation toolkit!
 This documentation will guide you through the setup and usage of hyprmcsr on a modern Linux system with Hyprland.
 
 - For a general Linux MCSR guide, see [linux-mcsr by Saanvi](https://its-saanvi.github.io/linux-mcsr/).
-  Most sections are relevant for this toolkit as well, **except** for the parts about Resetti, splitting audio streams, keymap rebinds, and setting up i3.  
+  Most sections might be useful for this toolkit as well, **except** for the parts about Resetti, splitting audio streams, keymap rebinds, and setting up i3.  
   Those topics are either handled differently or automatically by hyprmcsr.
 - For a **detailed explanation of every configuration option**, see the [README](../README.md).
 

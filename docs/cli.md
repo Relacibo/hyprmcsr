@@ -15,13 +15,13 @@ Now you can use `hyprmcsr` from anywhere in your terminal.
 ## Common commands
 
 - `hyprmcsr start`  
-  Start your configured profile and all automation (window management, audio splitting, input remapping, etc.).
+  Main command. Start your configured profile and all automation (window management, audio splitting, input remapping, etc.).
 
-- `hyprmcsr destroy`  
-  Clean up and reset everything (undoes remapping, closes virtual devices, etc.).
+- `hyprmcsr delete-old-worlds \"^Random Speedrun\" 50`  
+  Deletes all minecraft speedrun saves except the last 50. If you like, you can put this in your onDestroy array in you `<profile>.profile.json`
 
 - `hyprmcsr install`  
-  Download required JARs and set up dependencies (see [Automatic JAR Download](./jar-download.md)).
+  Download required JARs and set up dependencies (see [Automatic JAR Download](./jar-download.md)). Also sets up the 2 virual audio devices for discord and game.
 
 - `hyprmcsr run-jar modcheck`  
   Run the ModCheck tool to verify your mods (see [ModCheck](./jar-download.md#modcheck)).

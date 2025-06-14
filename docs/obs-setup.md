@@ -18,5 +18,3 @@ Make sure you have Flatpak and the Flathub repository enabled on your system.
 
 **Automation:**  
 hyprmcsr can control OBS via [obs-cli](https://github.com/pschmitt/obs-cli) and the OBS websocket (authentication can be disabled for simplicity).
-
-See [linux-mcsr OBS guide](https://its-saanvi.github.io/linux-mcsr/obs.html) for more tips.

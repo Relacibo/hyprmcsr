@@ -11,5 +11,3 @@
 
 - **Input remapper not working:**  
   Check group membership and permissions.
-
-For more help, see [linux-mcsr Troubleshooting](https://its-saanvi.github.io/linux-mcsr/troubleshooting.html) or open an issue on GitHub.
