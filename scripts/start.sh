@@ -1,5 +1,5 @@
 #!/bin/bash
-sudo bash -c :
+sudo -v
 
 SCRIPT_DIR="$(dirname "$(realpath "$0")")"
 
@@ -81,7 +81,7 @@ if [ -n "$on_start_cmds" ]; then
   )
 fi
 
-OBSERVE_LOG=$(jq -r '.minecraft.observeLog.enabled // 1' "$CONFIG_FILE")
+OBSERVE_LOG=$(jq -r '.minecraft.observeLog.enabled // true' "$CONFIG_FILE")
 if [ "$OBSERVE_LOG" = "true" ]; then
   (
     export HYPRMCSR_PROFILE PRISM_INSTANCE_ID MINECRAFT_ROOT
@@ -94,8 +94,11 @@ fi
 auto_destroy=$(jq -r '.autoDestroyOnExit // true' "$CONFIG_FILE")
 
 if [ "$auto_destroy" = "true" ]; then
+  # Sudo-Ticket regelmäßig erneuern, solange das Skript läuft
+  while true; do sudo -v; sleep 60; done &
+  SUDO_REFRESH_PID=$!
   # Trap für SIGINT und SIGTERM setzen
-  trap 'kill $LOG_MONITOR_PID 2>/dev/null; $SCRIPT_DIR/destroy.sh; exit' SIGINT SIGTERM
+  trap 'kill $SUDO_REFRESH_PID 2>/dev/null; kill $LOG_MONITOR_PID 2>/dev/null; sudo -v; $SCRIPT_DIR/destroy.sh; exit' SIGINT SIGTERM
   echo "Drücke Strg+C zum Beenden. Beim Beenden wird destroy.sh automatisch ausgeführt."
   sleep infinity
 fi
