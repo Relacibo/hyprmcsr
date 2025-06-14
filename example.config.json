@@ -6,7 +6,8 @@
     "jar": [
       "tildejustin/modcheck",
       "Ninjabrain1/Ninjabrain-Bot",
-      "DuncanRuns/NinjaLink"
+      "DuncanRuns/NinjaLink",
+      "PaceMan-MCSR/PaceMan-Tracker"
     ]
   }
 }

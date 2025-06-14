@@ -2,7 +2,8 @@
   "onStart": [
     "if [ \"$PROFILE\" = \"coop\" ]; then JAR_WORKDIR=\"$HOME/.config/NinjaLink\" $SCRIPT_DIR/run_jar.sh NinjaLink fi",
     "$SCRIPT_DIR/run_jar.sh Ninjabrain-Bot",
-    "flatpak run com.obsproject.Studio"
+    "flatpak run com.obsproject.Studio",
+    "# $SCRIPT_DIR/run_jar.sh paceman"
   ],
   "onDestroy": [],
   "binds": {
