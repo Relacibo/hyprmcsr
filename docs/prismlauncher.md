@@ -14,6 +14,8 @@ flatpak install flathub org.prismlauncher.PrismLauncher
 After installation, launch PrismLauncher and set up your Minecraft instances as usual.  
 hyprmcsr will automatically detect and use your configured PrismLauncher instance.
 
+See also: [Modcheck](https://github.com/Relacibo/hyprmcsr/blob/main/docs/jar-download.md#modcheck)
+
 ---
 
 ## LWJGL Version
