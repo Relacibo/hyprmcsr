@@ -68,7 +68,7 @@
     "onStart": [],
     "prismPrefixOverride": "~/.local/share/PrismLauncher",
     "prismInstanceId": "1.16.1",
-    "windowTitleRegex": "^Minecraft\\* 1.16.1",
+    "windowClassRegex": "Minecraft",
     "prismWrapperCommand": {
       "autoReplace": true,
       "innerCommand": "obs-gamecapture"

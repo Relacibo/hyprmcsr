@@ -107,7 +107,10 @@ See [example.config.json](example.config.json) and [example.default.profile.json
 - **inputRemapper.devices**: List of devices and presets for input-remapper.
 - **minecraft.prismPrefixOverride**: (Optional) Path to your PrismLauncher data directory.
 - **minecraft.prismInstanceId**: Name or UUID of your PrismLauncher instance.
-- **minecraft.windowTitleRegex**: Regex to detect the Minecraft window.
+- **minecraft.windowClassRegex**:  
+  Regular expression to detect the Minecraft window by its window class.
+  This regex is used to identify the Minecraft window among all open windows.  
+  You may need to adjust this regex to match the actual window class, e.g. if you are using a wrapper command, that changes the class (you can check the class of your windows with `hyprctl clients -j`).
 - **minecraft.observeLog.enabled**: Enable or disable log observation for Minecraft state.
 - **minecraft.onStart**: Array of shell commands/scripts to run after Minecraft has started (executed by `instance_wrapper.sh`).
 - **pipewireLoopback.enabled**: Enable or disable Pipewire audio loopback/splitting.
