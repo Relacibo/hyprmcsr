@@ -1,7 +1,7 @@
 # hyprmcsr
 
 
-<img src="https://raw.githubusercontent.com/hyprwm/Hyprland/main/resources/logo.png" width="640" height="320" alt="banner">
+<img src="resources/logo.png" width="640" height="320" alt="banner">
 
 > **Note:**  
 > This project and its documentation are still experimental and under active development.  
