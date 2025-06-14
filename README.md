@@ -33,7 +33,7 @@ If you have problems, feel free to open an issue.
 ## Contributers
 
 - Me ([youtube](https://www.youtube.com/@relacibo), [speedrun.com](https://www.speedrun.com/de-DE/users/Relacibo))
-- Igelway ([youtube](https://www.youtube.com/@MisterKenway), [speedrun.com](https://www.speedrun.com/de-DE/users/Igelway))
+- [Igelway](https://github.com/Igelway) ([youtube](https://www.youtube.com/@MisterKenway), [speedrun.com](https://www.speedrun.com/de-DE/users/Igelway))
 
 ## License
 
