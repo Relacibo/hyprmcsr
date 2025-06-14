@@ -14,14 +14,14 @@ hyprmcsr can automatically download and update required JARs for your speedrun s
   
 ## ModCheck
 
-- [ModCheck](https://github.com/tildejustin/modcheck) is a tool to verify your Minecraft mods for speedrun legality.
+- [ModCheck](https://github.com/tildejustin/modcheck) is a tool to download and update the mods of your minecraft instance.
 - You can run it at any time with:
 
   ```bash
   hyprmcsr run-jar modcheck
   ```
 
-  This will launch the ModCheck GUI with your current instance's mods folder preselected.
+  This will launch the ModCheck GUI.
 
 
 ---
