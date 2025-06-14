@@ -28,7 +28,7 @@ hyprmcsr can automatically download and update required JARs for your speedrun s
 
 ## Optional Tools
 
-You can use additional tools for automation in your `onEnter`, `onExit`, or custom binds in your profile config:
+You can use additional tools for automation in your `onStart`, `onEnter`, `onExit`, or custom binds in your profile config, like:
 
 - [**razer-cli**](https://github.com/lolei/razer-cli)  
   Command-line tool to set DPI and other settings for Razer mice.
