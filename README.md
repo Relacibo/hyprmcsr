@@ -6,14 +6,17 @@
 
 ## Overview
 
-This project automates the setup of a Minecraft speedrunning environment on Linux using Hyprland, Pipewire, and various helper tools. The focus is on simplicity and making it easy to adapt or extend for your own needs.
+**hyprmcsr** is a toolkit for automating a modern Minecraft speedrunning environment on Linux, with a focus on performance, usability, and automation.  
+It is especially useful for runners looking for a streamlined, performant alternative to the typical Windows-based MCSR setup.
 
-**Configuration is now split:**
-- Global settings: `config.json` (copied from `example.config.json` on first install)
-- Profile-specific settings: `<profile>.profile.json` (e.g. `default.profile.json`, copied from `example.default.profile.json`)
+The toolkit leverages [Hyprland](https://hyprland.org/) (Wayland compositor), Pipewire, PrismLauncher, and various helper tools to provide:
+- Automated window management and keybinds
+- Audio splitting for game/Discord/OBS
+- Input remapping for optimal controls
+- Easy mod and tool management (auto-download)
+- Integration with OBS and other speedrun helpers
 
-Tested on Fedora 42.  
-If you have problems, feel free to open an issue.
+All core functionality is controlled via the `hyprmcsr` CLI, which manages setup, teardown, and automation for your speedrun sessions.
 
 ---
 
@@ -29,6 +32,7 @@ If you have problems, feel free to open an issue.
 - [Troubleshooting](./docs/troubleshooting.md)
 
 ---
+
 
 ## Contributers
 
