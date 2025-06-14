@@ -69,9 +69,9 @@
     "prismPrefixOverride": "~/.local/share/PrismLauncher",
     "prismInstanceId": "1.16.1",
     "windowTitleRegex": "^Minecraft\\* 1.16.1",
-    "prismReplaceWrapperCommand": {
-      "enabled": true,
-      "innerWrapperCommand": "obs-gamecapture"
+    "prismWrapperCommand": {
+      "autoReplace": true,
+      "innerCommand": "obs-gamecapture"
     },
     "observeLog": {
       "enabled": true

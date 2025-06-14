@@ -119,21 +119,21 @@ See [example.config.json](example.config.json) and [example.default.profile.json
   If `true` (default), Minecraft will be started automatically by `hyprmcsr.sh`.  
   If `false`, you must start Minecraft yourself via PrismLauncher (GUI or CLI).  
   In both cases, all post-launch actions (window handling, audio, etc.) are handled by `instance_wrapper.sh` after Minecraft starts.
-- **minecraft.prismReplaceWrapperCommand**:  
+- **minecraft.prismWrapperCommand**:  
   Controls whether the instance wrapper is set automatically and which inner wrapper (like obs-gamecapture) is used.  
   Example:
   ```json
   "minecraft": {
     ...
-    "prismReplaceWrapperCommand": {
-      "enabled": true,
-      "innerWrapperCommand": "obs-gamecapture"
+    "prismWrapperCommand": {
+      "autoReplace": true,
+      "innerCommand": "obs-gamecapture"
     }
   }
   ```
-  - If `enabled` is omitted or `true`, the wrapper will be set automatically and the `instance_wrapper.sh` will be configured as the WrapperCommand for your PrismLauncher instance.
-  - If `enabled` is `false`, **you must manually ensure that `instance_wrapper.sh` is set as the WrapperCommand in your PrismLauncher instance and that the environment variable `HYPRMCSR_PROFILE` is set correctly when launching Minecraft.**
-  - `innerWrapperCommand` can be any wrapper tool (e.g. `"obs-gamecapture"`).
+  - If `autoReplace` is omitted or set to `true`, the wrapper will be set automatically and `instance_wrapper.sh` will be configured as the WrapperCommand for your PrismLauncher instance.
+  - If `autoReplace` is `false`, **you must manually ensure that `instance_wrapper.sh` is set as the WrapperCommand in your PrismLauncher instance and that the environment variable `HYPRMCSR_PROFILE` is set correctly when launching Minecraft.**
+  - `innerCommand` can be any wrapper tool (e.g., `"obs-gamecapture"`).
   - If you don't need a wrapper, you can omit this field.
 - **minecraft.minecraftRootFolderOverride**: (Optional)  
   Set this to the absolute path of your `.minecraft` folder if you want to override the default detection.  

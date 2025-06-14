@@ -32,12 +32,12 @@ if [ -n "$toggle_binds_key" ] && [ "$toggle_binds_key" != "null" ]; then
   hyprctl keyword bind $toggle_binds_key,exec,"HYPRMCSR_PROFILE=\"$HYPRMCSR_PROFILE\" $SCRIPT_DIR/toggle_binds.sh"
 fi
 
-# prismReplaceWrapperCommand auswerten
-PRISM_REPLACE_WRAPPER_ENABLED=$(jq -r '.minecraft.prismReplaceWrapperCommand.enabled // true' "$CONFIG_FILE")
-INNER_WRAPPER_CMD=$(jq -r '.minecraft.prismReplaceWrapperCommand.innerWrapperCommand // empty' "$CONFIG_FILE")
+# prismWrapperCommand auswerten
+PRISM_WRAPPER_AUTO_REPLACE=$(jq -r '.minecraft.prismWrapperCommand.autoReplace // true' "$CONFIG_FILE")
+INNER_WRAPPER_CMD=$(jq -r '.minecraft.prismWrapperCommand.innerCommand // empty' "$CONFIG_FILE")
 
-if [ "$PRISM_REPLACE_WRAPPER_ENABLED" = "true" ]; then
-  if [ -n "$INNER_WRAPPER_CMD" ] && [ "$INNER_WRAPPER_CMD" != "null" ]; then
+if [ "$PRISM_WRAPPER_AUTO_REPLACE" = "true" ]; then
+  if [ -n "$INNER_WRAPPER_CMD" ] && [ "$INNER_WRAPPER_CMD" != "null" ] && [ "$INNER_WRAPPER_CMD" != "empty" ]; then
     if [ -f "$PRISM_INSTANCE_CONFIG" ]; then
       WRAPPER_CMD="$SCRIPT_DIR/../bin/hyprmcsr -h $HYPRMCSR_PROFILE instance-wrapper"
       if grep -q "^WrapperCommand=" "$PRISM_INSTANCE_CONFIG"; then
