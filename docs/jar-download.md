@@ -1,4 +1,4 @@
-# Automatic JAR Download
+# Mod Management & Optional Tools
 
 hyprmcsr can automatically download and update required JARs for your speedrun setup using the `hyprmcsr install` command.
 
@@ -24,4 +24,20 @@ hyprmcsr can automatically download and update required JARs for your speedrun s
   ```
 
   This will launch the ModCheck GUI with your current instance's mods folder preselected.
-  
+
+> For more information about these tools, see [linux-mcsr tools](https://its-saanvi.github.io/linux-mcsr/tools.html).
+
+---
+
+## Optional Tools
+
+You can use additional tools for automation in your `onEnter`, `onExit`, or custom binds in your profile config:
+
+- [**razer-cli**](https://github.com/lolei/razer-cli)  
+  Command-line tool to set DPI and other settings for Razer mice.
+
+- [**obs-cli**](https://github.com/pschmitt/obs-cli)  
+  Command-line client for OBS Studio, allowing you to control scenes, sources, and more from scripts.
+
+You can add more tools as needed for your workflow.
+

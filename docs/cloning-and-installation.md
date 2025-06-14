@@ -46,4 +46,6 @@ You can create additional profiles by copying and editing the example profile.
 > **Tip:**  
 > If you want to use a different profile, specify it when starting hyprmcsr or set the `HYPRMCSR_PROFILE` environment variable.
 
-Continue with the [CLI usage](./cli.md) or other chapters for more details.
+---
+
+Continue with [hyprmcsr CLI](./cli.md) for details on available commands and CLI options.

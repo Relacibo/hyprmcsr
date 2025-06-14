@@ -7,19 +7,20 @@ This documentation will guide you through the setup and usage of hyprmcsr on a m
 - For a general Linux MCSR guide, see [linux-mcsr by Saanvi](https://its-saanvi.github.io/linux-mcsr/).
   Most sections might be useful for this toolkit as well, **except** for the parts about Resetti, splitting audio streams, keymap rebinds, and setting up i3.  
   Those topics are either handled differently or automatically by hyprmcsr.
-- For a **detailed explanation of every configuration option**, see the [README](../README.md).
+- For a **detailed explanation of every configuration option**, see the [Configuration](./configuration.md).
 
 ## Table of Contents
 
 - [Hyprland Setup](./hyprland-setup.md)
 - [Cloning and Installation](./cloning-and-installation.md)
 - [hyprmcsr CLI](./cli.md)
+- [Usage](./usage.md)
 - [PrismLauncher](./prismlauncher.md)
 - [Audio Splitting](./audio-splitting.md)
 - [Keybinds and Modes](./keybinds-and-modes.md)
 - [OBS Setup](./obs-setup.md)
 - [Input Remapper](./input-remapper.md)
-- [Automatic JAR Download](./jar-download.md)
+- [Mod Management & Optional Tools](./jar-download.md)
 - [Troubleshooting](./troubleshooting.md)
 - [Further Reading & Links](./links.md)
 

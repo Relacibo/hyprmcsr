@@ -28,4 +28,4 @@ Now you can use `hyprmcsr` from anywhere in your terminal.
 
 ## More
 
-For advanced usage and troubleshooting, see the other chapters in this documentation.
+For instructions on starting, stopping, and using hyprmcsr in practice, continue with [Usage](./usage.md).
