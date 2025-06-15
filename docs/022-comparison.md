@@ -4,22 +4,23 @@
 > This table was generated with the help of an AI and may contain inaccuracies or outdated information. Please always check the official documentation of each project for the latest details.  
 > This comparison is also a work in progress and should not be relied upon for critical decisions.
 
-| Feature/Tool      | hyprmcsr (Hyprland/Wayland) | Jingle ([DuncanRuns/Jingle](https://github.com/DuncanRuns/Jingle)) | Resetti ([tesselslate/resetti](https://github.com/tesselslate/resetti)) | Waywall ([tesselslate/waywall](https://github.com/tesselslate/waywall)) |
-|-------------------|----------------------------|-----------------------|--------------------|-------------------|
-| **Platform**      | Linux (Hyprland/Wayland)   | Windows only          | Linux (i3/X11)     | Linux (Wayland)   |
-| **Window Manager Integration** | Hyprland (Wayland) | N/A (Windows)         | N/A, i3 recommended (X11)    | N/A (Wayland) |
-| **Automated Window Management** | Yes              | Yes                  | Yes               | Yes               |
-| **Audio Splitting**             | Pipewire, auto    | Yes (Windows)        | Manual            | Pipewire, manual  |
-| **Input Remapping**             | Input Remapper (user config) | Built-in (Jingle) | Manual            | Manual            |
-| **OBS Integration**             | With third party tools | Yes (auto scene)  | No                | No                |
-| **Mod/Tool Auto-Download**      | Yes              | No                   | No                | No                |
-| **Profile System**              | Yes (JSON)        | Yes (YAML)           | No                | No                |
-| **Wayland Support**             | Native            | No                   | Partial (Sway)    | Native            |
-| **X11 Support**                 | No                | No                   | Yes               | No                |
-| **Active Maintenance**          | Yes               | Yes                  | No                | Yes               |
-| **Special Requirements**        | Must be set as wrapper command in PrismLauncher; requires Hyprland | None | None | Patched GLFW (can be set as custom GLFW in PrismLauncher); must be set as wrapper command |
-| **Launcher agnostic**           | No (Prism required) | Yes                  | Yes               | Maybe |
-| **Display Manager agnostic**    | No (Hyprland required) | N/A                | Yes               | Yes               |
+| Feature/Tool      | hyprmcsr (Hyprland/Wayland) | Jingle ([DuncanRuns/Jingle](https://github.com/DuncanRuns/Jingle)) | Resetti ([tesselslate/resetti](https://github.com/tesselslate/resetti)) | Waywall ([tesselslate/waywall](https://github.com/tesselslate/waywall)) | **Benutzerfreundliche GUI** |
+|-------------------|----------------------------|-----------------------|--------------------|-------------------|--------------------------|
+| **Platform**      | Linux (Hyprland/Wayland)   | Windows only          | Linux (i3/X11)     | Linux (Wayland)   |                          |
+| **Window Manager Integration** | Hyprland (Wayland) | N/A (Windows)         | N/A, i3 recommended (X11)    | N/A (Wayland) |                          |
+| **Automated Window Management** | Yes              | Yes                  | Yes               | Yes               |                          |
+| **Audio Splitting**             | Pipewire, auto    | Yes (Windows)        | Manual            | Pipewire, manual  |                          |
+| **Input Remapping**             | Input Remapper (user config) | Built-in (Jingle) | Manual            | Manual            |                          |
+| **OBS Integration**             | With third party tools | Yes (auto scene)  | No                | No                |                          |
+| **Mod/Tool Auto-Download**      | Yes              | No                   | No                | No                |                          |
+| **Profile System**              | Yes (JSON)        | Yes (YAML)           | No                | No                |                          |
+| **Wayland Support**             | Native            | No                   | Partial (Sway)    | Native            |                          |
+| **X11 Support**                 | No                | No                   | Yes               | No                |                          |
+| **Active Maintenance**          | Yes               | Yes                  | No                | Yes               |                          |
+| **Special Requirements**        | Must be set as wrapper command in PrismLauncher; requires Hyprland | None | None | Patched GLFW (can be set as custom GLFW in PrismLauncher); must be set as wrapper command |                          |
+| **Launcher agnostic**           | No (Prism required) | Yes                  | Yes               | Maybe             |                          |
+| **Display Manager agnostic**    | No (Hyprland required) | N/A                | Yes               | Yes               |                          |
+| **Benutzerfreundliche GUI**     | Nein              | Ja                   | Nein              | Nein              |                          |
 
 ## Links
 
