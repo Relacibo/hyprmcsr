@@ -15,6 +15,9 @@ For Boat Eye, it is recommended to create a dedicated OBS scene:
    - **Alignment:** Centered
 4. **Project** this scene to a second monitor if desired.
 
+To ensure Boat Eye works correctly, the entire Minecraft window must be captured. The recommended way to achieve this on Linux is by using [obs-vkcapture](https://github.com/nowrep/obs-vkcapture), as it reliably records the full game window including the necessary vertical stretch.  
+See the [With obs-vkcapture](./013-obs-setup.md#with-obs-vkcapture) section for details on how to set up obs-vkcapture.
+
 ## Automatic Overlay Toggle with obs-cli
 
 To show or hide the Boat Eye overlay as required by the rules, you can use [obs-cli](https://github.com/pschmitt/obs-cli).  
