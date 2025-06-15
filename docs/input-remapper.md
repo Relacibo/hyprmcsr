@@ -17,12 +17,26 @@ Or get the latest version from [the GitHub releases page](https://github.com/sez
 Before using hyprmcsr, you should use the input-remapper GUI (`input-remapper-gtk`) to create and test profiles for your specific devices.  
 Once you have working profiles, add the appropriate `input-remapper-control` commands to your profile's `onStart` and `onDestroy` arrays for automatic activation and cleanup.
 
+**Example profile section:**
+```json
+{
+  "requireSudo": true,
+  "onStart": [
+    "sudo input-remapper-control --command start --device \"Ducky Ducky One 3 TKL \" --preset \"MCSR\"",
+    "input-remapper-control --command start --device \"Razer Razer Viper V3 Pro\" --preset \"MCSR\""
+  ],
+  "onDestroy": [
+    "sudo input-remapper-control --command stop-all"
+  ]
+}
+```
+
 You can list all available device names with:
 ```bash
 input-remapper-control --list-devices | sed 's/.*/"&"/'
 ```
 **Tip:**  
-This wraps each device name in double quotes, so you can see and copy the exact name — including any trailing whitespace — into your profile.
+This wraps each device name in double quotes, so you can see and copy the exact name—including any trailing whitespace—into your profile.
 
 **Important:**  
 Do **not** press any keys or mouse buttons while input-remapper is applying or removing remaps!  
