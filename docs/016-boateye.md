@@ -66,7 +66,7 @@ Note: The tool uses Windows pointer speed.
 | 13      | 1.75     | 0.75       |
 | 14      | 2        | 1          |
 
-- For hyprmcsr, you can set the value directly as `"sensitivity"` in your profile (libinput value recommended).
+- For hyprmcsr, you can set the value directly as `"sensitivity"` in your profile (libinput value).
 
 **Important:**  
 You should also set mouse acceleration to flat for best results.  
