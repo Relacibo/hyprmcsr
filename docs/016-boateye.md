@@ -18,10 +18,9 @@ For Boat Eye, it is recommended to create a dedicated OBS scene:
 ## Automatic Overlay Toggle with obs-cli
 
 To show or hide the Boat Eye overlay as required by the rules, you can use [obs-cli](https://github.com/pschmitt/obs-cli).  
-Example configuration in your profile (`example.default.profile.json`):
+Example configuration in your profile (`default.profile.json`):
 
 ```json
-// Excerpt from "modeSwitch" in example.default.profile.json
 "boat-eye": {
   "size": "384x16384",
   "sensitivity": "-0.9375",
