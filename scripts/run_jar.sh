@@ -4,7 +4,7 @@ SCRIPT_DIR=$(dirname "$(realpath "$0")")
 CONFIG_ROOT="${XDG_CONFIG_HOME:-$HOME/.config}/hyprmcsr"
 GLOBAL_CONFIG_FILE="$CONFIG_ROOT/config.json"
 
-# Download-Root ggf. aus globaler Config lesen, sonst Default
+# Download root, read from global config if present, else default
 DOWNLOAD_ROOT=$(jq -r '.download.root // empty' "$GLOBAL_CONFIG_FILE")
 if [ -z "$DOWNLOAD_ROOT" ] || [ "$DOWNLOAD_ROOT" = "null" ]; then
   DOWNLOAD_ROOT="$SCRIPT_DIR/../download"
@@ -19,7 +19,7 @@ fi
 PREFIX="$1"
 shift
 
-# Suche nach der ersten passenden JAR-Datei mit dem Präfix
+# Search for the first matching JAR file with the prefix
 JAR_FILE=$(find "$JARS_DIR" -maxdepth 1 -type f -name "${PREFIX}*.jar" | head -n1)
 
 if [ -z "$JAR_FILE" ]; then
@@ -27,7 +27,7 @@ if [ -z "$JAR_FILE" ]; then
   exit 2
 fi
 
-# Arbeitsverzeichnis bestimmen
+# Determine working directory
 WORKDIR="${JAR_WORKDIR:-/tmp/hyprmcsr-jar}"
 mkdir -p "$WORKDIR"
 cd "$WORKDIR"

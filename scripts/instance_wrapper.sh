@@ -6,12 +6,12 @@ source "$SCRIPT_DIR/env_prism.sh"
 source "$SCRIPT_DIR/env_runtime.sh"
 WINDOW_CLASS_REGEX=$(jq -r '.minecraft.windowClassRegex // "Minecraft"' "$CONFIG_FILE")
 
-# Vor dem Start: Liste aller Java-PIDs merken
+# Before start: remember all Java PIDs
 before_pids=$(pgrep -u "$USER" java | sort)
-# Vor dem Start: Liste aller sink-input-IDs merken
+# Before start: remember all sink-input-IDs
 before_sinks=$(pactl -f json list sink-inputs | jq '.[].index' | sort)
 
-# Starte parallele Aktionen im Subprozess
+# Start parallel actions in subprocess
 (
   timeout=20
   elapsed=0
@@ -19,7 +19,7 @@ before_sinks=$(pactl -f json list sink-inputs | jq '.[].index' | sort)
   window_pid=""
   MC_PID=""
 
-  # Suche nach neuer Java-PID und Fenster mit passender Klasse (vereinfacht, ohne pending_pids)
+  # Search for new Java PID and window with matching class (simplified, no pending_pids)
   while [ $elapsed -lt $timeout ]; do
     after_pids=$(pgrep -u "$USER" java | sort)
     new_pids=$(comm -13 <(echo "$before_pids") <(echo "$after_pids"))
@@ -47,7 +47,7 @@ before_sinks=$(pactl -f json list sink-inputs | jq '.[].index' | sort)
     "
   fi
 
-  # Sound-Splitting: Suche nach neuem sink-input mit node.name == "java" UND media.role == "game"
+  # Sound splitting: search for new sink-input with node.name == "java" AND media.role == "game"
   pipewire_enabled=$(jq -r '.pipewireLoopback.enabled // false' "$CONFIG_FILE")
   if [ "$pipewire_enabled" = "true" ]; then
     for i in {1..20}; do
@@ -63,15 +63,15 @@ before_sinks=$(pactl -f json list sink-inputs | jq '.[].index' | sort)
         ')
         if [ -n "$sink_info" ]; then
           pactl move-sink-input "$new_sink" virtual_game
-          break 2  # verlasse beide Schleifen
+          break 2  # exit both loops
         fi
       done
-      before_sinks="$after_sinks"   # Update Referenz für nächste Runde
+      before_sinks="$after_sinks"   # Update reference for next round
       sleep 1
     done
   fi
 
-  # minecraft.onStart ausführen (alle im Hintergrund, mit allen relevanten Umgebungsvariablen)
+  # Run minecraft.onStart (all in background, with all relevant environment variables)
   mc_on_start_cmds=$(jq -r '.minecraft.onStart[]?' "$CONFIG_FILE")
   if [ -n "$mc_on_start_cmds" ]; then
     (
@@ -83,7 +83,7 @@ before_sinks=$(pactl -f json list sink-inputs | jq '.[].index' | sort)
   fi
 ) &
 
-# Starte Minecraft (ggf. mit innerem Wrapper) im Vordergrund!
+# Start Minecraft (with inner wrapper if set) in foreground!
 inner_wrapper_cmd=$(jq -r '.minecraft.prismWrapperCommand.innerCommand // empty' "$CONFIG_FILE")
 
 if [ -n "$inner_wrapper_cmd" ] && [ "$inner_wrapper_cmd" != "null" ] && [ "$inner_wrapper_cmd" != "empty" ]; then

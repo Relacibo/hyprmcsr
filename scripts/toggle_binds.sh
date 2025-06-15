@@ -4,15 +4,15 @@
 source "$(dirname "$(realpath "$0")")/env_runtime.sh"
 
 if [ $# -ge 1 ]; then
-  # Argument als Wert setzen (nur 0 oder 1 zulassen)
+  # Set argument as value (only 0 or 1 allowed)
   if [ "$1" = "0" ] || [ "$1" = "1" ]; then
     BINDS_ENABLED="$1"
   else
-    echo "Ungültiges Argument: $1 (nur 0 oder 1 erlaubt)"
+    echo "Invalid argument: $1 (only 0 or 1 allowed)"
     exit 1
   fi
 else
-  # Toggle-Modus
+  # Toggle mode
   if [ "$BINDS_ENABLED" = "1" ]; then
     BINDS_ENABLED=0
   else
@@ -22,7 +22,7 @@ fi
 
 echo "$BINDS_ENABLED" > "$STATE_DIR/binds_enabled"
 
-# onToggleBinds ausführen (mit allen relevanten Umgebungsvariablen inkl. BINDS_ENABLED)
+# Run onToggleBinds (with all relevant environment variables incl. BINDS_ENABLED)
 on_toggle_cmds=$(jq -r '.onToggleBinds[]?' "$CONFIG_FILE")
 if [ -n "$on_toggle_cmds" ]; then
   export SCRIPT_DIR HYPRMCSR_PROFILE PRISM_INSTANCE_ID MINECRAFT_ROOT WINDOW_ADDRESS BINDS_ENABLED

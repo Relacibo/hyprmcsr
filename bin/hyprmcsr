@@ -1,7 +1,7 @@
 #!/bin/bash
 # filepath: /home/reinhard/git/hyprmcsr/bin/hyprmcsr
 
-# Standardwerte ggf. aus Environment übernehmen
+# Use defaults from environment if set
 HYPRMCSR_PROFILE="${HYPRMCSR_PROFILE:-}"
 PROFILE="${PROFILE:-}"
 
@@ -11,7 +11,7 @@ usage() {
   exit 1
 }
 
-# Version ausgeben, wenn --version oder version als Befehl
+# Print version if --version or version command
 if [[ "$1" == "--version" || "$1" == "version" ]]; then
   VERSION_FILE="$(dirname "$(realpath "$0")")/../VERSION"
   if [ -f "$VERSION_FILE" ]; then
@@ -20,7 +20,7 @@ if [[ "$1" == "--version" || "$1" == "version" ]]; then
     echo "unknown version"
   fi
 
-  # Git-Commit anzeigen, falls möglich (ohne git-Befehl)
+  # Show git commit if possible (without git command)
   GIT_DIR="$(dirname "$(realpath "$0")")/.."
   if [ -d "$GIT_DIR/.git" ]; then
     head_file="$GIT_DIR/.git/HEAD"
@@ -42,7 +42,7 @@ if [[ "$1" == "--version" || "$1" == "version" ]]; then
   exit 0
 fi
 
-# Argumente parsen
+# Parse arguments
 while [[ "$1" =~ ^- ]]; do
   case "$1" in
     -h)
@@ -67,10 +67,10 @@ if [ -z "$CMD" ]; then
   usage
 fi
 
-# Mapping von Kebab-Case zu Skriptname
+# Map kebab-case to script name
 SCRIPT_NAME=$(echo "$CMD" | tr '-' '_').sh
 
-# Verzeichnis, in dem die eigentlichen Skripte liegen
+# Directory where the actual scripts are located
 SCRIPT_DIR="$(dirname "$(realpath "$0")")/../scripts"
 
 SCRIPT_PATH="$SCRIPT_DIR/$SCRIPT_NAME"
@@ -80,7 +80,7 @@ if [ ! -f "$SCRIPT_PATH" ]; then
   usage
 fi
 
-# Umgebungsvariablen setzen, falls angegeben
+# Set environment variables if specified
 [ -n "$HYPRMCSR_PROFILE" ] && export HYPRMCSR_PROFILE="$HYPRMCSR_PROFILE"
 [ -n "$PROFILE" ] && set -- "$PROFILE" "$@"
 

@@ -3,7 +3,7 @@
 
 SCRIPT_DIR="$(dirname "$(realpath "$0")")"
 
-# Allgemeine Profil-Logik
+# General profile logic
 if [[ "$1" == --* ]]; then
   export PROFILE="${1#--}"
   shift
@@ -16,14 +16,14 @@ source "$SCRIPT_DIR/env_core.sh"
 source "$SCRIPT_DIR/env_prism.sh"
 
 if ! command -v jq >/dev/null; then
-  echo "jq wird benötigt!"
+  echo "jq is required!"
   exit 1
 fi
 
 echo "default" > "$STATE_DIR/window_switcher_state"
 echo "$HYPRMCSR_PROFILE" > "$STATE_DIR/profile"
 
-# Keybinds für Mode-Switches setzen
+# Set keybinds for mode switches
 jq -r '.binds.modeSwitch | to_entries[] | "\(.key) \(.value)"' "$CONFIG_FILE" | while read -r mode key; do
     hyprctl keyword bindni $key,exec,"HYPRMCSR_PROFILE=\"$HYPRMCSR_PROFILE\" $SCRIPT_DIR/toggle_mode.sh $mode"
 done
@@ -33,7 +33,7 @@ if [ -n "$toggle_binds_key" ] && [ "$toggle_binds_key" != "null" ]; then
   hyprctl keyword bind $toggle_binds_key,exec,"HYPRMCSR_PROFILE=\"$HYPRMCSR_PROFILE\" $SCRIPT_DIR/toggle_binds.sh"
 fi
 
-# prismWrapperCommand auswerten
+# Evaluate prismWrapperCommand
 PRISM_WRAPPER_AUTO_REPLACE=$(jq -r '.minecraft.prismWrapperCommand.autoReplace // true' "$CONFIG_FILE")
 INNER_WRAPPER_CMD=$(jq -r '.minecraft.prismWrapperCommand.innerCommand // empty' "$CONFIG_FILE")
 
@@ -46,7 +46,7 @@ if [ "$PRISM_WRAPPER_AUTO_REPLACE" = "true" ]; then
       else
         echo "WrapperCommand=$WRAPPER_CMD" >> "$PRISM_INSTANCE_CONFIG"
       fi
-      # Benutzerdefinierte Befehle aktivieren
+      # Enable custom commands
       if grep -q "^UseCustomCommands=" "$PRISM_INSTANCE_CONFIG"; then
         sed -i "s|^UseCustomCommands=.*|UseCustomCommands=true|" "$PRISM_INSTANCE_CONFIG"
       else
@@ -62,7 +62,7 @@ if [ "$MC_AUTOSTART" = "true" ]; then
   prismlauncher -l "$PRISM_INSTANCE_ID" &
 fi
 
-# Custom binds aus config.json anlegen (mit allen relevanten Umgebungsvariablen)
+# Create custom binds from config.json (with all relevant environment variables)
 custom_binds=$(jq -r '.binds.custom | to_entries[] | "\(.key) \(.value|@json)"' "$CONFIG_FILE")
 if [ -n "$custom_binds" ]; then
   while IFS= read -r entry; do
@@ -72,7 +72,7 @@ if [ -n "$custom_binds" ]; then
   done <<< "$custom_binds"
 fi
 
-# Run onStart commands from config.json (alle im Hintergrund, mit allen relevanten Umgebungsvariablen)
+# Run onStart commands from config.json (all in background, with all relevant environment variables)
 on_start_cmds=$(jq -r '.onStart[]?' "$CONFIG_FILE")
 if [ -n "$on_start_cmds" ]; then
   (
@@ -92,7 +92,7 @@ if [ "$OBSERVE_LOG" = "true" ]; then
   )
 fi
 
-# Sudo-Handling je nach requireSudo
+# Sudo handling depending on requireSudo
 REQUIRE_SUDO=$(jq -r '.requireSudo // false' "$CONFIG_FILE")
 auto_destroy=$(jq -r '.autoDestroyOnExit // true' "$CONFIG_FILE")
 
@@ -102,13 +102,13 @@ if [ "$REQUIRE_SUDO" = "true" ]; then
     while true; do sudo -v; sleep 60; done &
     SUDO_REFRESH_PID=$!
     trap 'kill $SUDO_REFRESH_PID 2>/dev/null; kill $LOG_MONITOR_PID 2>/dev/null; sudo -v; $SCRIPT_DIR/destroy.sh; exit' SIGINT SIGTERM
-    echo "Drücke Strg+C zum Beenden. Beim Beenden wird destroy.sh automatisch ausgeführt."
+    echo "Press Ctrl+C to exit. On exit, destroy.sh will be executed automatically."
     sleep infinity
   fi
 else
   if [ "$auto_destroy" = "true" ]; then
     trap 'kill $LOG_MONITOR_PID 2>/dev/null; $SCRIPT_DIR/destroy.sh; exit' SIGINT SIGTERM
-    echo "Drücke Strg+C zum Beenden. Beim Beenden wird destroy.sh automatisch ausgeführt."
+    echo "Press Ctrl+C to exit. On exit, destroy.sh will be executed automatically."
     sleep infinity
   fi
 fi

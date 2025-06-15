@@ -27,7 +27,7 @@ fi
 
 PREVIOUS_MODE="$CURRENT_MODE"
 
-# Wenn sich der Modus nicht ändert, Skript beenden
+# If mode does not change, exit script
 if [ "$PREVIOUS_MODE" = "$NEXT_MODE" ]; then
   exit 0
 fi
@@ -36,7 +36,7 @@ fi
 TARGET_SIZE=$(jq -r --arg m "$NEXT_MODE" '.modeSwitch.modes[$m].size // .modeSwitch.default.size' "$CONFIG_FILE")
 TARGET_SENSITIVITY=$(jq -r --arg m "$NEXT_MODE" '.modeSwitch.modes[$m].sensitivity // .modeSwitch.default.sensitivity' "$CONFIG_FILE")
 
-# onExit: run all commands in array (nur wenn PREVIOUS_MODE gesetzt ist)
+# onExit: run all commands in array (only if PREVIOUS_MODE is set)
 if [ -n "$PREVIOUS_MODE" ]; then
   (
     export WINDOW_ADDRESS SCRIPT_DIR HYPRMCSR_PROFILE PRISM_INSTANCE_ID MINECRAFT_ROOT PREVIOUS_MODE NEXT_MODE

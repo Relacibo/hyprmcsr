@@ -15,7 +15,7 @@ fi
 REGEX="$1"
 KEEP_N="$2"
 
-# Prüfe, ob KEEP_N eine Zahl ist
+# Check if KEEP_N is a number
 if ! [[ "$KEEP_N" =~ ^[0-9]+$ ]]; then
   echo "Error: <keep_n> must be a number."
   exit 1
