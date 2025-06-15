@@ -1,10 +1,10 @@
 # Input Remapper
 
-hyprmcsr uses [input-remapper](https://github.com/sezanzeb/input-remapper) to automatically remap keys and mouse buttons for optimal speedrunning.
+You can use [input-remapper](https://github.com/sezanzeb/input-remapper) to remap your keyboard or mouse inputs to other keys or buttons for optimal speedrunning.
 
-- You must now add all input-remapper commands explicitly to your profile's `onStart` and `onDestroy` arrays.
-- No more magic: hyprmcsr does **not** manage input-remapper for you automatically.
-- This gives you full control over which devices and profiles are started/stopped.
+- hyprmcsr does **not** manage input-remapper for you automatically.
+- You must add all input-remapper commands explicitly to your profile's `onStart` and `onDestroy` arrays.
+- This gives you full control over which devices and profiles are started or stopped.
 
 **Installation (Fedora):**  
 You can install input-remapper on Fedora with:
