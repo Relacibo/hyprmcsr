@@ -28,21 +28,10 @@ Just use the monitor recording with Pipewire on which Minecraft is running, as i
 
 ## Boat Eye
 
-To use the "Boat Eye" mode, you need to set up a second scene in OBS:
+Für die Einrichtung und Automatisierung des "Boat Eye"-Modus siehe das separate Kapitel:  
+➡️ [Boat Eye Mode](./016-boateye.md)
 
-- **Add wrapper command** if you didn't already: Add `obs-gamecapture` as a wrapper command, like above.
-- **Create a new scene** in OBS specifically for Boat Eye.
-- **Add a separate Game Capture source** to this scene, capturing Minecraft as usual.
-- Don't use cursor capturing
-- Set the transformation of the Game Capture source as follows:
-  - **Position:** Centered
-  - **Size:** Set the bounding box to **half the width and half the height of your monitor resolution** (e.g., 960x540 for a 1920x1080 monitor)
-  - **Alignment:** Center
-
-This ensures the Boat Eye mode is displayed correctly.
-Adjust these values if you use a different monitor resolution.
-
-You can then open this scene as a projector in OBS and keep it running on a secondary monitor while playing.
+Dort findest du alle Details zu OBS-Szenen, Transformationen, Sensitivität und automatischem Ein-/Ausblenden per obs-cli.
 
 ## Automation
 
