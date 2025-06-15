@@ -11,10 +11,10 @@ You can install PrismLauncher via Flatpak with:
 flatpak install flathub org.prismlauncher.PrismLauncher
 ```
 
-For more details and tips, see the [PrismLauncher section in the linux-mcsr guide](https://its-saanvi.github.io/linux-mcsr/launcher.html).
-
 After installation, launch PrismLauncher and set up your Minecraft instances as usual.  
 hyprmcsr will automatically detect and use your configured PrismLauncher instance.
+
+See also: [Modcheck](https://github.com/Relacibo/hyprmcsr/blob/main/docs/jar-download.md#modcheck)
 
 ---
 
@@ -37,4 +37,4 @@ If you want to use a specific wrapper (like `obs-gamecapture`), set it as `"inne
 **Do not** set it directly in the PrismLauncher GUI, as it will be overwritten by the automation.
 
 If you want to manage the wrapper manually, set `"prismWrapperCommand.autoReplace": false` in your config.
-Then you can set any wrapper you like in the PrismLauncher GUI (e.g., `obs-gamecapture`).
+Then you can set any wrapper you like in the PrismLauncher GUI (e.g., `obs-gamecapture`). Remember though to also set `hyprmcsr -h <profile> instance-wrapper` as one of the wrapper commands.

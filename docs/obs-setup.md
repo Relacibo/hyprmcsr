@@ -47,3 +47,16 @@ You can then open this scene as a projector in OBS and keep it running on a seco
 ## Automation
 
 hyprmcsr can control OBS via [obs-cli](https://github.com/pschmitt/obs-cli) and the OBS websocket (authentication can be disabled for simplicity).
+Example usage:
+```bash
+...
+  "boat-eye": {
+    ...
+    "onEnter": [
+      "~/.local/bin/obs-cli item show --scene BoatEyeScene GameCapture"
+    ],
+    "onExit": [
+      "~/.local/bin/obs-cli item hide --scene BoatEyeScene GameCapture"
+    ]
+}
+```
