@@ -42,7 +42,7 @@ Beispiel-Konfiguration in deinem Profil (`example.default.profile.json`):
 
 Für präzises Spielen im Boat-Eye-Modus ist die richtige Zeigergeschwindigkeit wichtig.  
 Ein Video, das die Einstellungen erklärt:  
-[Boat Eye Setup Guide (YouTube) by osh]([https://www.youtube.com/watch?v=QwQwQwQwQwQ](https://www.youtube.com/watch?v=HcrrfsHrR_c))
+[Boat Eye Setup Guide (YouTube) by osh](https://www.youtube.com/watch?v=HcrrfsHrR_c)
 
 **Berechnung der optimalen Zeigergeschwindigkeit:**  
 Nutze das Tool: [Pixel-Perfect-Tools/calc](https://priffin.github.io/Pixel-Perfect-Tools/calc.html)  
