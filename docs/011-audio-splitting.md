@@ -26,4 +26,4 @@ If you set `"pipewireLoopBack.enabled": false` and run the install script again,
 You can always check or change the playback target device by editing the `pipewireLoopBack.playbackTarget` field in your config. If you want to reset it, just remove the field and re-run `hyprmcsr install`.
 
 **Troubleshooting:**  
-If audio is not split, check your Pipewire setup and see [Troubleshooting](./troubleshooting.md).
+If audio is not split, check your Pipewire setup and see [Troubleshooting](./020-troubleshooting.md).

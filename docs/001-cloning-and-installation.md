@@ -48,4 +48,4 @@ You can create additional profiles by copying and editing the example profile.
 
 ---
 
-Continue with [hyprmcsr CLI](./cli.md) for details on available commands and CLI options.
+Continue with [hyprmcsr CLI](./002-cli.md) for details on available commands and CLI options.

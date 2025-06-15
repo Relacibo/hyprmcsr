@@ -46,8 +46,8 @@ hyprmcsr delete_old_worlds.sh <regex> <keep_n>
 
 ## Next Steps
 
-- For JAR download, Ninjabrain Bot, NinjaLink, ModCheck, and optional tools, see [Mod Management & Optional Tools](./jar-download.md).
+- For JAR download, Ninjabrain Bot, NinjaLink, ModCheck, and optional tools, see [Mod Management & Optional Tools](./015-jar-download.md).
 - For a detailed explanation of all configuration options, see [Configuration](./configuration.md).
-- For PrismLauncher setup, see [PrismLauncher](./prismlauncher.md).
-- For OBS setup and capturing, see [OBS Setup](./obs-setup.md).
-- For troubleshooting and further help, see [Troubleshooting](./troubleshooting.md).
+- For PrismLauncher setup, see [PrismLauncher](./010-prismlauncher.md).
+- For OBS setup and capturing, see [OBS Setup](./013-obs-setup.md).
+- For troubleshooting and further help, see [Troubleshooting](./020-troubleshooting.md).

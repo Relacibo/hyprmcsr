@@ -52,3 +52,7 @@ Follow the [official Hyprland installation guide](https://wiki.hyprland.org/Gett
 
 **Tip:**  
 For more details, troubleshooting, and advanced configuration, see the [official Hyprland Wiki](https://wiki.hyprland.org/).
+
+---
+
+Continue with [Cloning and Installation](./001-cloning-and-installation.md)
