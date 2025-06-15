@@ -69,6 +69,19 @@ Note: The tool uses Windows pointer speed.
 
 - For hyprmcsr, you can set the value directly as `"sensitivity"` in your profile (libinput value recommended).
 
+**Important:**  
+You should also set mouse acceleration to flat for best results.  
+- **Permanent:** In your `hyprland.conf`, set  
+  ```
+  input {
+    accel_profile = flat
+  }
+  ```
+- **Dynamically:** You can also set it at runtime with  
+  ```
+  hyprctl keyword input:accel_profile flat
+  ```
+
 ---
 
 > Back to [OBS Setup](./013-obs-setup.md)
