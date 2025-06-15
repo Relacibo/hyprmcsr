@@ -1,7 +1,7 @@
 {
   "requireSudo": true,
   "onStart": [
-    "if [ \"$PROFILE\" = \"coop\" ]; then JAR_WORKDIR=\"$HOME/.config/NinjaLink\" $SCRIPT_DIR/run_jar.sh NinjaLink fi",
+    "if [ \"$PROFILE\" = \"coop\" ]; then JAR_WORKDIR=\"$HOME/.config/NinjaLink\" $SCRIPT_DIR/run_jar.sh NinjaLink; fi",
     "$SCRIPT_DIR/run_jar.sh Ninjabrain-Bot",
     "flatpak run com.obsproject.Studio",
     "sudo input-remapper-control --command start --device \"Ducky Ducky One 3 TKL \" --preset \"MCSR\"",
