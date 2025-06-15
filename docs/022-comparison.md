@@ -7,7 +7,7 @@
 | Feature/Tool      | hyprmcsr (Hyprland/Wayland) | Jingle ([DuncanRuns/Jingle](https://github.com/DuncanRuns/Jingle)) | Resetti ([tesselslate/resetti](https://github.com/tesselslate/resetti)) | Waywall ([tesselslate/waywall](https://github.com/tesselslate/waywall)) |
 |-------------------|----------------------------|-----------------------|--------------------|-------------------|
 | **Platform**      | Linux (Hyprland/Wayland)   | Windows only          | Linux (i3/X11)     | Linux (Wayland)   |
-| **Window Manager Integration** | Hyprland (Wayland) | N/A (Windows)         | i3/X11            | Wayland (Waywall) |
+| **Window Manager Integration** | Hyprland (Wayland) | N/A (Windows)         | i3/X11            | ? (Wayland) |
 | **Automated Window Management** | Yes              | Yes                  | Yes               | Yes               |
 | **Audio Splitting**             | Pipewire, auto    | Yes (Windows)        | Manual            | Pipewire, manual  |
 | **Input Remapping**             | Input Remapper (user config) | Built-in (Jingle) | Manual            | Manual            |
