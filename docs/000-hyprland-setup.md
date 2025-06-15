@@ -51,6 +51,10 @@ Follow the [official Hyprland installation guide](https://wiki.hyprland.org/Gett
   This should output `wayland`.
 
 **Tip:**  
+For a comprehensive walkthrough of Hyprland features, configuration, and customization, see the [official Hyprland Master Tutorial](https://wiki.hypr.land/Getting-Started/Master-Tutorial/).
+
+Be sure to check out the [Must-have Utilities](https://wiki.hypr.land/Useful-Utilities/Must-have) page for essential tools that improve your Hyprland experience (e.g., screenshot tools, clipboard managers, notification daemons, etc.).
+
 For more details, troubleshooting, and advanced configuration, see the [official Hyprland Wiki](https://wiki.hyprland.org/).
 
 ---
