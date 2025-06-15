@@ -1,4 +1,5 @@
 #!/bin/bash
+# filepath: /home/reinhard/git/hyprmcsr/bin/hyprmcsr
 
 # Standardwerte ggf. aus Environment übernehmen
 HYPRMCSR_PROFILE="${HYPRMCSR_PROFILE:-}"
@@ -17,6 +18,26 @@ if [[ "$1" == "--version" || "$1" == "version" ]]; then
     cat "$VERSION_FILE"
   else
     echo "unknown version"
+  fi
+
+  # Git-Commit anzeigen, falls möglich (ohne git-Befehl)
+  GIT_DIR="$(dirname "$(realpath "$0")")/.."
+  if [ -d "$GIT_DIR/.git" ]; then
+    head_file="$GIT_DIR/.git/HEAD"
+    if [ -f "$head_file" ]; then
+      ref=$(cat "$head_file")
+      if [[ "$ref" == ref:\ * ]]; then
+        ref_file="$GIT_DIR/.git/$(echo "$ref" | cut -d' ' -f2)"
+        if [ -f "$ref_file" ]; then
+          commit=$(head -c 7 "$ref_file")
+          echo "git commit: $commit"
+        fi
+      else
+        # detached HEAD
+        commit=$(echo "$ref" | head -c 7)
+        echo "git commit: $commit"
+      fi
+    fi
   fi
   exit 0
 fi
