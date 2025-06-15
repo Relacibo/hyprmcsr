@@ -1,5 +1,5 @@
 #!/bin/bash
-sudo -v
+# filepath: /home/reinhard/git/hyprmcsr/scripts/start.sh
 
 SCRIPT_DIR="$(dirname "$(realpath "$0")")"
 
@@ -23,6 +23,7 @@ fi
 echo "default" > "$STATE_DIR/window_switcher_state"
 echo "$HYPRMCSR_PROFILE" > "$STATE_DIR/profile"
 
+# Keybinds für Mode-Switches setzen
 jq -r '.binds.modeSwitch | to_entries[] | "\(.key) \(.value)"' "$CONFIG_FILE" | while read -r mode key; do
     hyprctl keyword bindni $key,exec,"HYPRMCSR_PROFILE=\"$HYPRMCSR_PROFILE\" $SCRIPT_DIR/toggle_mode.sh $mode"
 done
@@ -71,13 +72,6 @@ if [ -n "$custom_binds" ]; then
   done <<< "$custom_binds"
 fi
 
-# Input Remapper für Devices (vereinheitlicht)
-jq -c '.inputRemapper.devices[]' "$CONFIG_FILE" | while read -r device_entry; do
-  device=$(echo "$device_entry" | jq -r '.device')
-  preset=$(echo "$device_entry" | jq -r '.preset')
-  sudo input-remapper-control --command start --device "$device" --preset "$preset"
-done
-
 # Run onStart commands from config.json (alle im Hintergrund, mit allen relevanten Umgebungsvariablen)
 on_start_cmds=$(jq -r '.onStart[]?' "$CONFIG_FILE")
 if [ -n "$on_start_cmds" ]; then
@@ -98,15 +92,23 @@ if [ "$OBSERVE_LOG" = "true" ]; then
   )
 fi
 
-# Option aus config lesen (default: true)
+# Sudo-Handling je nach requireSudo
+REQUIRE_SUDO=$(jq -r '.requireSudo // false' "$CONFIG_FILE")
 auto_destroy=$(jq -r '.autoDestroyOnExit // true' "$CONFIG_FILE")
 
-if [ "$auto_destroy" = "true" ]; then
-  # Sudo-Ticket regelmäßig erneuern, solange das Skript läuft
-  while true; do sudo -v; sleep 60; done &
-  SUDO_REFRESH_PID=$!
-  # Trap für SIGINT und SIGTERM setzen
-  trap 'kill $SUDO_REFRESH_PID 2>/dev/null; kill $LOG_MONITOR_PID 2>/dev/null; sudo -v; $SCRIPT_DIR/destroy.sh; exit' SIGINT SIGTERM
-  echo "Drücke Strg+C zum Beenden. Beim Beenden wird destroy.sh automatisch ausgeführt."
-  sleep infinity
+if [ "$REQUIRE_SUDO" = "true" ]; then
+  sudo -v
+  if [ "$auto_destroy" = "true" ]; then
+    while true; do sudo -v; sleep 60; done &
+    SUDO_REFRESH_PID=$!
+    trap 'kill $SUDO_REFRESH_PID 2>/dev/null; kill $LOG_MONITOR_PID 2>/dev/null; sudo -v; $SCRIPT_DIR/destroy.sh; exit' SIGINT SIGTERM
+    echo "Drücke Strg+C zum Beenden. Beim Beenden wird destroy.sh automatisch ausgeführt."
+    sleep infinity
+  fi
+else
+  if [ "$auto_destroy" = "true" ]; then
+    trap 'kill $LOG_MONITOR_PID 2>/dev/null; $SCRIPT_DIR/destroy.sh; exit' SIGINT SIGTERM
+    echo "Drücke Strg+C zum Beenden. Beim Beenden wird destroy.sh automatisch ausgeführt."
+    sleep infinity
+  fi
 fi

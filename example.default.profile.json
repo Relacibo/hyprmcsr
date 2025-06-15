@@ -1,11 +1,16 @@
 {
+  "requireSudo": true,
   "onStart": [
     "if [ \"$PROFILE\" = \"coop\" ]; then JAR_WORKDIR=\"$HOME/.config/NinjaLink\" $SCRIPT_DIR/run_jar.sh NinjaLink fi",
     "$SCRIPT_DIR/run_jar.sh Ninjabrain-Bot",
     "flatpak run com.obsproject.Studio",
+    "sudo input-remapper-control --command start --device \"Ducky Ducky One 3 TKL \" --preset \"MCSR\"",
+    "input-remapper-control --command start --device \"Razer Razer Viper V3 Pro\" --preset \"MCSR\"",
     "# $SCRIPT_DIR/run_jar.sh paceman"
   ],
-  "onDestroy": [],
+  "onDestroy": [
+    "sudo input-remapper-control --command stop-all"
+  ],
   "binds": {
     "toggleBinds": ",HOME",
     "modeSwitch": {
@@ -13,11 +18,7 @@
       "boat-eye": ",J",
       "planar-abuse": ",Z"
     },
-    "custom": {
-      ",J": [
-        "# notify-send $WINDOW_ADDRESS"
-      ]
-    }
+    "custom": {}
   },
   "modeSwitch": {
     "default": {
@@ -51,18 +52,6 @@
         "size": "1920x420"
       }
     }
-  },
-  "inputRemapper": {
-    "devices": [
-      {
-        "device": "Razer Razer Viper V3 Pro",
-        "preset": "MCSR"
-      },
-      {
-        "device": "Ducky Ducky One 3 TKL ",
-        "preset": "MCSR"
-      }
-    ]
   },
   "minecraft": {
     "autoStart": true,
