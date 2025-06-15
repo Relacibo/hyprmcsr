@@ -1,11 +1,10 @@
 # hyprmcsr
 
-
 <img src="resources/logo.png" width="640" height="320" alt="banner">
 
 > **Note:**  
 > This project and its documentation are still experimental and under active development.  
-> [See the full documentation in the `docs/` folder.](./docs/README.md)
+> [See the full documentation and guide in the `docs/` folder.](./docs/README.md)
 
 ## Overview
 
@@ -23,19 +22,12 @@ All core functionality is controlled via the `hyprmcsr` CLI, which manages setup
 
 ---
 
-## Quick Links
+## Documentation
 
-- [Getting Started & Table of Contents](./docs/README.md)
-- [Cloning and Installation](./docs/cloning-and-installation.md)
-- [Usage](./docs/usage.md)
-- [Configuration](./docs/configuration.md)
-- [OBS Setup](./docs/obs-setup.md)
-- [PrismLauncher](./docs/prismlauncher.md)
-- [Mod Management & Optional Tools](./docs/jar-download.md)
-- [Troubleshooting](./docs/troubleshooting.md)
+For setup instructions, usage, and all details, see the  
+👉 **[Full Guide & Documentation](./docs/README.md)** 👈
 
 ---
-
 
 ## Contributers
 
