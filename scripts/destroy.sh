@@ -9,7 +9,7 @@ if [ -n "$toggle_binds_key" ] && [ "$toggle_binds_key" != "null" ]; then
 fi
 
 # Remove custom binds
-custom_binds=$(jq -r '.binds.custom | to_entries[] | .key' "$CONFIG_FILE")
+custom_binds=$(jq -r '.binds.custom // {} | to_entries[] | .key' "$CONFIG_FILE")
 if [ -n "$custom_binds" ]; then
   while IFS= read -r bind; do
     hyprctl keyword unbind "$bind"

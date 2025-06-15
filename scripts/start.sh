@@ -63,7 +63,7 @@ if [ "$MC_AUTOSTART" = "true" ]; then
 fi
 
 # Create custom binds from config.json (with all relevant environment variables)
-custom_binds=$(jq -r '.binds.custom | to_entries[] | "\(.key) \(.value|@json)"' "$CONFIG_FILE")
+custom_binds=$(jq -r '.binds.custom // {} | to_entries[] | "\(.key) \(.value|@json)"' "$CONFIG_FILE")
 if [ -n "$custom_binds" ]; then
   while IFS= read -r entry; do
     bind=$(echo "$entry" | awk '{print $1}')
