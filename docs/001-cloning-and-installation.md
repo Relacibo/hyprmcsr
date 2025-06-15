@@ -50,6 +50,19 @@ You can create additional profiles by copying and editing the example profile.
 > **Tip:**  
 > If you want to use a different profile, specify it when starting hyprmcsr or set the `HYPRMCSR_PROFILE` environment variable.
 
+## Updating hyprmcsr
+
+To get the latest updates, run the following command in your hyprmcsr directory:
+
+```bash
+git pull
+```
+
+This will fetch and apply the newest changes from the repository.
+
+> **Note:**  
+> After updating, you can optionally run `hyprmcsr install` again to ensure all new dependencies and files are set up, but this is usually not required unless the update instructions mention it.
+
 ---
 
 Continue with [hyprmcsr CLI](./002-cli.md) for details on available commands and CLI options.
