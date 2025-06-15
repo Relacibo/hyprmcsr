@@ -17,6 +17,11 @@ Or get the latest version from [the GitHub releases page](https://github.com/sez
 Before using hyprmcsr, you should use the input-remapper GUI (`input-remapper-gtk`) to create and test profiles for your specific devices.  
 Once you have working profiles, add the appropriate `input-remapper-control` commands to your profile's `onStart` and `onDestroy` arrays for automatic activation and cleanup.
 
+You can list all available device names with:
+```bash
+input-remapper-control --list-devices
+```
+
 **Important:**  
 Do **not** press any keys or mouse buttons while input-remapper is applying or removing remaps!  
 Otherwise, unexpected errors or malfunctions with your input devices may occur.
