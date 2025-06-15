@@ -19,8 +19,10 @@ Once you have working profiles, add the appropriate `input-remapper-control` com
 
 You can list all available device names with:
 ```bash
-input-remapper-control --list-devices
+input-remapper-control --list-devices | sed 's/.*/"&"/'
 ```
+**Tip:**  
+This wraps each device name in double quotes, so you can see and copy the exact name—including any trailing whitespace—into your profile.
 
 **Important:**  
 Do **not** press any keys or mouse buttons while input-remapper is applying or removing remaps!  
