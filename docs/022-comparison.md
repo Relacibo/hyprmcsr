@@ -11,7 +11,7 @@
 | **Automated Window Management** | Yes              | Yes                  | Yes               | Yes               |
 | **Audio Splitting**             | Pipewire, auto    | Yes (Windows)        | Manual            | Pipewire, manual  |
 | **Input Remapping**             | Input Remapper (user config) | Built-in (Jingle) | Manual            | Manual            |
-| **OBS Integration**             | Yes (auto scene, vkcapture) | Yes (auto scene)  | No                | No                |
+| **OBS Integration**             | With third party tools | Yes (auto scene)  | No                | No                |
 | **Mod/Tool Auto-Download**      | Yes              | No                   | No                | No                |
 | **Profile System**              | Yes (JSON)        | Yes (YAML)           | No                | No                |
 | **Wayland Support**             | Native            | No                   | Partial (Sway)    | Native            |
