@@ -11,6 +11,9 @@
   "onDestroy": [
     "sudo input-remapper-control --command stop-all"
   ],
+  "onToggleBinds": [
+    "# notify-send \"Binds toggled: $BINDS_ENABLED\""
+  ],
   "binds": {
     "toggleBinds": ",HOME",
     "modeSwitch": {
