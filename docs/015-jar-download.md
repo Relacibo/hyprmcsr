@@ -37,4 +37,3 @@ You can use additional tools for automation in your `onStart`, `onEnter`, `onExi
   Command-line client for OBS Studio, allowing you to control scenes, sources, and more from scripts.
 
 You can add more tools as needed for your workflow.
-

@@ -1,7 +1,7 @@
 # Comparison: hyprmcsr vs Other Tools
 
 > **Note:**  
-> This table was generated with the help of an AI and may contain inaccuracies or outdated information. Please always check the official documentation of each project for the latest details.
+> This table was generated with the help of an AI and may contain inaccuracies or outdated information. Please always check the official documentation of each project for the latest details.  
 > This comparison is also a work in progress and should not be relied upon for critical decisions.
 
 | Feature/Tool      | hyprmcsr (Hyprland/Wayland) | Jingle ([DuncanRuns/Jingle](https://github.com/DuncanRuns/Jingle)) | Resetti ([tesselslate/resetti](https://github.com/tesselslate/resetti)) | Waywall ([tesselslate/waywall](https://github.com/tesselslate/waywall)) |
@@ -17,8 +17,9 @@
 | **Wayland Support**             | Native            | No                   | Partial (Sway)    | Native            |
 | **X11 Support**                 | No                | No                   | Yes               | No                |
 | **Active Maintenance**          | Yes               | Yes                  | No                | Yes               |
-| **Target Audience**             | Hyprland/Wayland users | Windows users     | i3 users          | Wayland users (Minecraft SR) |
-| **Special Requirements**        | None              | None                 | None              | Patched GLFW (can be set as custom GLFW in PrismLauncher) |
+| **Special Requirements**        | Must be set as wrapper command in PrismLauncher; requires Hyprland | None | None | Patched GLFW (can be set as custom GLFW in PrismLauncher); must be set as wrapper command |
+| **Launcher agnostic**           | No (Prism required) | Yes                  | Yes               | Maybe |
+| **Display Manager agnostic**    | No (Hyprland required) | N/A                | Yes               | Yes               |
 
 ## Links
 
@@ -30,6 +31,6 @@
 
 **Note:**  
 - Jingle is a Windows-only tool.  
-- Resetti and Jingle are more focused on i3/X11 or Windows setups, while hyprmcsr is designed for Hyprland/Wayland.
+- Resetti and Jingle are launcher agnostic (work with any Minecraft launcher), while hyprmcsr and Waywall require PrismLauncher.
 - hyprmcsr automates more setup steps (audio, window, mods) but expects you to configure input-remapper yourself.
-- Waywall is also made specifically for Minecraft speedrunning and requires a patched GLFW (not Minecraft itself); you can set this as a custom GLFW in PrismLauncher.
+- Both hyprmcsr and Waywall must be set as wrapper commands in PrismLauncher. Waywall requires a patched GLFW (not Minecraft itself); you can set this as a custom GLFW in PrismLauncher.

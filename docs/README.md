@@ -10,18 +10,18 @@ This documentation will guide you through the setup and usage of hyprmcsr on a m
 
 ## Table of Contents
 
-- [Hyprland Setup](./hyprland-setup.md)
-- [Cloning and Installation](./cloning-and-installation.md)
-- [hyprmcsr CLI](./cli.md)
-- [Usage](./usage.md)
-- [PrismLauncher](./prismlauncher.md)
-- [Audio Splitting](./audio-splitting.md)
-- [Keybinds and Modes](./keybinds-and-modes.md)
-- [OBS Setup](./obs-setup.md)
-- [Input Remapper](./input-remapper.md)
-- [Mod Management & Optional Tools](./jar-download.md)
-- [Troubleshooting](./troubleshooting.md)
-- [Further Reading & Links](./links.md)
+- [Hyprland Setup](./000-hyprland-setup.md)
+- [Cloning and Installation](./001-cloning-and-installation.md)
+- [hyprmcsr CLI](./002-cli.md)
+- [Usage](./003-usage.md)
+- [PrismLauncher](./010-prismlauncher.md)
+- [Audio Splitting](./011-audio-splitting.md)
+- [Keybinds and Modes](./012-keybinds-and-modes.md)
+- [OBS Setup](./013-obs-setup.md)
+- [Input Remapper](./014-input-remapper.md)
+- [Mod Management & Optional Tools](./015-jar-download.md)
+- [Troubleshooting](./020-troubleshooting.md)
+- [Further Reading & Links](./021-links.md)
 
 
 > **Note:**  
