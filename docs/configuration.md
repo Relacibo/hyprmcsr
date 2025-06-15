@@ -16,8 +16,10 @@ See [example.config.json](../example.config.json) and [example.default.profile.j
 
 ## Key fields
 
-- **onStart**: Array of shell commands/scripts to run in the background when starting (e.g. starting helper tools, OBS, etc.).  
-- **onDestroy**: Array of shell commands/scripts to run in the background when stopping (e.g. cleanup, notifications, killing helper tools).
+- **onStart**: Array of shell commands/scripts to run in the background when starting (e.g. starting helper tools, OBS, input-remapper, etc.).
+- **onDestroy**: Array of shell commands/scripts to run in the background when stopping (e.g. cleanup, notifications, killing helper tools, stopping input-remapper).
+- **onToggleBinds**: Array of shell commands/scripts to run whenever binds are toggled (e.g. notifications, custom actions).  
+  The environment variable `$BINDS_ENABLED` is set to `1` (enabled) or `0` (disabled).
 - **binds.toggleBinds**: Key combination to toggle binds.
 - **binds.modeSwitch**: Key combinations for switching between window modes.
 - **binds.custom**:  
@@ -25,7 +27,6 @@ See [example.config.json](../example.config.json) and [example.default.profile.j
   The commands will be executed with the environment variables `$WINDOW_ADDRESS`, `$SCRIPT_DIR`, `$PROFILE`, `$HYPRMCSR_PROFILE`, `$PRISM_INSTANCE_ID`, and `$MINECRAFT_ROOT` set.
 - **modeSwitch.default**: Default window size, sensitivity, and optional `onEnter`/`onExit` arrays for commands to run when entering or exiting a mode.
 - **modeSwitch.modes**: Per-mode overrides for size, sensitivity, and `onEnter`/`onExit` commands.
-- **inputRemapper.devices**: List of devices and presets for input-remapper.
 - **minecraft.prismPrefixOverride**: (Optional) Path to your PrismLauncher data directory.
 - **minecraft.prismInstanceId**: Name or UUID of your PrismLauncher instance.
 - **minecraft.windowClassRegex**:  
@@ -39,6 +40,7 @@ See [example.config.json](../example.config.json) and [example.default.profile.j
   Tip: You can leave this field empty. If loopback is enabled, running `install.sh` will automatically detect and set your default output here.
 - **download.jar**: Array of GitHub repositories (or URLs in the future) for required JARs to be downloaded automatically.
 - **autoDestroyOnExit**: If true, runs cleanup automatically when the main script exits.
+- **requireSudo**: If true, you will be prompted for sudo at start and it will be kept alive for all commands in `onStart`/`onDestroy` (useful for input-remapper or other tools needing root).
 - **minecraft.autoStart**:  
   If `true` (default), Minecraft will be started automatically by `hyprmcsr.sh`.  
   If `false`, you must start Minecraft yourself via PrismLauncher (GUI or CLI).  
@@ -73,4 +75,4 @@ See [example.config.json](../example.config.json) and [example.default.profile.j
 ---
 
 **Tip:**  
-You can use variables like `$SCRIPT_DIR`, `$PROFILE`, `$HYPRMCSR_PROFILE`, `$PREVIOUS_MODE`, `$NEXT_MODE`, `$WINDOW_ADDRESS`, `$PRISM_INSTANCE_ID`, and `$MINECRAFT_ROOT` in your shell commands in `onStart`, `onDestroy`, `onEnter`, `onExit`, `minecraft.onStart`, and custom binds.
+You can use variables like `$SCRIPT_DIR`, `$PROFILE`, `$HYPRMCSR_PROFILE`, `$PREVIOUS_MODE`, `$NEXT_MODE`, `$WINDOW_ADDRESS`, `$PRISM_INSTANCE_ID`, `$MINECRAFT_ROOT`, and `$BINDS_ENABLED` in your shell commands in `onStart`, `onDestroy`, `onEnter`, `onExit`, `onToggleBinds`, `minecraft.onStart`, and custom binds.
