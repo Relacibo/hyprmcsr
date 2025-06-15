@@ -20,6 +20,12 @@ if ! command -v jq >/dev/null; then
   exit 1
 fi
 
+# Check for sudo requirement early
+REQUIRE_SUDO=$(jq -r '.requireSudo // false' "$CONFIG_FILE")
+if [ "$REQUIRE_SUDO" = "true" ]; then
+  sudo -v
+fi
+
 echo "default" > "$STATE_DIR/window_switcher_state"
 echo "$HYPRMCSR_PROFILE" > "$STATE_DIR/profile"
 
@@ -93,11 +99,10 @@ if [ "$OBSERVE_LOG" = "true" ]; then
 fi
 
 # Sudo handling depending on requireSudo
-REQUIRE_SUDO=$(jq -r '.requireSudo // false' "$CONFIG_FILE")
+# (leave only the refresh/trap logic here)
 auto_destroy=$(jq -r '.autoDestroyOnExit // true' "$CONFIG_FILE")
 
 if [ "$REQUIRE_SUDO" = "true" ]; then
-  sudo -v
   if [ "$auto_destroy" = "true" ]; then
     while true; do sudo -v; sleep 60; done &
     SUDO_REFRESH_PID=$!
