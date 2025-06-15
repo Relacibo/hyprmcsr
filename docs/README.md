@@ -14,6 +14,7 @@ This documentation will guide you through the setup and usage of hyprmcsr on a m
 - [Cloning and Installation](./001-cloning-and-installation.md)
 - [hyprmcsr CLI](./002-cli.md)
 - [Usage](./003-usage.md)
+- [Configuration](./004-configuration.md)
 - [PrismLauncher](./010-prismlauncher.md)
 - [Audio Splitting](./011-audio-splitting.md)
 - [Keybinds and Modes](./012-keybinds-and-modes.md)
