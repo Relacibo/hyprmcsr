@@ -35,7 +35,7 @@ hyprmcsr install
 This command will:
 - Download required JARs
 - Create default configuration files
-- Set up audio splitting, if enabled in your `*.profile.json` (disabled by default)
+- Set up audio splitting, if enabled in your `config.json` (disabled by default)
 
 ## 4. Configuration files
 
