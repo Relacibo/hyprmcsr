@@ -20,6 +20,7 @@
 | **Special Requirements**        | Must be set as wrapper command in PrismLauncher; requires Hyprland | None | None | Patched GLFW (can be set as custom GLFW in PrismLauncher); must be set as wrapper command |
 | **Launcher agnostic**           | No (Prism required) | Yes                  | Yes               | Maybe             |
 | **Display Manager agnostic**    | No (Hyprland required) | N/A                | Yes               | Yes               |
+| **User-friendly GUI**           | No                | Yes                  | No                | No                |
 
 ## Links
 
