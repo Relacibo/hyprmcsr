@@ -2,6 +2,10 @@
 
 This section explains how to clone the hyprmcsr repository and set up the initial configuration.
 
+> **Requirement:**  
+> You need [git](https://git-scm.com/) installed.  
+> See [Install Git on Linux](https://git-scm.com/downloads/linux) for instructions.
+
 ## 1. Clone the repository
 
 ```bash
