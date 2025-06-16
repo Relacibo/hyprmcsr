@@ -83,12 +83,6 @@ before_sinks=$(pactl -f json list sink-inputs | jq '.[].index' | sort)
   fi
 ) &
 
-# Start Minecraft (with inner wrapper if set) in foreground!
-inner_wrapper_cmd=$(jq -r '.minecraft.prismWrapperCommand.innerCommand // empty' "$CONFIG_FILE")
-
-if [ -n "$inner_wrapper_cmd" ] && [ "$inner_wrapper_cmd" != "null" ] && [ "$inner_wrapper_cmd" != "empty" ]; then
-  exec $inner_wrapper_cmd "$@"
-else
-  exec "$@"
-fi
+# Starte Minecraft direkt mit den übergebenen Argumenten (kein inner_wrapper_cmd mehr)
+exec "$@"
 

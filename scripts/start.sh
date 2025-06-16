@@ -46,7 +46,8 @@ INNER_WRAPPER_CMD=$(jq -r '.minecraft.prismWrapperCommand.innerCommand // empty'
 if [ "$PRISM_WRAPPER_AUTO_REPLACE" = "true" ]; then
   if [ -n "$INNER_WRAPPER_CMD" ] && [ "$INNER_WRAPPER_CMD" != "null" ] && [ "$INNER_WRAPPER_CMD" != "empty" ]; then
     if [ -f "$PRISM_INSTANCE_CONFIG" ]; then
-      WRAPPER_CMD="$SCRIPT_DIR/../bin/hyprmcsr -h $HYPRMCSR_PROFILE instance-wrapper"
+      # Schreibe den innerCommand direkt in den WrapperCommand
+      WRAPPER_CMD="$SCRIPT_DIR/../bin/hyprmcsr -h $HYPRMCSR_PROFILE instance-wrapper $INNER_WRAPPER_CMD"
       if grep -q "^WrapperCommand=" "$PRISM_INSTANCE_CONFIG"; then
         sed -i "s|^WrapperCommand=.*|WrapperCommand=$WRAPPER_CMD|" "$PRISM_INSTANCE_CONFIG"
       else
