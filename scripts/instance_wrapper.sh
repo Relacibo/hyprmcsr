@@ -4,7 +4,8 @@
 SCRIPT_DIR="$(dirname "$(realpath "$0")")"
 source "$SCRIPT_DIR/env_prism.sh"
 source "$SCRIPT_DIR/env_runtime.sh"
-WINDOW_CLASS_REGEX=$(jq -r '.minecraft.windowClassRegex // "Minecraft"' "$CONFIG_FILE")
+WINDOW_CLASS_REGEX=$(jq -r '.minecraft.windowClassRegex // empty' "$CONFIG_FILE")
+WINDOW_TITLE_REGEX=$(jq -r '.minecraft.windowTitleRegex // empty' "$CONFIG_FILE")
 
 # Before start: remember all Java PIDs
 before_pids=$(pgrep -u "$USER" java | sort)
@@ -19,13 +20,22 @@ before_sinks=$(pactl -f json list sink-inputs | jq '.[].index' | sort)
   window_pid=""
   MC_PID=""
 
-  # Search for new Java PID and window with matching class (simplified, no pending_pids)
+  # Search for new Java PID and window with matching class/title (simplified, no pending_pids)
   while [ $elapsed -lt $timeout ]; do
     after_pids=$(pgrep -u "$USER" java | sort)
     new_pids=$(comm -13 <(echo "$before_pids") <(echo "$after_pids"))
     for pid in $new_pids; do
-      window_info=$(hyprctl clients -j | jq -r --arg pid "$pid" --arg regex "$WINDOW_CLASS_REGEX" '
-        .[] | select(.pid == ($pid | tonumber) and (.class | test($regex))) | "\(.address) \(.pid)"
+      window_info=$(hyprctl clients -j | jq -r --arg pid "$pid" --arg class_regex "$WINDOW_CLASS_REGEX" --arg title_regex "$WINDOW_TITLE_REGEX" '
+        .[] | select(
+          .pid == ($pid | tonumber)
+          and (
+            (
+              ($class_regex == "" or (.class | test($class_regex)))
+              and
+              ($title_regex == "" or (.title | test($title_regex)))
+            )
+          )
+        ) | "\(.address) \(.pid)"
       ')
       window_address=$(echo "$window_info" | awk '{print $1}')
       window_pid=$(echo "$window_info" | awk '{print $2}')

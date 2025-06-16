@@ -1,12 +1,14 @@
 # Configuration
 
-hyprmcsr uses two types of configuration files, that are created, when running `hyprmcsr install` for the first time:
+hyprmcsr uses two types of configuration files, that are created when running `hyprmcsr install` for the first time:
 
 ## Global config: `config.json`
+
 - Located in `~/.config/hyprmcsr/config.json`
 - Contains global settings like JAR download sources, pipewire loopback, etc.
 
 ## Profile config: `<profile>.profile.json`
+
 - Located in `~/.config/hyprmcsr/<profile>.profile.json` (e.g. `default.profile.json`)
 - Contains all profile-specific settings (Minecraft instance, binds, modes, etc.)
 
@@ -30,9 +32,16 @@ See [example.config.json](../example.config.json) and [example.default.profile.j
 - **minecraft.prismPrefixOverride**: (Optional) Path to your PrismLauncher data directory.
 - **minecraft.prismInstanceId**: Name or UUID of your PrismLauncher instance.
 - **minecraft.windowClassRegex**:  
-  Regular expression to detect the Minecraft window by its window class.
-  This regex is used to identify the Minecraft window among all open windows.  
-  You may need to adjust this regex to match the actual window class, e.g. if you are using a wrapper command, that changes the class (you can check the class of your windows with `hyprctl clients -j`).
+  (Optional) Regular expression to detect the Minecraft window by its window class.
+- **minecraft.windowTitleRegex**:  
+  (Optional) Regular expression to detect the Minecraft window by its window title.
+  > **Note:**  
+  > Both fields are optional and equivalent.
+  >
+  > - If **neither** is set, any window is accepted.
+  > - If **one** is set, it must match.
+  > - If **both** are set, both must match.  
+  >   You can check the values with `hyprctl clients -j`.
 - **minecraft.observeLog.enabled**: Enable or disable log observation for Minecraft state.
 - **minecraft.onStart**: Array of shell commands/scripts to run after Minecraft has started (executed by `instance_wrapper.sh`).
 - **pipewireLoopback.enabled**: Enable or disable Pipewire audio loopback/splitting.
@@ -64,7 +73,7 @@ See [example.config.json](../example.config.json) and [example.default.profile.j
 - **minecraft.minecraftRootFolderOverride**: (Optional)  
   Set this to the absolute **or relative** path of your `.minecraft` folder if you want to override the default detection.  
   If you use a **relative path**, it will be resolved relative to the detected PrismLauncher instance folder.  
-  Example:  
+  Example:
   ```json
   "minecraft": {
     "minecraftRootFolderOverride": ".minecraft"
