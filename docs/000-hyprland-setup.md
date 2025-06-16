@@ -15,7 +15,10 @@ Hyprland works best on:
 - **Ubuntu** (with some manual steps)
 - **openSUSE** (Tumbleweed)
 
-> For the smoothest experience, use a distribution with up-to-date Wayland and Pipewire support.
+> **Recommendation:**  
+> For the smoothest experience, use a rolling release or otherwise up-to-date distribution (such as Fedora, Arch, or openSUSE Tumbleweed).  
+> These provide the latest versions of Wayland, Pipewire, and related packages, which are important for Hyprland and hyprmcsr.  
+> Ubuntu and other slower-moving distributions may require additional troubleshooting and manual steps due to older package versions.
 
 ## Installation
 
