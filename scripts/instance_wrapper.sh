@@ -24,8 +24,9 @@ before_sinks=$(pactl -f json list sink-inputs | jq '.[].index' | sort)
   while [ $elapsed -lt $timeout ]; do
     after_pids=$(pgrep -u "$USER" java | sort)
     new_pids=$(comm -13 <(echo "$before_pids") <(echo "$after_pids"))
+    clients_json=$(hyprctl clients -j)
     for pid in $new_pids; do
-      window_info=$(hyprctl clients -j | jq -r --arg pid "$pid" --arg class_regex "$WINDOW_CLASS_REGEX" --arg title_regex "$WINDOW_TITLE_REGEX" '
+      window_info=$(echo "$clients_json" | jq -r --arg pid "$pid" --arg class_regex "$WINDOW_CLASS_REGEX" --arg title_regex "$WINDOW_TITLE_REGEX" '
         .[] | select(
           .pid == ($pid | tonumber)
           and (
