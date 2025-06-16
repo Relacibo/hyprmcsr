@@ -13,16 +13,16 @@ hyprmcsr uses two types of configuration files, that are created when running `h
   - `download.root`: (Optional) Custom download root for JARs.
   - You can add further global options as needed. All other settings should go into your profile config.
 
+See [example.config.json](../example.config.json) for a full example of the global config.
+
 ## Profile config: `<profile>.profile.json`
 
 - Located in `~/.config/hyprmcsr/<profile>.profile.json` (e.g. `default.profile.json`)
 - Contains all profile-specific settings (Minecraft instance, binds, modes, etc.)
 
-See [example.config.json](../example.config.json) and [example.default.profile.json](../example.default.profile.json) for full examples.
+See [example.default.profile.json](../example.default.profile.json) for a full example of a profile config.
 
----
-
-## Key fields
+### Key fields
 
 - **onStart**: Array of shell commands/scripts to run in the background when starting (e.g. starting helper tools, OBS, input-remapper, etc.).
 - **onDestroy**: Array of shell commands/scripts to run in the background when stopping (e.g. cleanup, notifications, killing helper tools, stopping input-remapper).
