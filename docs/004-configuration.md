@@ -6,6 +6,12 @@ hyprmcsr uses two types of configuration files, that are created when running `h
 
 - Located in `~/.config/hyprmcsr/config.json`
 - Contains global settings like JAR download sources, pipewire loopback, etc.
+- **Typical fields:**
+  - `pipewireLoopback.enabled`: Enable or disable Pipewire audio loopback/splitting globally.
+  - `pipewireLoopback.playbackTarget`: Audio output for Pipewire split (e.g., your headset).
+  - `download.jar`: Array of GitHub repositories (or URLs) for required JARs to be downloaded automatically.
+  - `download.root`: (Optional) Custom download root for JARs.
+  - You can add further global options as needed. All other settings should go into your profile config.
 
 ## Profile config: `<profile>.profile.json`
 
