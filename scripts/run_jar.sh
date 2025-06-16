@@ -2,10 +2,10 @@
 
 SCRIPT_DIR=$(dirname "$(realpath "$0")")
 CONFIG_ROOT="${XDG_CONFIG_HOME:-$HOME/.config}/hyprmcsr"
-GLOBAL_CONFIG_FILE="$CONFIG_ROOT/config.json"
+CONFIG_FILE="$CONFIG_ROOT/config.json"
 
 # Download root, read from global config if present, else default
-DOWNLOAD_ROOT=$(jq -r '.download.root // empty' "$GLOBAL_CONFIG_FILE")
+DOWNLOAD_ROOT=$(jq -r '.download.root // empty' "$CONFIG_FILE")
 if [ -z "$DOWNLOAD_ROOT" ] || [ "$DOWNLOAD_ROOT" = "null" ]; then
   DOWNLOAD_ROOT="$SCRIPT_DIR/../download"
 fi

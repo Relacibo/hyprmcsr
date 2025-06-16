@@ -21,7 +21,7 @@ if ! command -v jq >/dev/null; then
 fi
 
 # Check for sudo requirement early
-REQUIRE_SUDO=$(jq -r '.requireSudo // false' "$CONFIG_FILE")
+REQUIRE_SUDO=$(jq -r '.requireSudo // false' "$PROFILE_CONFIG_FILE")
 if [ "$REQUIRE_SUDO" = "true" ]; then
   sudo -v
 fi
@@ -30,18 +30,18 @@ echo "default" > "$STATE_DIR/window_switcher_state"
 echo "$HYPRMCSR_PROFILE" > "$STATE_DIR/profile"
 
 # Set keybinds for mode switches
-jq -r '.binds.modeSwitch | to_entries[] | "\(.key) \(.value)"' "$CONFIG_FILE" | while read -r mode key; do
+jq -r '.binds.modeSwitch | to_entries[] | "\(.key) \(.value)"' "$PROFILE_CONFIG_FILE" | while read -r mode key; do
     hyprctl keyword bindni $key,exec,"HYPRMCSR_PROFILE=\"$HYPRMCSR_PROFILE\" $SCRIPT_DIR/toggle_mode.sh $mode"
 done
 
-toggle_binds_key=$(jq -r '.binds.toggleBinds' "$CONFIG_FILE")
+toggle_binds_key=$(jq -r '.binds.toggleBinds' "$PROFILE_CONFIG_FILE")
 if [ -n "$toggle_binds_key" ] && [ "$toggle_binds_key" != "null" ]; then
   hyprctl keyword bind $toggle_binds_key,exec,"HYPRMCSR_PROFILE=\"$HYPRMCSR_PROFILE\" $SCRIPT_DIR/toggle_binds.sh"
 fi
 
 # Evaluate prismWrapperCommand
-PRISM_WRAPPER_AUTO_REPLACE=$(jq -r '.minecraft.prismWrapperCommand.autoReplace // true' "$CONFIG_FILE")
-INNER_WRAPPER_CMD=$(jq -r '.minecraft.prismWrapperCommand.innerCommand // empty' "$CONFIG_FILE")
+PRISM_WRAPPER_AUTO_REPLACE=$(jq -r '.minecraft.prismWrapperCommand.autoReplace // true' "$PROFILE_CONFIG_FILE")
+INNER_WRAPPER_CMD=$(jq -r '.minecraft.prismWrapperCommand.innerCommand // empty' "$PROFILE_CONFIG_FILE")
 
 if [ "$PRISM_WRAPPER_AUTO_REPLACE" = "true" ]; then
   if [ -n "$INNER_WRAPPER_CMD" ] && [ "$INNER_WRAPPER_CMD" != "null" ] && [ "$INNER_WRAPPER_CMD" != "empty" ]; then
@@ -64,13 +64,13 @@ if [ "$PRISM_WRAPPER_AUTO_REPLACE" = "true" ]; then
 fi
 
 # Minecraft autostart (can be disabled in profile config)
-MC_AUTOSTART=$(jq -r '.minecraft.autoStart // true' "$CONFIG_FILE")
+MC_AUTOSTART=$(jq -r '.minecraft.autoStart // true' "$PROFILE_CONFIG_FILE")
 if [ "$MC_AUTOSTART" = "true" ]; then
   prismlauncher -l "$PRISM_INSTANCE_ID" &
 fi
 
 # Create custom binds from config.json (with all relevant environment variables)
-custom_binds=$(jq -r '.binds.custom // {} | to_entries[] | "\(.key) \(.value|@json)"' "$CONFIG_FILE")
+custom_binds=$(jq -r '.binds.custom // {} | to_entries[] | "\(.key) \(.value|@json)"' "$PROFILE_CONFIG_FILE")
 if [ -n "$custom_binds" ]; then
   while IFS= read -r entry; do
     bind=$(echo "$entry" | awk '{print $1}')
@@ -80,7 +80,7 @@ if [ -n "$custom_binds" ]; then
 fi
 
 # Run onStart commands from config.json (all in background, with all relevant environment variables)
-on_start_cmds=$(jq -r '.onStart[]?' "$CONFIG_FILE")
+on_start_cmds=$(jq -r '.onStart[]?' "$PROFILE_CONFIG_FILE")
 if [ -n "$on_start_cmds" ]; then
   (
     export SCRIPT_DIR PROFILE HYPRMCSR_PROFILE PRISM_INSTANCE_ID MINECRAFT_ROOT WINDOW_ADDRESS
@@ -90,7 +90,7 @@ if [ -n "$on_start_cmds" ]; then
   )
 fi
 
-OBSERVE_LOG=$(jq -r '.minecraft.observeLog.enabled // true' "$CONFIG_FILE")
+OBSERVE_LOG=$(jq -r '.minecraft.observeLog.enabled // true' "$PROFILE_CONFIG_FILE")
 if [ "$OBSERVE_LOG" = "true" ]; then
   (
     export HYPRMCSR_PROFILE PRISM_INSTANCE_ID MINECRAFT_ROOT
@@ -101,7 +101,7 @@ fi
 
 # Sudo handling depending on requireSudo
 # (leave only the refresh/trap logic here)
-auto_destroy=$(jq -r '.autoDestroyOnExit // true' "$CONFIG_FILE")
+auto_destroy=$(jq -r '.autoDestroyOnExit // true' "$PROFILE_CONFIG_FILE")
 
 if [ "$REQUIRE_SUDO" = "true" ]; then
   if [ "$auto_destroy" = "true" ]; then

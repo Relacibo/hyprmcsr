@@ -33,14 +33,14 @@ if [ "$PREVIOUS_MODE" = "$NEXT_MODE" ]; then
 fi
 
 # Load target values (with fallback to default)
-TARGET_SIZE=$(jq -r --arg m "$NEXT_MODE" '.modeSwitch.modes[$m].size // .modeSwitch.default.size' "$CONFIG_FILE")
-TARGET_SENSITIVITY=$(jq -r --arg m "$NEXT_MODE" '.modeSwitch.modes[$m].sensitivity // .modeSwitch.default.sensitivity' "$CONFIG_FILE")
+TARGET_SIZE=$(jq -r --arg m "$NEXT_MODE" '.modeSwitch.modes[$m].size // .modeSwitch.default.size' "$PROFILE_CONFIG_FILE")
+TARGET_SENSITIVITY=$(jq -r --arg m "$NEXT_MODE" '.modeSwitch.modes[$m].sensitivity // .modeSwitch.default.sensitivity' "$PROFILE_CONFIG_FILE")
 
 # onExit: run all commands in array (only if PREVIOUS_MODE is set)
 if [ -n "$PREVIOUS_MODE" ]; then
   (
     export WINDOW_ADDRESS SCRIPT_DIR HYPRMCSR_PROFILE PRISM_INSTANCE_ID MINECRAFT_ROOT PREVIOUS_MODE NEXT_MODE
-    jq -r --arg m "$PREVIOUS_MODE" '.modeSwitch.modes[$m].onExit[]? // .modeSwitch.default.onExit[]? // empty' "$CONFIG_FILE" | while IFS= read -r cmd; do
+    jq -r --arg m "$PREVIOUS_MODE" '.modeSwitch.modes[$m].onExit[]? // .modeSwitch.default.onExit[]? // empty' "$PROFILE_CONFIG_FILE" | while IFS= read -r cmd; do
       [ -z "$cmd" ] && continue
       bash -c "$cmd" &
     done
@@ -66,7 +66,7 @@ hyprctl --batch "
 # onEnter: run all commands in array (if any and mode changes)
 (
   export WINDOW_ADDRESS SCRIPT_DIR PROFILE HYPRMCSR_PROFILE PRISM_INSTANCE_ID MINECRAFT_ROOT PREVIOUS_MODE NEXT_MODE
-  jq -r --arg m "$NEXT_MODE" '.modeSwitch.modes[$m].onEnter[]? // .modeSwitch.default.onEnter[]? // empty' "$CONFIG_FILE" | while IFS= read -r cmd; do
+  jq -r --arg m "$NEXT_MODE" '.modeSwitch.modes[$m].onEnter[]? // .modeSwitch.default.onEnter[]? // empty' "$PROFILE_CONFIG_FILE" | while IFS= read -r cmd; do
     [ -z "$cmd" ] && continue
     bash -c "$cmd" &
   done

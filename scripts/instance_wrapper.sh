@@ -4,8 +4,8 @@
 SCRIPT_DIR="$(dirname "$(realpath "$0")")"
 source "$SCRIPT_DIR/env_prism.sh"
 source "$SCRIPT_DIR/env_runtime.sh"
-WINDOW_CLASS_REGEX=$(jq -r '.minecraft.windowClassRegex // empty' "$CONFIG_FILE")
-WINDOW_TITLE_REGEX=$(jq -r '.minecraft.windowTitleRegex // empty' "$CONFIG_FILE")
+WINDOW_CLASS_REGEX=$(jq -r '.minecraft.windowClassRegex // empty' "$PROFILE_CONFIG_FILE")
+WINDOW_TITLE_REGEX=$(jq -r '.minecraft.windowTitleRegex // empty' "$PROFILE_CONFIG_FILE")
 
 # Before start: remember all Java PIDs
 before_pids=$(pgrep -u "$USER" java | sort)
