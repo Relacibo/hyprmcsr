@@ -4,14 +4,10 @@
 SCRIPT_DIR="$(dirname "$(realpath "$0")")"
 
 # General profile logic
-if [[ "$1" == --* ]]; then
-  export PROFILE="${1#--}"
-  shift
-else
-  export PROFILE=""
-fi
+# Entfernt: Argumenten-Parsing für PROFILE und HYPRMCSR_PROFILE
+# Die Umgebungsvariablen werden direkt verwendet, wie sie gesetzt sind
 
-export HYPRMCSR_PROFILE="${1:-default}"
+export HYPRMCSR_PROFILE="${HYPRMCSR_PROFILE:-default}"
 source "$SCRIPT_DIR/env_core.sh"
 source "$SCRIPT_DIR/env_prism.sh"
 
