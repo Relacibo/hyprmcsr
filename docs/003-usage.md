@@ -39,18 +39,18 @@ hyprmcsr destroy
 ## Delete old Minecraft worlds
 
 ```bash
-hyprmcsr delete_old_worlds.sh <regex> <keep_n>
+hyprmcsr delete-old-worlds <regex> <keep_n>
 ```
 - Deletes all worlds in the saves folder of the current Prism instance that match `<regex>`, except for the `<keep_n>` newest ones.
 - By default, Minecraft worlds created by this setup have the prefix `Random Speedrun `.  
   Example:  
   ```bash
-  hyprmcsr delete_old_worlds.sh "^Random Speedrun " 50
+  hyprmcsr delete-old-worlds "^Random Speedrun " 50
   ```
   This will keep the 50 newest worlds with that prefix and delete the rest.
 - **Tip:** You can also call this script from your `onDestroy` array in your `<profile>.profile.json` to automatically clean up old worlds when exiting. Just make sure to escape the double quotes with backslashes, for example: 
   ```bash
-  "onDestroy": ["$SCRIPT_DIR/scripts/delete_old_worlds.sh \"^Random Speedrun \" 50"]
+  "onDestroy": ["$SCRIPT_DIR/delete_old_worlds.sh \"^Random Speedrun \" 50"]
   ```
 
 ---
