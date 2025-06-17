@@ -39,10 +39,6 @@ fi
 PRISM_WRAPPER_AUTO_REPLACE=$(jq -r '.minecraft.prismWrapperCommand.autoReplace // true' "$PROFILE_CONFIG_FILE")
 INNER_WRAPPER_CMD=$(jq -r '.minecraft.prismWrapperCommand.innerCommand // empty' "$PROFILE_CONFIG_FILE")
 
-echo $PRISM_INSTANCE_CONFIG
-
-exit 0
-
 if [ "$PRISM_WRAPPER_AUTO_REPLACE" = "true" ]; then
   if [ -n "$INNER_WRAPPER_CMD" ] && [ "$INNER_WRAPPER_CMD" != "null" ] && [ "$INNER_WRAPPER_CMD" != "empty" ]; then
     if [ -f "$PRISM_INSTANCE_CONFIG" ]; then

@@ -56,7 +56,6 @@ before_sinks=$(pactl -f json list sink-inputs | jq '.[].index' | sort)
       dispatch setprop address:$window_address noanim 1;
       dispatch setprop address:$window_address norounding 1;
       dispatch focuswindow address:$window_address;
-      dispatch fullscreenstate 1;
       dispatch setfloating address:$window_address;
       dispatch centerwindow address:$window_address;
     "
