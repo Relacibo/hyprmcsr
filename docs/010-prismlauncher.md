@@ -38,3 +38,6 @@ If you want to use a specific wrapper (like `obs-gamecapture`), set it as `"inne
 
 If you want to manage the wrapper manually, set `"prismWrapperCommand.autoReplace": false` in your config.
 Then you can set any wrapper you like in the PrismLauncher GUI (e.g., `obs-gamecapture`). Remember though to also set `hyprmcsr -h <profile> instance-wrapper` as one of the wrapper commands.
+
+**Note:**
+When specifying your PrismLauncher instance ID in your config (e.g., for `minecraft.prismInstanceId`), always use the actual folder name of the instance (as found in `~/.local/share/PrismLauncher/instances/`), **not** the display name shown in the PrismLauncher GUI. The folder name is the true instance ID required for automation and configuration.

@@ -55,6 +55,10 @@ before_sinks=$(pactl -f json list sink-inputs | jq '.[].index' | sort)
     hyprctl -q --batch "
       dispatch setprop address:$window_address noanim 1;
       dispatch setprop address:$window_address norounding 1;
+      dispatch focuswindow address:$window_address;
+      dispatch fullscreenstate 1;
+      dispatch setfloating address:$window_address;
+      dispatch centerwindow address:$window_address;
     "
   fi
 
@@ -94,6 +98,6 @@ before_sinks=$(pactl -f json list sink-inputs | jq '.[].index' | sort)
   fi
 ) &
 
-# Starte Minecraft direkt mit den übergebenen Argumenten (kein inner_wrapper_cmd mehr)
+# Start Minecraft directly with the given arguments (no inner_wrapper_cmd anymore)
 exec "$@"
 
