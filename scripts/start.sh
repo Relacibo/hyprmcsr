@@ -27,12 +27,12 @@ echo "$HYPRMCSR_PROFILE" > "$STATE_DIR/profile"
 
 # Set keybinds for mode switches
 jq -r '.binds.modeSwitch | to_entries[] | "\(.key) \(.value)"' "$PROFILE_CONFIG_FILE" | while read -r mode key; do
-    hyprctl keyword bindni $key,exec,"HYPRMCSR_PROFILE=\"$HYPRMCSR_PROFILE\" $SCRIPT_DIR/toggle_mode.sh $mode"
+    hyprctl keyword bindni $key,exec,"$HYPRMCSR_BIN -h $HYPRMCSR_PROFILE toggle_mode $mode"
 done
 
 toggle_binds_key=$(jq -r '.binds.toggleBinds' "$PROFILE_CONFIG_FILE")
 if [ -n "$toggle_binds_key" ] && [ "$toggle_binds_key" != "null" ]; then
-  hyprctl keyword bind $toggle_binds_key,exec,"HYPRMCSR_PROFILE=\"$HYPRMCSR_PROFILE\" $SCRIPT_DIR/toggle_binds.sh"
+  hyprctl keyword bind $toggle_binds_key,exec,"$HYPRMCSR_BIN -h $HYPRMCSR_PROFILE toggle_binds"
 fi
 
 # Evaluate prismWrapperCommand
@@ -42,7 +42,7 @@ INNER_WRAPPER_CMD=$(jq -r '.minecraft.prismWrapperCommand.innerCommand // empty'
 if [ "$PRISM_WRAPPER_AUTO_REPLACE" = "true" ]; then
   if [ -n "$INNER_WRAPPER_CMD" ] && [ "$INNER_WRAPPER_CMD" != "null" ] && [ "$INNER_WRAPPER_CMD" != "empty" ]; then
     if [ -f "$PRISM_INSTANCE_CONFIG" ]; then
-      WRAPPER_CMD="$SCRIPT_DIR/../bin/hyprmcsr -h $HYPRMCSR_PROFILE instance-wrapper $INNER_WRAPPER_CMD"
+      WRAPPER_CMD="$HYPRMCSR_BIN -h $HYPRMCSR_PROFILE instance-wrapper $INNER_WRAPPER_CMD"
       # Ensure WrapperCommand is set in [General] section
       if grep -q "^WrapperCommand=" "$PRISM_INSTANCE_CONFIG"; then
         # Replace only in [General] section
@@ -81,19 +81,13 @@ if [ "$PRISM_WRAPPER_AUTO_REPLACE" = "true" ]; then
   fi
 fi
 
-# Minecraft autostart (can be disabled in profile config)
-MC_AUTOSTART=$(jq -r '.minecraft.autoStart // true' "$PROFILE_CONFIG_FILE")
-if [ "$MC_AUTOSTART" = "true" ]; then
-  prismlauncher -l "$PRISM_INSTANCE_ID" &
-fi
-
 # Create custom binds from config.json (with all relevant environment variables)
 custom_binds=$(jq -r '.binds.custom // {} | to_entries[] | "\(.key) \(.value|@json)"' "$PROFILE_CONFIG_FILE")
 if [ -n "$custom_binds" ]; then
   while IFS= read -r entry; do
     bind=$(echo "$entry" | awk '{print $1}')
     cmds=$(echo "$entry" | cut -d' ' -f2-)
-    hyprctl keyword bind "$bind,exec,HYPRMCSR_PROFILE=\"$HYPRMCSR_PROFILE\" PRISM_INSTANCE_ID=\"$PRISM_INSTANCE_ID\" MINECRAFT_ROOT=\"$MINECRAFT_ROOT\" $SCRIPT_DIR/custom_bind_wrapper.sh '$cmds'"
+    hyprctl keyword bind "$bind,exec,$HYPRMCSR_BIN -h $HYPRMCSR_PROFILE custom-bind-wrapper '$cmds'"
   done <<< "$custom_binds"
 fi
 
@@ -101,7 +95,7 @@ fi
 on_start_cmds=$(jq -r '.onStart[]?' "$PROFILE_CONFIG_FILE")
 if [ -n "$on_start_cmds" ]; then
   (
-    export SCRIPT_DIR PROFILE HYPRMCSR_PROFILE PRISM_INSTANCE_ID MINECRAFT_ROOT WINDOW_ADDRESS
+    export SCRIPT_DIR PROFILE HYPRMCSR_PROFILE
     while IFS= read -r cmd; do
       bash -c "$cmd" &
     done <<< "$on_start_cmds"

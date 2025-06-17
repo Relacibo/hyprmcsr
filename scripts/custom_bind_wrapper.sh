@@ -1,6 +1,7 @@
 #!/bin/bash
 SCRIPT_DIR="$(dirname "$(realpath "$0")")"
 source "$SCRIPT_DIR/env_runtime.sh"
+source "$SCRIPT_DIR/env_prism.sh"
 
 [ "$BINDS_ENABLED" = "1" ] || exit 0
 

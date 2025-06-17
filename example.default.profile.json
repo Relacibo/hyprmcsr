@@ -6,7 +6,8 @@
     "flatpak run com.obsproject.Studio",
     "sudo input-remapper-control --command start --device \"Ducky Ducky One 3 TKL \" --preset \"MCSR\"",
     "input-remapper-control --command start --device \"Razer Razer Viper V3 Pro\" --preset \"MCSR\"",
-    "# $SCRIPT_DIR/run_jar.sh paceman"
+    "# $SCRIPT_DIR/run_jar.sh paceman",
+    "prismlauncher -l \"1.16.1\""
   ],
   "onDestroy": [
     "sudo input-remapper-control --command stop-all"
@@ -57,10 +58,8 @@
     }
   },
   "minecraft": {
-    "autoStart": true,
     "onStart": [],
     "prismPrefixOverride": "~/.local/share/PrismLauncher",
-    "prismInstanceId": "1.16.1",
     "windowClassRegex": "Minecraft",
     "windowTitleRegex": "Minecraft",
     "prismWrapperCommand": {

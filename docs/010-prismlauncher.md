@@ -41,3 +41,12 @@ Then you can set any wrapper you like in the PrismLauncher GUI (e.g., `obs-gamec
 
 **Note:**
 When specifying your PrismLauncher instance ID in your config (e.g., for `minecraft.prismInstanceId`), always use the actual folder name of the instance (as found in `~/.local/share/PrismLauncher/instances/`), **not** the display name shown in the PrismLauncher GUI. The folder name is the true instance ID required for automation and configuration.
+
+**Tip:**
+You can start Minecraft directly from your onStart array using:
+
+    prismlauncher -l "instance id"
+
+Replace "instance id" with the folder name of your instance (not the display name in PrismLauncher).
+
+This is the recommended way to launch Minecraft from automation scripts.

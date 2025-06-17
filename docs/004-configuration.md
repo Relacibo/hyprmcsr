@@ -56,10 +56,6 @@ See [example.default.profile.json](../example.default.profile.json) for a full e
 - **download.jar**: Array of GitHub repositories (or URLs in the future) for required JARs to be downloaded automatically.
 - **autoDestroyOnExit**: If true, runs cleanup automatically when the main script exits.
 - **requireSudo**: If true, you will be prompted for sudo at start and it will be kept alive for all commands in `onStart`/`onDestroy` (useful for input-remapper or other tools needing root).
-- **minecraft.autoStart**:  
-  If `true` (default), Minecraft will be started automatically by `hyprmcsr.sh`.  
-  If `false`, you must start Minecraft yourself via PrismLauncher (GUI or CLI).  
-  In both cases, all post-launch actions (window handling, audio, etc.) are handled by `instance_wrapper.sh` after Minecraft starts.
 - **minecraft.prismWrapperCommand**:  
   Controls whether the instance wrapper is set automatically and which inner wrapper (like obs-gamecapture) is used.  
   Example:
@@ -81,3 +77,5 @@ See [example.default.profile.json](../example.default.profile.json) for a full e
 
 **Tip:**  
 You can use variables like `$SCRIPT_DIR`, `$PROFILE`, `$HYPRMCSR_PROFILE`, `$PREVIOUS_MODE`, `$NEXT_MODE`, `$WINDOW_ADDRESS`, `$PRISM_INSTANCE_ID`, `$MINECRAFT_ROOT`, and `$BINDS_ENABLED` in your shell commands in `onStart`, `onDestroy`, `onEnter`, `onExit`, `onToggleBinds`, `minecraft.onStart`, and custom binds.
+
+# removed: autoStartInstanceId and autoStart (now recommend prismlauncher -l "instance id" in onStart)
