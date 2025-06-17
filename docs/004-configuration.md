@@ -36,7 +36,7 @@ See [example.default.profile.json](../example.default.profile.json) for a full e
 - **modeSwitch.default**: Default window size, sensitivity, and optional `onEnter`/`onExit` arrays for commands to run when entering or exiting a mode.
 - **modeSwitch.modes**: Per-mode overrides for size, sensitivity, and `onEnter`/`onExit` commands.
 - **minecraft.prismPrefixOverride**: (Optional) Path to your PrismLauncher data directory.
-- **minecraft.prismInstanceId**: Name or UUID of your PrismLauncher instance.
+- **minecraft.prismInstanceId**: Name or UUID of your PrismLauncher instance. (Usually the folder name in `instances/`)
 - **minecraft.windowClassRegex**:  
   (Optional) Regular expression to detect the Minecraft window by its window class.
 - **minecraft.windowTitleRegex**:  
@@ -76,16 +76,6 @@ See [example.default.profile.json](../example.default.profile.json) for a full e
   - If `autoReplace` is `false`, **you must manually ensure that `instance_wrapper.sh` is set as the WrapperCommand in your PrismLauncher instance and that the environment variable `HYPRMCSR_PROFILE` is set correctly when launching Minecraft.**
   - `innerCommand` can be any wrapper tool (e.g., `"obs-gamecapture"`).
   - If you don't need a wrapper, you can omit this field.
-- **minecraft.minecraftRootFolderOverride**: (Optional)  
-  Set this to the absolute **or relative** path of your `.minecraft` folder if you want to override the default detection.  
-  If you use a **relative path**, it will be resolved relative to the detected PrismLauncher instance folder.  
-  Example:
-  ```json
-  "minecraft": {
-    "minecraftRootFolderOverride": ".minecraft"
-  }
-  ```
-  If not set, the scripts will use the PrismLauncher instance config or the default path.
 
 ---
 

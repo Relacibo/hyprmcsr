@@ -5,25 +5,21 @@ PRISM_PREFIX=$(jq -r '.minecraft.prismPrefixOverride // "~/.local/share/PrismLau
 PRISM_PREFIX="${PRISM_PREFIX/#\~/$HOME}"
 export PRISM_PREFIX
 
-PRISM_INSTANCE_ID=$(jq -r '.minecraft.prismInstanceId' "$PROFILE_CONFIG_FILE")
+# Prefer environment/state files set by PrismLauncher/instance_wrapper
+if [ -f "$STATE_DIR/prism_instance_id" ]; then
+  PRISM_INSTANCE_ID=$(cat "$STATE_DIR/prism_instance_id")
+else
+  PRISM_INSTANCE_ID=$(jq -r '.minecraft.prismInstanceId' "$PROFILE_CONFIG_FILE")
+fi
 export PRISM_INSTANCE_ID
 
 PRISM_INSTANCE_CONFIG="$PRISM_PREFIX/instances/$PRISM_INSTANCE_ID/instance.cfg"
 export PRISM_INSTANCE_CONFIG
 
-# Check for explicit override for Minecraft root folder
-MINECRAFT_ROOT=$(jq -r '.minecraft.minecraftRootFolderOverride // empty' "$PROFILE_CONFIG_FILE")
-if [ -n "$MINECRAFT_ROOT" ] && [ "$MINECRAFT_ROOT" != "null" ]; then
-  # If relative path, resolve relative to $PRISM_PREFIX/instances/$PRISM_INSTANCE_ID
-  case "$MINECRAFT_ROOT" in
-    /*) ;; # absolute, do nothing
-    ~*) MINECRAFT_ROOT="${MINECRAFT_ROOT/#\~/$HOME}" ;; # replace ~
-    *) MINECRAFT_ROOT="$PRISM_PREFIX/instances/$PRISM_INSTANCE_ID/$MINECRAFT_ROOT" ;;
-  esac
+if [ -f "$STATE_DIR/minecraft_root" ]; then
+  MINECRAFT_ROOT=$(cat "$STATE_DIR/minecraft_root")
 else
-  MINECRAFT_ROOT=$(grep '^OverrideMinecraftDir=' "$PRISM_INSTANCE_CONFIG" 2>/dev/null | cut -d= -f2-)
-  if [ -z "$MINECRAFT_ROOT" ]; then
-    MINECRAFT_ROOT="$PRISM_PREFIX/instances/$PRISM_INSTANCE_ID/minecraft"
-  fi
+  # Fallback: use default PrismLauncher instance path
+  MINECRAFT_ROOT="$PRISM_PREFIX/instances/$PRISM_INSTANCE_ID/minecraft"
 fi
 export MINECRAFT_ROOT

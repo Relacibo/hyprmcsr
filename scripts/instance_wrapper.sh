@@ -2,7 +2,6 @@
 # filepath: /home/reinhard/git/hyprmcsr/scripts/instance_wrapper.sh
 
 SCRIPT_DIR="$(dirname "$(realpath "$0")")"
-source "$SCRIPT_DIR/env_prism.sh"
 source "$SCRIPT_DIR/env_runtime.sh"
 WINDOW_CLASS_REGEX=$(jq -r '.minecraft.windowClassRegex // empty' "$PROFILE_CONFIG_FILE")
 WINDOW_TITLE_REGEX=$(jq -r '.minecraft.windowTitleRegex // empty' "$PROFILE_CONFIG_FILE")
@@ -11,6 +10,18 @@ WINDOW_TITLE_REGEX=$(jq -r '.minecraft.windowTitleRegex // empty' "$PROFILE_CONF
 before_pids=$(pgrep -u "$USER" java | sort)
 # Before start: remember all sink-input-IDs
 before_sinks=$(pactl -f json list sink-inputs | jq '.[].index' | sort)
+
+# Set and persist PRISM_INSTANCE_ID and MINECRAFT_ROOT from PrismLauncher environment variables
+if [ -n "$INST_ID" ]; then
+  PRISM_INSTANCE_ID="$INST_ID"
+  echo "$PRISM_INSTANCE_ID" > "$STATE_DIR/prism_instance_id"
+fi
+if [ -n "$INST_MC_DIR" ]; then
+  MINECRAFT_ROOT="$INST_MC_DIR"
+  echo "$MINECRAFT_ROOT" > "$STATE_DIR/minecraft_root"
+fi
+export PRISM_INSTANCE_ID
+export MINECRAFT_ROOT
 
 # Start parallel actions in subprocess
 (

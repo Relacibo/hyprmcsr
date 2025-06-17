@@ -30,4 +30,5 @@ if [ -n "$on_destroy_cmds" ]; then
   )
 fi
 
-rm -rf "$STATE_DIR"
+# Only remove state files, but keep prism_instance_id and minecraft_root for session persistence
+find "$STATE_DIR" -mindepth 1 -maxdepth 1 ! -name 'prism_instance_id' ! -name 'minecraft_root' -exec rm -rf {} +
