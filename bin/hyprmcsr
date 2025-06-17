@@ -14,13 +14,14 @@ usage() {
 # Print version if --version or version command
 if [[ "$1" == "--version" || "$1" == "version" ]]; then
   VERSION_FILE="$(dirname "$(realpath "$0")")/../VERSION"
+  version_str=""
   if [ -f "$VERSION_FILE" ]; then
-    cat "$VERSION_FILE"
+    version_str="$(cat "$VERSION_FILE")"
   else
-    echo "unknown version"
+    version_str="unknown version"
   fi
 
-  # Show git commit if possible (without git command)
+  # Show git commit if possible (full hash appended to version)
   GIT_DIR="$(dirname "$(realpath "$0")")/.."
   if [ -d "$GIT_DIR/.git" ]; then
     head_file="$GIT_DIR/.git/HEAD"
@@ -29,15 +30,21 @@ if [[ "$1" == "--version" || "$1" == "version" ]]; then
       if [[ "$ref" == ref:\ * ]]; then
         ref_file="$GIT_DIR/.git/$(echo "$ref" | cut -d' ' -f2)"
         if [ -f "$ref_file" ]; then
-          commit=$(head -c 7 "$ref_file")
-          echo "git commit: $commit"
+          commit=$(cat "$ref_file" | head -c 40)
+          echo "$version_str-$commit"
+        else
+          echo "$version_str"
         fi
       else
         # detached HEAD
-        commit=$(echo "$ref" | head -c 7)
-        echo "git commit: $commit"
+        commit=$(echo "$ref" | head -c 40)
+        echo "$version_str-$commit"
       fi
+    else
+      echo "$version_str"
     fi
+  else
+    echo "$version_str"
   fi
   exit 0
 fi
@@ -74,6 +81,12 @@ SCRIPT_NAME=$(echo "$CMD" | tr '-' '_').sh
 SCRIPT_DIR="$(dirname "$(realpath "$0")")/../scripts"
 
 SCRIPT_PATH="$SCRIPT_DIR/$SCRIPT_NAME"
+
+# Security: Only allow execution of scripts in the scripts directory
+if [[ ! "$SCRIPT_PATH" -ef "$SCRIPT_DIR/$(basename "$SCRIPT_PATH")" ]]; then
+  echo "Refusing to execute script outside of scripts directory: $SCRIPT_PATH"
+  exit 1
+fi
 
 if [ ! -f "$SCRIPT_PATH" ]; then
   echo "Unknown command: $CMD"
