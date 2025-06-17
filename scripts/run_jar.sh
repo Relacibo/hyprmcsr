@@ -19,8 +19,13 @@ fi
 PREFIX="$1"
 shift
 
-# Search for the first matching JAR file with the prefix
-JAR_FILE=$(find "$JARS_DIR" -maxdepth 1 -type f -name "${PREFIX}*.jar" | head -n1)
+# Wenn ein vollständiger Dateiname mit .jar angegeben wird und existiert, direkt verwenden
+if [[ "$PREFIX" == *.jar ]] && [ -f "$JARS_DIR/$PREFIX" ]; then
+  JAR_FILE="$JARS_DIR/$PREFIX"
+else
+  # Suche nach erstem passenden JAR mit Präfix
+  JAR_FILE=$(find "$JARS_DIR" -maxdepth 1 -type f -name "${PREFIX}*.jar" | head -n1)
+fi
 
 if [ -z "$JAR_FILE" ]; then
   echo "No JAR file found with prefix '$PREFIX' in $JARS_DIR"

@@ -1,0 +1,75 @@
+#compdef hyprmcsr
+
+_hyprmcsr() {
+  local -a commands profiles
+  local config_root config_file download_root repo_dir jars_dir
+  commands=(start destroy delete-old-worlds install modcheck run-jar version)
+
+  # config_root dynamisch bestimmen
+  config_root="${XDG_CONFIG_HOME:-$HOME/.config}/hyprmcsr"
+  config_file="$config_root/config.json"
+
+  # Profile dynamisch ermitteln
+  if [[ -d $config_root ]]; then
+    profiles=(${(f)"$(ls $config_root/*.profile.json 2>/dev/null | xargs -n1 basename | sed 's/\.profile\.json$//')"})
+  else
+    profiles=()
+  fi
+
+  local context state state_descr line
+  _arguments -C \
+    '-h[Set global config profile]:profile:(${profiles})' \
+    '-p[Set profile]: :_nothing' \
+    '1:command:((start destroy delete-old-worlds install modcheck run-jar version))' \
+    '*::args:->args'
+
+  case $state in
+    args)
+      # Ermittle das aktuelle Kommando (nach Optionen)
+      local cmd_idx=1
+      local cmd_name=""
+      for ((i=1; i<=$#words; i++)); do
+        if [[ ${words[i]} != -* ]]; then
+          cmd_name=${words[i]}
+          cmd_idx=$i
+          break
+        fi
+      done
+      case $cmd_name in
+        delete-old-worlds)
+          _arguments '1:regex:' '2:keep_n:'
+          ;;
+        run-jar)
+          # download_root dynamisch aus config.json
+          if [[ -f $config_file ]]; then
+            download_root=$(command jq -r '.download.root // empty' "$config_file" 2>/dev/null)
+          fi
+          if [[ -z $download_root || $download_root == "null" || $download_root == "" ]]; then
+            repo_dir=${0:A}
+            repo_dir=${repo_dir%/bin/*}
+            jars_dir="$repo_dir/download/jar"
+          else
+            jars_dir="$download_root/jar"
+          fi
+          local -a jars
+          if [[ -d $jars_dir ]]; then
+            jars=(${(f)$(ls -1 $jars_dir/*.jar(N) 2>/dev/null | xargs -n1 basename)})
+          else
+            jars=()
+          fi
+          if (( $#jars )); then
+            _values 'jar file' $jars
+          else
+            _message 'no jar files found'
+          fi
+          ;;
+        "")
+          # Wenn noch kein Kommando eingegeben wurde, Kommandos vorschlagen
+          _values 'command' $commands
+          ;;
+      esac
+      ;;
+  esac
+}
+
+compdef _hyprmcsr hyprmcsr
