@@ -46,18 +46,27 @@ _hyprmcsr() {
           fi
           if [[ -z $download_root || $download_root == "null" || $download_root == "" ]]; then
             repo_dir=${0:A}
-            repo_dir=${repo_dir%/bin/*}
+            repo_dir=${repo_dir%/tab-completions/_hyprmcsr}
+            # Falls der Pfad auf .../hyprmcsr/_hyprmcsr endet (z.B. bei Symlink im PATH), nochmal ein Verzeichnis nach oben
+            if [[ $repo_dir == */_hyprmcsr ]]; then
+              repo_dir=${repo_dir%/_hyprmcsr}
+            fi
             jars_dir="$repo_dir/download/jar"
           else
             jars_dir="$download_root/jar"
           fi
           local -a jars
           if [[ -d $jars_dir ]]; then
-            jars=(${(f)$(ls -1 $jars_dir/*.jar(N) 2>/dev/null | xargs -n1 basename)})
+            jars=()
+            for f in "$jars_dir"/*.jar(.N); do
+              [[ -e $f ]] && jars+="${f:t}"
+            done
           else
             jars=()
           fi
-          if (( $#jars )); then
+          print -rl -- "[DEBUG] jars_dir: $jars_dir" > /tmp/hyprmcsr-zsh-debug.log
+          print -rl -- "[DEBUG] jars: $jars[@]" >> /tmp/hyprmcsr-zsh-debug.log
+          if (( ${#jars[@]} )); then
             _values 'jar file' $jars
           else
             _message 'no jar files found'
