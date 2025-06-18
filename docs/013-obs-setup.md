@@ -24,7 +24,7 @@ Just use monitor capture with Pipewire on the monitor where Minecraft is running
 - This will automatically wrap Minecraft with obs-gamecapture.
 
 **Limitations:**
-- Currently, the monitor where Minecraft runs must be positioned at the very top-left of your monitor setup for the mouse to be recorded, if it is recorded at all.
+- Currently, the monitor where Minecraft runs must be positioned at the very top-left of your monitor setup for the mouse to be recorded, if prism and obs are installed natively. With flatpak installations it will not be recorded at all.
 
 ## Boat Eye
 
