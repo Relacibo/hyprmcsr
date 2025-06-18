@@ -1,14 +1,22 @@
 {
   "requireSudo": true,
   "onStart": [
-    "if [ \"$PROFILE\" = \"coop\" ]; then JAR_WORKDIR=\"$HOME/.config/NinjaLink\" $SCRIPT_DIR/run_jar.sh NinjaLink; fi",
+    {
+      "exec": "JAR_WORKDIR=\"$HOME/.config/NinjaLink\" $SCRIPT_DIR/run_jar.sh NinjaLink",
+      "if": "[ \"$PROFILE\" = \"coop\" ]"
+    },
     "$SCRIPT_DIR/run_jar.sh Ninjabrain-Bot",
     "flatpak run com.obsproject.Studio",
     "sudo input-remapper-control --command start --device \"Ducky Ducky One 3 TKL \" --preset \"MCSR\"",
     "input-remapper-control --command start --device \"Razer Razer Viper V3 Pro\" --preset \"MCSR\"",
-    "# $SCRIPT_DIR/run_jar.sh paceman",
-    "if [ \"$PROFILE\" = \"ranked\" ]; then prismlauncher -l \"ranked\"; fi",
-    "if [ -z \"${PROFILE:-}\" ]; then prismlauncher -l \"1.16.1\"; fi"
+    {
+      "exec": "prismlauncher -l \"ranked\"",
+      "if": "[ \"$PROFILE\" = \"ranked\" ]"
+    },
+    {
+      "exec": "prismlauncher -l \"1.16.1\"",
+      "if": "[ \"$PROFILE\" = \"default\" ]"
+    }
   ],
   "onDestroy": [
     "sudo input-remapper-control --command stop-all"

@@ -1,7 +1,9 @@
 #!/bin/bash
 SCRIPT_DIR="$(dirname "$(realpath "$0")")"
-source "$SCRIPT_DIR/env_prism.sh"
-source "$SCRIPT_DIR/env_runtime.sh"
+
+# Source env scripts from util
+source "$SCRIPT_DIR/../util/env_core.sh"
+source "$SCRIPT_DIR/../util/env_prism.sh"
 
 toggle_binds_key=$(jq -r '.binds.toggleBinds' "$PROFILE_CONFIG_FILE")
 if [ -n "$toggle_binds_key" ] && [ "$toggle_binds_key" != "null" ]; then
@@ -20,12 +22,13 @@ jq -r '.binds.modeSwitch | to_entries[] | "\(.key) \(.value)"' "$PROFILE_CONFIG_
   hyprctl keyword unbind $key
 done
 
-on_destroy_cmds=$(jq -r '.onDestroy[]?' "$PROFILE_CONFIG_FILE")
+# Run onDestroy commands from config.json (all in background, with all relevant environment variables)
+on_destroy_cmds=$(jq -c '.onDestroy[]?' "$PROFILE_CONFIG_FILE")
 if [ -n "$on_destroy_cmds" ]; then
   (
-    export WINDOW_ADDRESS SCRIPT_DIR PROFILE HYPRMCSR_PROFILE PRISM_INSTANCE_ID MINECRAFT_ROOT
+    export SCRIPT_DIR PROFILE HYPRMCSR_PROFILE
     while IFS= read -r cmd; do
-      bash -c "$cmd" &
+      "$SCRIPT_DIR/../util/run_conditional_command.sh" "$cmd"
     done <<< "$on_destroy_cmds"
   )
 fi

@@ -24,17 +24,17 @@ See [example.default.profile.json](../example.default.profile.json) for a full e
 
 ### Key fields
 
-- **onStart**: Array of shell commands/scripts to run in the background when starting (e.g. starting helper tools, OBS, input-remapper, etc.).
-- **onDestroy**: Array of shell commands/scripts to run in the background when stopping (e.g. cleanup, notifications, killing helper tools, stopping input-remapper).
+- **onStart**: Array of shell commands/scripts to run in the background when starting (e.g. starting helper tools, OBS, input-remapper, etc.). See [Command Syntax](#command-syntax-string-or-object)
+- **onDestroy**: Array of shell commands/scripts to run in the background when stopping (e.g. cleanup, notifications, killing helper tools, stopping input-remapper). See [Command Syntax](#command-syntax-string-or-object)
 - **onToggleBinds**: Array of shell commands/scripts to run whenever binds are toggled (e.g. notifications, custom actions).  
-  The environment variable `$BINDS_ENABLED` is set to `1` (enabled) or `0` (disabled).
+  The environment variable `$BINDS_ENABLED` is set to `1` (enabled) or `0` (disabled). See [Command Syntax](#command-syntax-string-or-object)
 - **binds.toggleBinds**: Key combination to toggle binds.
 - **binds.modeSwitch**: Key combinations for switching between window modes.
 - **binds.custom**:  
   Define your own keybinds and associated commands here.  
-  The commands will be executed with the environment variables `$WINDOW_ADDRESS`, `$SCRIPT_DIR`, `$PROFILE`, `$HYPRMCSR_PROFILE`, `$PRISM_INSTANCE_ID`, and `$MINECRAFT_ROOT` set.
-- **modeSwitch.default**: Default window size, sensitivity, and optional `onEnter`/`onExit` arrays for commands to run when entering or exiting a mode.
-- **modeSwitch.modes**: Per-mode overrides for size, sensitivity, and `onEnter`/`onExit` commands.
+  The commands will be executed with the environment variables `$WINDOW_ADDRESS`, `$SCRIPT_DIR`, `$PROFILE`, `$HYPRMCSR_PROFILE`, `$PRISM_INSTANCE_ID`, and `$MINECRAFT_ROOT` set. See [Command Syntax](#command-syntax-string-or-object)
+- **modeSwitch.default**: Default window size, sensitivity, and optional `onEnter`/`onExit` arrays for commands to run when entering or exiting a mode. See [Command Syntax](#command-syntax-string-or-object)
+- **modeSwitch.modes**: Per-mode overrides for size, sensitivity, and `onEnter`/`onExit` commands. See [Command Syntax](#command-syntax-string-or-object)
 - **minecraft.prismPrefixOverride**: (Optional) Path to your PrismLauncher data directory.
 - **minecraft.windowClassRegex**:  
   (Optional) Regular expression to detect the Minecraft window by its window class.
@@ -48,7 +48,7 @@ See [example.default.profile.json](../example.default.profile.json) for a full e
   > - If **both** are set, both must match.  
   >   You can check the values with `hyprctl clients -j`.
 - **minecraft.observeLog.enabled**: Enable or disable log observation for Minecraft state.
-- **minecraft.onStart**: Array of shell commands/scripts to run after Minecraft has started (executed by `instance_wrapper.sh`).
+- **minecraft.onStart**: Array of shell commands/scripts to run after Minecraft has started (executed by `instance_wrapper.sh`). See [Command Syntax](#command-syntax-string-or-object)
 - **pipewireLoopback.enabled**: Enable or disable Pipewire audio loopback/splitting.
 - **pipewireLoopback.playbackTarget**: Audio output for Pipewire split (e.g., your headset).  
   Tip: You can leave this field empty. If loopback is enabled, running `install.sh` will automatically detect and set your default output here.
@@ -78,5 +78,22 @@ See [example.default.profile.json](../example.default.profile.json) for a full e
 
 **Tip:**  
 You can use variables like `$SCRIPT_DIR`, `$PROFILE`, `$HYPRMCSR_PROFILE`, `$PREVIOUS_MODE`, `$NEXT_MODE`, `$WINDOW_ADDRESS`, `$PRISM_INSTANCE_ID`, `$MINECRAFT_ROOT`, and `$BINDS_ENABLED` in your shell commands in `onStart`, `onDestroy`, `onEnter`, `onExit`, `onToggleBinds`, `minecraft.onStart`, and custom binds.
+
+## Command Syntax: String or Object
+
+All command fields (e.g. `onStart`, `onDestroy`, `onToggleBinds`, `modeSwitch.*.onEnter`, `modeSwitch.*.onExit`) support:
+
+- **String:** always executed
+- **Object:**
+  - `exec`: command
+  - `if`: (optional) bash condition, only executed if true
+
+**Example:**
+```json
+"onStart": [
+  "flatpak run obs",
+  { "exec": "do-special", "if": "[ \"$PROFILE\" = \"special\" ]" }
+]
+```
 
 # removed: autoStartInstanceId and autoStart (now recommend prismlauncher -l "instance id" in onStart)

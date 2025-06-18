@@ -9,8 +9,9 @@ SCRIPT_DIR="$(dirname "$(realpath "$0")")"
 
 export HYPRMCSR_PROFILE="${HYPRMCSR_PROFILE:-default}"
 export PROFILE="${PROFILE:-default}"
-source "$SCRIPT_DIR/env_core.sh"
-source "$SCRIPT_DIR/env_prism.sh"
+# Source env scripts from util
+source "$SCRIPT_DIR/../util/env_core.sh"
+source "$SCRIPT_DIR/../util/env_prism.sh"
 
 if ! command -v jq >/dev/null; then
   echo "jq is required!"
@@ -104,13 +105,18 @@ if [ -n "$custom_binds" ]; then
   done <<< "$custom_binds"
 fi
 
+# Helper: run a command or a conditional command object
+run_profile_command() {
+  "$SCRIPT_DIR/../util/run_conditional_command.sh" "$1"
+}
+
 # Run onStart commands from config.json (all in background, with all relevant environment variables)
-on_start_cmds=$(jq -r '.onStart[]?' "$PROFILE_CONFIG_FILE")
+on_start_cmds=$(jq -c '.onStart[]?' "$PROFILE_CONFIG_FILE")
 if [ -n "$on_start_cmds" ]; then
   (
     export SCRIPT_DIR PROFILE HYPRMCSR_PROFILE
     while IFS= read -r cmd; do
-      bash -c "$cmd" &
+      run_profile_command "$cmd"
     done <<< "$on_start_cmds"
   )
 fi

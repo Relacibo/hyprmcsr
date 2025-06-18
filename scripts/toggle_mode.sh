@@ -1,7 +1,9 @@
 #!/bin/bash
 SCRIPT_DIR="$(dirname "$(realpath "$0")")"
-source "$SCRIPT_DIR/env_runtime.sh"
-source "$SCRIPT_DIR/env_prism.sh"
+# env_runtime.sh, env_core.sh und env_prism.sh werden jetzt alle aus util/ bezogen
+source "$SCRIPT_DIR/../util/env_core.sh"
+source "$SCRIPT_DIR/../util/env_prism.sh"
+source "$SCRIPT_DIR/../util/env_runtime.sh"
 
 MODE="$1"
 STATE_FILE="$STATE_DIR/current_mode"
@@ -36,13 +38,13 @@ fi
 TARGET_SIZE=$(jq -r --arg m "$NEXT_MODE" '.modeSwitch.modes[$m].size // .modeSwitch.default.size' "$PROFILE_CONFIG_FILE")
 TARGET_SENSITIVITY=$(jq -r --arg m "$NEXT_MODE" '.modeSwitch.modes[$m].sensitivity // .modeSwitch.default.sensitivity' "$PROFILE_CONFIG_FILE")
 
-# onExit: run all commands in array (only if PREVIOUS_MODE is set)
+# Run onExit: run all commands in array (only if PREVIOUS_MODE is set)
 if [ -n "$PREVIOUS_MODE" ]; then
   (
     export WINDOW_ADDRESS SCRIPT_DIR HYPRMCSR_PROFILE PRISM_INSTANCE_ID MINECRAFT_ROOT PREVIOUS_MODE NEXT_MODE
-    jq -r --arg m "$PREVIOUS_MODE" '.modeSwitch.modes[$m].onExit[]? // .modeSwitch.default.onExit[]? // empty' "$PROFILE_CONFIG_FILE" | while IFS= read -r cmd; do
+    jq -c --arg m "$PREVIOUS_MODE" '.modeSwitch.modes[$m].onExit[]? // .modeSwitch.default.onExit[]? // empty' "$PROFILE_CONFIG_FILE" | while IFS= read -r cmd; do
       [ -z "$cmd" ] && continue
-      bash -c "$cmd" &
+      "$SCRIPT_DIR/../util/run_conditional_command.sh" "$cmd"
     done
   )
 fi
@@ -61,11 +63,11 @@ hyprctl --batch "
   dispatch focuswindow address:$WINDOW_ADDRESS
 "
 
-# onEnter: run all commands in array (if any and mode changes)
+# Run onEnter: run all commands in array
 (
-  export WINDOW_ADDRESS SCRIPT_DIR PROFILE HYPRMCSR_PROFILE PRISM_INSTANCE_ID MINECRAFT_ROOT PREVIOUS_MODE NEXT_MODE
-  jq -r --arg m "$NEXT_MODE" '.modeSwitch.modes[$m].onEnter[]? // .modeSwitch.default.onEnter[]? // empty' "$PROFILE_CONFIG_FILE" | while IFS= read -r cmd; do
+  export WINDOW_ADDRESS SCRIPT_DIR HYPRMCSR_PROFILE PRISM_INSTANCE_ID MINECRAFT_ROOT PREVIOUS_MODE NEXT_MODE
+  jq -c --arg m "$NEXT_MODE" '.modeSwitch.modes[$m].onEnter[]? // .modeSwitch.default.onEnter[]? // empty' "$PROFILE_CONFIG_FILE" | while IFS= read -r cmd; do
     [ -z "$cmd" ] && continue
-    bash -c "$cmd" &
+    "$SCRIPT_DIR/../util/run_conditional_command.sh" "$cmd"
   done
 )
