@@ -1,5 +1,51 @@
 #!/bin/bash
-# filepath: /home/reinhard/git/hyprmcsr/scripts/start.sh
+
+
+set_instance_cfg_field_in_general_section() {
+  local instance_config="$1"
+  local field="$2"
+  local mode="$3" # "override" oder "ensure-init"
+  local value="$4" # optional, nur für override
+
+  if awk '/^\[General\]/{in_general=1} /^\[/{if($0!="[General]"){in_general=0}} in_general && /^'"$field"'=/' "$instance_config" | grep -q .; then
+    if [ "$mode" = "override" ]; then
+      awk -v val="$value" -v field="$field" '
+        BEGIN{in_general=0}
+        /^\[General\]/{in_general=1}
+        /^\[/{if($0!="[General]"){in_general=0}}
+        in_general && ($0 ~ "^"field"=") {print field"="val; next}
+        {print}
+      ' "$instance_config" > "$instance_config.tmp" && mv "$instance_config.tmp" "$instance_config"
+    fi
+    # ensure-init: nichts tun, Feld bleibt wie es ist
+  else
+    if [ "$mode" = "ensure-init" ]; then
+      awk -v field="$field" '
+        BEGIN{inserted=0}
+        /^\[General\]/{print; if(!inserted){print field"="; inserted=1}; next}
+        {print}
+      ' "$instance_config" > "$instance_config.tmp" && mv "$instance_config.tmp" "$instance_config"
+    elif [ "$mode" = "override" ]; then
+      awk -v val="$value" -v field="$field" '
+        BEGIN{inserted=0}
+        /^\[General\]/{print; if(!inserted){print field"="val; inserted=1}; next}
+        {print}
+      ' "$instance_config" > "$instance_config.tmp" && mv "$instance_config.tmp" "$instance_config"
+    fi
+  fi
+}
+
+update_instance_general_section() {
+  local instance_config="$1"
+  local wrapper_cmd="$2"
+  local profile_config_file="$3"
+
+  set_instance_cfg_field_in_general_section "$instance_config" "WrapperCommand" "override" "$wrapper_cmd"
+  set_instance_cfg_field_in_general_section "$instance_config" "UseCustomCommands" "override" "true"
+  for field in PostExitCommand PreLaunchCommand; do
+    set_instance_cfg_field_in_general_section "$instance_config" "$field" "ensure-init"
+  done
+}
 
 SCRIPT_DIR="$(dirname "$(realpath "$0")")"
 
@@ -57,38 +103,7 @@ if [ "$PRISM_WRAPPER_AUTO_REPLACE" = "true" ]; then
       if [ -f "$INSTANCE_CONFIG" ]; then
         # Set WrapperCommand and UseCustomCommands in [General] section only
         if grep -q "^\[General\]" "$INSTANCE_CONFIG"; then
-          # WrapperCommand
-          if awk '/^\[General\]/{in_general=1} /^\[/{if($0!="[General]"){in_general=0}} in_general && /^WrapperCommand=/' "$INSTANCE_CONFIG" | grep -q .; then
-            awk -v cmd="$WRAPPER_CMD" '
-              BEGIN{in_general=0}
-              /^\[General\]/{in_general=1}
-              /^\[/{if($0!="[General]"){in_general=0}}
-              in_general && /^WrapperCommand=/{print "WrapperCommand="cmd; next}
-              {print}
-            ' "$INSTANCE_CONFIG" > "$INSTANCE_CONFIG.tmp" && mv "$INSTANCE_CONFIG.tmp" "$INSTANCE_CONFIG"
-          else
-            awk -v cmd="$WRAPPER_CMD" '
-              BEGIN{inserted=0}
-              /^\[General\]/{print; if(!inserted){print "WrapperCommand="cmd; inserted=1}; next}
-              {print}
-            ' "$INSTANCE_CONFIG" > "$INSTANCE_CONFIG.tmp" && mv "$INSTANCE_CONFIG.tmp" "$INSTANCE_CONFIG"
-          fi
-          # UseCustomCommands
-          if awk '/^\[General\]/{in_general=1} /^\[/{if($0!="[General]"){in_general=0}} in_general && /^UseCustomCommands=/' "$INSTANCE_CONFIG" | grep -q .; then
-            awk -v val="true" '
-              BEGIN{in_general=0}
-              /^\[General\]/{in_general=1}
-              /^\[/{if($0!="[General]"){in_general=0}}
-              in_general && /^UseCustomCommands=/{print "UseCustomCommands="val; next}
-              {print}
-            ' "$INSTANCE_CONFIG" > "$INSTANCE_CONFIG.tmp" && mv "$INSTANCE_CONFIG.tmp" "$INSTANCE_CONFIG"
-          else
-            awk -v val="true" '
-              BEGIN{inserted=0}
-              /^\[General\]/{print; if(!inserted){print "UseCustomCommands="val; inserted=1}; next}
-              {print}
-            ' "$INSTANCE_CONFIG" > "$INSTANCE_CONFIG.tmp" && mv "$INSTANCE_CONFIG.tmp" "$INSTANCE_CONFIG"
-          fi
+          update_instance_general_section "$INSTANCE_CONFIG" "$WRAPPER_CMD" "$PROFILE_CONFIG_FILE"
         fi
       fi
     done
