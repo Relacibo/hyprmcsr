@@ -105,20 +105,12 @@ if [ -n "$custom_binds" ]; then
   done <<< "$custom_binds"
 fi
 
-# Helper: run a command or a conditional command object
-run_profile_command() {
-  "$SCRIPT_DIR/../util/run_conditional_command.sh" "$1"
-}
-
 # Run onStart commands from config.json (all in background, with all relevant environment variables)
 on_start_cmds=$(jq -c '.onStart[]?' "$PROFILE_CONFIG_FILE")
 if [ -n "$on_start_cmds" ]; then
-  (
-    export SCRIPT_DIR PROFILE HYPRMCSR_PROFILE
-    while IFS= read -r cmd; do
-      run_profile_command "$cmd"
-    done <<< "$on_start_cmds"
-  )
+  while IFS= read -r cmd; do
+    "$SCRIPT_DIR/../util/run_conditional_command.sh" "$cmd"
+  done <<< "$on_start_cmds"
 fi
 
 OBSERVE_LOG=$(jq -r '.minecraft.observeLog.enabled // true' "$PROFILE_CONFIG_FILE")

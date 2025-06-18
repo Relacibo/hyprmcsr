@@ -7,9 +7,10 @@ source "$SCRIPT_DIR/../util/env_prism.sh"
 
 CMDS_JSON="$1"
 
-# Directly call the util script for each command, no helper needed
+# Import zentrale Kommando-Logik
+source "$SCRIPT_DIR/../util/run_conditional_command.sh"
 
 echo "$CMDS_JSON" | jq -c '.[]' | while IFS= read -r cmd; do
   [ -z "$cmd" ] && continue
-  "$SCRIPT_DIR/../util/run_conditional_command.sh" "$cmd"
+  run_conditional_command "$cmd"
 done

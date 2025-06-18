@@ -8,8 +8,6 @@ export PRISM_PREFIX
 # Prefer environment/state files set by PrismLauncher/instance_wrapper
 if [ -f "$STATE_DIR/prism_instance_id" ]; then
   PRISM_INSTANCE_ID=$(cat "$STATE_DIR/prism_instance_id")
-else
-  PRISM_INSTANCE_ID=""
 fi
 export PRISM_INSTANCE_ID
 
@@ -18,8 +16,8 @@ export PRISM_INSTANCE_CONFIG
 
 if [ -f "$STATE_DIR/minecraft_root" ]; then
   MINECRAFT_ROOT=$(cat "$STATE_DIR/minecraft_root")
-else
-  # Fallback: use default PrismLauncher instance path
+elif [ -n "$PRISM_INSTANCE_ID" ]; then
+  # Fallback: use default PrismLauncher instance path only if PRISM_INSTANCE_ID is set
   MINECRAFT_ROOT="$PRISM_PREFIX/instances/$PRISM_INSTANCE_ID/minecraft"
 fi
 export MINECRAFT_ROOT

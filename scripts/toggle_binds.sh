@@ -2,9 +2,11 @@
 # filepath: /home/reinhard/git/hyprmcsr/scripts/toggle_binds.sh
 
 # Source env scripts from util
+SCRIPT_DIR="$(dirname "$(realpath "$0")")"
 source "$SCRIPT_DIR/../util/env_core.sh"
 source "$SCRIPT_DIR/../util/env_prism.sh"
 source "$SCRIPT_DIR/../util/env_runtime.sh"
+source "$SCRIPT_DIR/../util/run_conditional_command.sh"
 
 if [ $# -ge 1 ]; then
   # Set argument as value (only 0 or 1 allowed)
@@ -28,7 +30,6 @@ echo "$BINDS_ENABLED" > "$STATE_DIR/binds_enabled"
 # Run onToggleBinds (with all relevant environment variables incl. BINDS_ENABLED)
 on_toggle_cmds=$(jq -c '.onToggleBinds[]?' "$PROFILE_CONFIG_FILE")
 if [ -n "$on_toggle_cmds" ]; then
-  export SCRIPT_DIR HYPRMCSR_PROFILE PRISM_INSTANCE_ID MINECRAFT_ROOT WINDOW_ADDRESS BINDS_ENABLED
   while IFS= read -r cmd; do
     "$SCRIPT_DIR/../util/run_conditional_command.sh" "$cmd"
   done <<< "$on_toggle_cmds"

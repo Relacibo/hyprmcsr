@@ -4,6 +4,7 @@ SCRIPT_DIR="$(dirname "$(realpath "$0")")"
 source "$SCRIPT_DIR/../util/env_core.sh"
 source "$SCRIPT_DIR/../util/env_prism.sh"
 source "$SCRIPT_DIR/../util/env_runtime.sh"
+source "$SCRIPT_DIR/../util/run_conditional_command.sh"
 
 MODE="$1"
 STATE_FILE="$STATE_DIR/current_mode"
@@ -40,13 +41,10 @@ TARGET_SENSITIVITY=$(jq -r --arg m "$NEXT_MODE" '.modeSwitch.modes[$m].sensitivi
 
 # Run onExit: run all commands in array (only if PREVIOUS_MODE is set)
 if [ -n "$PREVIOUS_MODE" ]; then
-  (
-    export WINDOW_ADDRESS SCRIPT_DIR HYPRMCSR_PROFILE PRISM_INSTANCE_ID MINECRAFT_ROOT PREVIOUS_MODE NEXT_MODE
-    jq -c --arg m "$PREVIOUS_MODE" '.modeSwitch.modes[$m].onExit[]? // .modeSwitch.default.onExit[]? // empty' "$PROFILE_CONFIG_FILE" | while IFS= read -r cmd; do
-      [ -z "$cmd" ] && continue
-      "$SCRIPT_DIR/../util/run_conditional_command.sh" "$cmd"
-    done
-  )
+  jq -c --arg m "$PREVIOUS_MODE" '.modeSwitch.modes[$m].onExit[]? // .modeSwitch.default.onExit[]? // empty' "$PROFILE_CONFIG_FILE" | while IFS= read -r cmd; do
+    [ -z "$cmd" ] && continue
+    "$SCRIPT_DIR/../util/run_conditional_command.sh" "$cmd"
+  done
 fi
 
 # Update state
@@ -64,10 +62,8 @@ hyprctl --batch "
 "
 
 # Run onEnter: run all commands in array
-(
-  export WINDOW_ADDRESS SCRIPT_DIR HYPRMCSR_PROFILE PRISM_INSTANCE_ID MINECRAFT_ROOT PREVIOUS_MODE NEXT_MODE
-  jq -c --arg m "$NEXT_MODE" '.modeSwitch.modes[$m].onEnter[]? // .modeSwitch.default.onEnter[]? // empty' "$PROFILE_CONFIG_FILE" | while IFS= read -r cmd; do
-    [ -z "$cmd" ] && continue
-    "$SCRIPT_DIR/../util/run_conditional_command.sh" "$cmd"
-  done
-)
+export WINDOW_ADDRESS SCRIPT_DIR HYPRMCSR_PROFILE PRISM_INSTANCE_ID MINECRAFT_ROOT PREVIOUS_MODE NEXT_MODE
+jq -c --arg m "$NEXT_MODE" '.modeSwitch.modes[$m].onEnter[]? // .modeSwitch.default.onEnter[]? // empty' "$PROFILE_CONFIG_FILE" | while IFS= read -r cmd; do
+  [ -z "$cmd" ] && continue
+  "$SCRIPT_DIR/../util/run_conditional_command.sh" "$cmd"
+done

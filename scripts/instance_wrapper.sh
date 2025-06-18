@@ -2,10 +2,10 @@
 # filepath: /home/reinhard/git/hyprmcsr/scripts/instance_wrapper.sh
 
 SCRIPT_DIR="$(dirname "$(realpath "$0")")"
-source "$SCRIPT_DIR/../util/env_runtime.sh"
-source "$SCRIPT_DIR/../util/env_prism.sh"
-# Source env scripts from util
 source "$SCRIPT_DIR/../util/env_core.sh"
+source "$SCRIPT_DIR/../util/env_prism.sh"
+source "$SCRIPT_DIR/../util/env_runtime.sh"
+# Source env scripts from util
 WINDOW_CLASS_REGEX=$(jq -r '.minecraft.windowClassRegex // empty' "$PROFILE_CONFIG_FILE")
 WINDOW_TITLE_REGEX=$(jq -r '.minecraft.windowTitleRegex // empty' "$PROFILE_CONFIG_FILE")
 
@@ -102,12 +102,9 @@ export MINECRAFT_ROOT
   # Run minecraft.onStart (all in background, with all relevant environment variables)
   mc_on_start_cmds=$(jq -c '.minecraft.onStart[]?' "$CONFIG_FILE")
   if [ -n "$mc_on_start_cmds" ]; then
-    (
-      export SCRIPT_DIR HYPRMCSR_PROFILE PRISM_INSTANCE_ID MINECRAFT_ROOT WINDOW_ADDRESS
-      while IFS= read -r cmd; do
-        "$SCRIPT_DIR/../util/run_conditional_command.sh" "$cmd"
-      done <<< "$mc_on_start_cmds"
-    )
+    while IFS= read -r cmd; do
+      "$SCRIPT_DIR/../util/run_conditional_command.sh" "$cmd"
+    done <<< "$mc_on_start_cmds"
   fi
 ) &
 
