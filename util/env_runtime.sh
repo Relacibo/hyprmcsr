@@ -1,5 +1,5 @@
 #!/bin/bash
-source "$(dirname "$(realpath "$0")")/env_core.sh"
+source "$(dirname "${BASH_SOURCE[0]}")/env_core.sh"
 
 WINDOW_ADDRESS_FILE="$STATE_DIR/window_address"
 if [ -f "$WINDOW_ADDRESS_FILE" ]; then

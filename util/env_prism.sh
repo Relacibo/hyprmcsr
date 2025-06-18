@@ -1,5 +1,5 @@
 #!/bin/bash
-source "$(dirname "$(realpath "$0")")/env_core.sh"
+source "$(dirname "${BASH_SOURCE[0]}")/env_core.sh"
 
 PRISM_PREFIX=$(jq -r '.minecraft.prismPrefixOverride // "~/.local/share/PrismLauncher"' "$PROFILE_CONFIG_FILE")
 PRISM_PREFIX="${PRISM_PREFIX/#\~/$HOME}"
