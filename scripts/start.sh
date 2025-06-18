@@ -8,6 +8,7 @@ SCRIPT_DIR="$(dirname "$(realpath "$0")")"
 # Die Umgebungsvariablen werden direkt verwendet, wie sie gesetzt sind
 
 export HYPRMCSR_PROFILE="${HYPRMCSR_PROFILE:-default}"
+export PROFILE="${PROFILE:-default}"
 source "$SCRIPT_DIR/env_core.sh"
 source "$SCRIPT_DIR/env_prism.sh"
 
