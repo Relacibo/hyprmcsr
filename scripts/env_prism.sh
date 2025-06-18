@@ -9,7 +9,7 @@ export PRISM_PREFIX
 if [ -f "$STATE_DIR/prism_instance_id" ]; then
   PRISM_INSTANCE_ID=$(cat "$STATE_DIR/prism_instance_id")
 else
-  PRISM_INSTANCE_ID=$(jq -r '.minecraft.prismInstanceId' "$PROFILE_CONFIG_FILE")
+  PRISM_INSTANCE_ID=""
 fi
 export PRISM_INSTANCE_ID
 

@@ -38,46 +38,58 @@ fi
 # Evaluate prismWrapperCommand
 PRISM_WRAPPER_AUTO_REPLACE=$(jq -r '.minecraft.prismWrapperCommand.autoReplace // true' "$PROFILE_CONFIG_FILE")
 INNER_WRAPPER_CMD=$(jq -r '.minecraft.prismWrapperCommand.innerCommand // empty' "$PROFILE_CONFIG_FILE")
+PRISM_INSTANCE_IDS=$(jq -r '.minecraft.prismWrapperCommand.prismMinecraftInstanceIds[]?' "$PROFILE_CONFIG_FILE")
+
+# Fallback: Use only the outer command if innerCommand is empty/null
+if [ "$INNER_WRAPPER_CMD" = "null" ] || [ "$INNER_WRAPPER_CMD" = "empty" ] || [ -z "$INNER_WRAPPER_CMD" ]; then
+  WRAPPER_CMD="$HYPRMCSR_BIN -h $HYPRMCSR_PROFILE instance-wrapper"
+else
+  WRAPPER_CMD="$HYPRMCSR_BIN -h $HYPRMCSR_PROFILE instance-wrapper $INNER_WRAPPER_CMD"
+fi
 
 if [ "$PRISM_WRAPPER_AUTO_REPLACE" = "true" ]; then
-  if [ -n "$INNER_WRAPPER_CMD" ] && [ "$INNER_WRAPPER_CMD" != "null" ] && [ "$INNER_WRAPPER_CMD" != "empty" ]; then
-    if [ -f "$PRISM_INSTANCE_CONFIG" ]; then
-      WRAPPER_CMD="$HYPRMCSR_BIN -h $HYPRMCSR_PROFILE instance-wrapper $INNER_WRAPPER_CMD"
-      # Ensure WrapperCommand is set in [General] section
-      if grep -q "^WrapperCommand=" "$PRISM_INSTANCE_CONFIG"; then
-        # Replace only in [General] section
-        awk -v cmd="$WRAPPER_CMD" '
-          BEGIN{in_general=0}
-          /^\[General\]/{in_general=1}
-          /^\[/{if($0!="[General]"){in_general=0}}
-          in_general && /^WrapperCommand=/{print "WrapperCommand="cmd; next}
-          {print}
-        ' "$PRISM_INSTANCE_CONFIG" > "$PRISM_INSTANCE_CONFIG.tmp" && mv "$PRISM_INSTANCE_CONFIG.tmp" "$PRISM_INSTANCE_CONFIG"
-      else
-        # Insert after [General] if not present
-        awk -v cmd="$WRAPPER_CMD" '
-          BEGIN{inserted=0}
-          /^\[General\]/{print; if(!inserted){print "WrapperCommand="cmd; inserted=1}; next}
-          {print}
-        ' "$PRISM_INSTANCE_CONFIG" > "$PRISM_INSTANCE_CONFIG.tmp" && mv "$PRISM_INSTANCE_CONFIG.tmp" "$PRISM_INSTANCE_CONFIG"
+  if [ -n "$PRISM_INSTANCE_IDS" ]; then
+    echo "$PRISM_INSTANCE_IDS" | while IFS= read -r INSTANCE_ID; do
+      [ -z "$INSTANCE_ID" ] && continue
+      INSTANCE_CONFIG="$PRISM_PREFIX/instances/$INSTANCE_ID/instance.cfg"
+      if [ -f "$INSTANCE_CONFIG" ]; then
+        # Set WrapperCommand and UseCustomCommands in [General] section only
+        if grep -q "^\[General\]" "$INSTANCE_CONFIG"; then
+          # WrapperCommand
+          if awk '/^\[General\]/{in_general=1} /^\[/{if($0!="[General]"){in_general=0}} in_general && /^WrapperCommand=/' "$INSTANCE_CONFIG" | grep -q .; then
+            awk -v cmd="$WRAPPER_CMD" '
+              BEGIN{in_general=0}
+              /^\[General\]/{in_general=1}
+              /^\[/{if($0!="[General]"){in_general=0}}
+              in_general && /^WrapperCommand=/{print "WrapperCommand="cmd; next}
+              {print}
+            ' "$INSTANCE_CONFIG" > "$INSTANCE_CONFIG.tmp" && mv "$INSTANCE_CONFIG.tmp" "$INSTANCE_CONFIG"
+          else
+            awk -v cmd="$WRAPPER_CMD" '
+              BEGIN{inserted=0}
+              /^\[General\]/{print; if(!inserted){print "WrapperCommand="cmd; inserted=1}; next}
+              {print}
+            ' "$INSTANCE_CONFIG" > "$INSTANCE_CONFIG.tmp" && mv "$INSTANCE_CONFIG.tmp" "$INSTANCE_CONFIG"
+          fi
+          # UseCustomCommands
+          if awk '/^\[General\]/{in_general=1} /^\[/{if($0!="[General]"){in_general=0}} in_general && /^UseCustomCommands=/' "$INSTANCE_CONFIG" | grep -q .; then
+            awk -v val="true" '
+              BEGIN{in_general=0}
+              /^\[General\]/{in_general=1}
+              /^\[/{if($0!="[General]"){in_general=0}}
+              in_general && /^UseCustomCommands=/{print "UseCustomCommands="val; next}
+              {print}
+            ' "$INSTANCE_CONFIG" > "$INSTANCE_CONFIG.tmp" && mv "$INSTANCE_CONFIG.tmp" "$INSTANCE_CONFIG"
+          else
+            awk -v val="true" '
+              BEGIN{inserted=0}
+              /^\[General\]/{print; if(!inserted){print "UseCustomCommands="val; inserted=1}; next}
+              {print}
+            ' "$INSTANCE_CONFIG" > "$INSTANCE_CONFIG.tmp" && mv "$INSTANCE_CONFIG.tmp" "$INSTANCE_CONFIG"
+          fi
+        fi
       fi
-      # Ensure UseCustomCommands is set in [General] section
-      if grep -q "^UseCustomCommands=" "$PRISM_INSTANCE_CONFIG"; then
-        awk -v val="true" '
-          BEGIN{in_general=0}
-          /^\[General\]/{in_general=1}
-          /^\[/{if($0!="[General]"){in_general=0}}
-          in_general && /^UseCustomCommands=/{print "UseCustomCommands="val; next}
-          {print}
-        ' "$PRISM_INSTANCE_CONFIG" > "$PRISM_INSTANCE_CONFIG.tmp" && mv "$PRISM_INSTANCE_CONFIG.tmp" "$PRISM_INSTANCE_CONFIG"
-      else
-        awk -v val="true" '
-          BEGIN{inserted=0}
-          /^\[General\]/{print; if(!inserted){print "UseCustomCommands="val; inserted=1}; next}
-          {print}
-        ' "$PRISM_INSTANCE_CONFIG" > "$PRISM_INSTANCE_CONFIG.tmp" && mv "$PRISM_INSTANCE_CONFIG.tmp" "$PRISM_INSTANCE_CONFIG"
-      fi
-    fi
+    done
   fi
 fi
 

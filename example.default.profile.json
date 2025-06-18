@@ -7,7 +7,8 @@
     "sudo input-remapper-control --command start --device \"Ducky Ducky One 3 TKL \" --preset \"MCSR\"",
     "input-remapper-control --command start --device \"Razer Razer Viper V3 Pro\" --preset \"MCSR\"",
     "# $SCRIPT_DIR/run_jar.sh paceman",
-    "prismlauncher -l \"1.16.1\""
+    "if [ \"$PROFILE\" = \"ranked\" ]; then prismlauncher -l \"ranked\"; fi",
+    "if [ -z \"${PROFILE:-}\" ]; then prismlauncher -l \"1.16.1\"; fi"
   ],
   "onDestroy": [
     "sudo input-remapper-control --command stop-all"
@@ -64,7 +65,10 @@
     "windowTitleRegex": "Minecraft",
     "prismWrapperCommand": {
       "autoReplace": true,
-      "innerCommand": "obs-gamecapture"
+      "innerCommand": "obs-gamecapture",
+      "prismMinecraftInstanceIds": [
+        "1.16.1"
+      ]
     },
     "observeLog": {
       "enabled": true
