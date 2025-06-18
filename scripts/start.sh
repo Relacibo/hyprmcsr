@@ -1,50 +1,121 @@
 #!/bin/bash
 
 
-set_instance_cfg_field_in_general_section() {
+# Sets or initializes multiple fields in the [$section] section at the correct alphabetical position (single pass, robust, sorted)
+# Fields as an alphabetically sorted array: FIELDS=("Field1:mode:val" "Field2:mode:val" ...)
+set_instance_cfg_fields_in_section() {
   local instance_config="$1"
-  local field="$2"
-  local mode="$3" # "override" oder "ensure-init"
-  local value="$4" # optional, nur für override
+  local section="$2"
+  shift 2
+  local fields=("$@")
 
-  if awk '/^\[General\]/{in_general=1} /^\[/{if($0!="[General]"){in_general=0}} in_general && /^'"$field"'=/' "$instance_config" | grep -q .; then
-    if [ "$mode" = "override" ]; then
-      awk -v val="$value" -v field="$field" '
-        BEGIN{in_general=0}
-        /^\[General\]/{in_general=1}
-        /^\[/{if($0!="[General]"){in_general=0}}
-        in_general && ($0 ~ "^"field"=") {print field"="val; next}
-        {print}
-      ' "$instance_config" > "$instance_config.tmp" && mv "$instance_config.tmp" "$instance_config"
-    fi
-    # ensure-init: nichts tun, Feld bleibt wie es ist
+  local tmpfile
+  tmpfile=$(mktemp)
+
+  if [ "$section" = "General" ]; then
+    # Build comma-separated strings for field names, modes, and values
+    local field_names=""
+    local field_modes=""
+    local field_values=""
+    local nfields=${#fields[@]}
+    for i in "${!fields[@]}"; do
+      IFS=":" read -r f m v <<< "${fields[$i]}"
+      field_names+="$f,"
+      field_modes+="$m,"
+      field_values+="$v,"
+    done
+    # Remove trailing comma
+    field_names="${field_names%,}"
+    field_modes="${field_modes%,}"
+    field_values="${field_values%,}"
+    awk -v nfields="$nfields" \
+      -v field_names="$field_names" -v field_modes="$field_modes" -v field_values="$field_values" '
+      BEGIN {
+        in_section=0; i=1;
+        split(field_names, fields, ",");
+        split(field_modes, modes, ",");
+        split(field_values, values, ",");
+      }
+      $0 ~ /^\[General\]/ { print; in_section=1; next }
+      /^\[/ && $0 !~ /^\[General\]/ {
+        if (in_section) {
+          # Insert remaining fields at the end of the block
+          while (i <= nfields) {
+            if (modes[i]=="override") print fields[i]"="values[i];
+            else if (modes[i]=="ensure-init") print fields[i]"=";
+            i++;
+          }
+        }
+        in_section=0; print; next
+      }
+      in_section {
+        # Extract field name from line
+        match($0, /^([^=]+)=/, m)
+        curr = m[1]
+        while (i <= nfields && fields[i] < curr) {
+          if (modes[i]=="override") print fields[i]"="values[i];
+          else if (modes[i]=="ensure-init") print fields[i]"=";
+          i++;
+        }
+        if (i <= nfields && fields[i] == curr) {
+          if (modes[i]=="override") print fields[i]"="values[i];
+          else if (modes[i]=="ensure-init") print $0;
+          i++;
+          next;
+        }
+        print; next
+      }
+      { print }
+      END {
+        if (in_section) {
+          while (i <= nfields) {
+            if (modes[i]=="override") print fields[i]"="values[i];
+            else if (modes[i]=="ensure-init") print fields[i]"=";
+            i++;
+          }
+        }
+      }
+    ' "$instance_config" > "$tmpfile" && mv "$tmpfile" "$instance_config"
   else
-    if [ "$mode" = "ensure-init" ]; then
-      awk -v field="$field" '
-        BEGIN{inserted=0}
-        /^\[General\]/{print; if(!inserted){print field"="; inserted=1}; next}
-        {print}
-      ' "$instance_config" > "$instance_config.tmp" && mv "$instance_config.tmp" "$instance_config"
-    elif [ "$mode" = "override" ]; then
-      awk -v val="$value" -v field="$field" '
-        BEGIN{inserted=0}
-        /^\[General\]/{print; if(!inserted){print field"="val; inserted=1}; next}
-        {print}
-      ' "$instance_config" > "$instance_config.tmp" && mv "$instance_config.tmp" "$instance_config"
-    fi
+    # For other sections, handle only one field at a time
+    local field mode value
+    IFS=":" read -r field mode value <<< "${fields[0]}"
+    awk -v section="$section" -v field="$field" -v mode="$mode" -v value="$value" '
+      BEGIN { in_section=0 }
+      $0 ~ "^\\["section"\\]" {
+        print
+        in_section=1
+        if (mode == "override") {
+          print field"="value
+        } else if (mode == "ensure-init") {
+          print field"="
+        }
+        next
+      }
+      /^\[/ && $0 !~ "^\\["section"\\]" { in_section=0 }
+      in_section && $0 ~ "^"field"=" { next }
+      { print }
+    ' "$instance_config" > "$tmpfile" && mv "$tmpfile" "$instance_config"
   fi
 }
 
-update_instance_general_section() {
+update_instance_config_section() {
   local instance_config="$1"
   local wrapper_cmd="$2"
   local profile_config_file="$3"
 
-  set_instance_cfg_field_in_general_section "$instance_config" "WrapperCommand" "override" "$wrapper_cmd"
-  set_instance_cfg_field_in_general_section "$instance_config" "UseCustomCommands" "override" "true"
-  for field in PostExitCommand PreLaunchCommand; do
-    set_instance_cfg_field_in_general_section "$instance_config" "$field" "ensure-init"
-  done
+  # Pass fields for [General] in alphabetical order
+  local fields=(
+    "PostExitCommand:ensure-init:"
+    "PreLaunchCommand:ensure-init:"
+    "UseCustomCommands:override:true"
+    "WrapperCommand:override:$wrapper_cmd"
+  )
+  set_instance_cfg_fields_in_section "$instance_config" "General" "${fields[@]}"
+
+  # [UI] as before, only two fields
+  # set_instance_cfg_fields_in_section "$instance_config" "UI" "WrapperCommand:override:$wrapper_cmd"
+  # set_instance_cfg_fields_in_section "$instance_config" "UI" "UseCustomCommands:override:true"
 }
 
 SCRIPT_DIR="$(dirname "$(realpath "$0")")"
@@ -103,7 +174,7 @@ if [ "$PRISM_WRAPPER_AUTO_REPLACE" = "true" ]; then
       if [ -f "$INSTANCE_CONFIG" ]; then
         # Set WrapperCommand and UseCustomCommands in [General] section only
         if grep -q "^\[General\]" "$INSTANCE_CONFIG"; then
-          update_instance_general_section "$INSTANCE_CONFIG" "$WRAPPER_CMD" "$PROFILE_CONFIG_FILE"
+          update_instance_config_section "$INSTANCE_CONFIG" "$WRAPPER_CMD" "$PROFILE_CONFIG_FILE"
         fi
       fi
     done
