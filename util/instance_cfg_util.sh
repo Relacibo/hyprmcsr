@@ -35,6 +35,9 @@ field_modes="${field_modes%,}"
 field_values="${field_values%,}"
 
 # Update [General] section in-place
+# Use mktemp for the temporary file for safety and atomicity
+
+tmpfile=$(mktemp)
 awk -v nfields="$nfields" \
     -v field_names="$field_names" -v field_modes="$field_modes" -v field_values="$field_values" '
   BEGIN {
@@ -80,6 +83,6 @@ awk -v nfields="$nfields" \
       }
     }
   }
-' "$instance_config" > "$instance_config.tmp" && mv "$instance_config.tmp" "$instance_config"
+' "$instance_config" > "$tmpfile" && mv "$tmpfile" "$instance_config"
 
 # For [UI] section, add similar logic if needed.
