@@ -7,7 +7,6 @@
 set -e
 
 INPUT="$1"
-echo $SCRIPT_DIR
 
 # Ensure all relevant environment variables are exported for child processes
 export HYPRMCSR_PROFILE
