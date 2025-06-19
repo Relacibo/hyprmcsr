@@ -7,6 +7,17 @@
 set -e
 
 INPUT="$1"
+echo $SCRIPT_DIR
+
+# Ensure all relevant environment variables are exported for child processes
+export HYPRMCSR_PROFILE
+export PROFILE
+export HYPRMCSR_BIN
+export STATE_DIR
+export SCRIPT_DIR
+export PRISM_PREFIX
+export MINECRAFT_ROOT
+export PRISM_INSTANCE_ID
 
 # Check if input is a JSON object (idiomatisch mit jq)
 if echo "$INPUT" | jq -e 'type == "object"' >/dev/null 2>&1; then

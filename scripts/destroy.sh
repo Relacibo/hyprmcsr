@@ -4,6 +4,7 @@ SCRIPT_DIR=$(dirname "${BASH_SOURCE[0]}")
 # Source env scripts from util
 source "$SCRIPT_DIR/../util/env_core.sh"
 source "$SCRIPT_DIR/../util/env_prism.sh"
+source "$SCRIPT_DIR/../util/env_runtime.sh"
 
 toggle_binds_key=$(jq -r '.binds.toggleBinds' "$PROFILE_CONFIG_FILE")
 if [ -n "$toggle_binds_key" ] && [ "$toggle_binds_key" != "null" ]; then
@@ -26,7 +27,7 @@ done
 on_destroy_cmds=$(jq -c '.onDestroy[]?' "$PROFILE_CONFIG_FILE")
 if [ -n "$on_destroy_cmds" ]; then
   (
-    export SCRIPT_DIR PROFILE HYPRMCSR_PROFILE
+    export SCRIPT_DIR PROFILE HYPRMCSR_PROFILE HYPRMCSR_BIN STATE_DIR PRISM_PREFIX MINECRAFT_ROOT PRISM_INSTANCE_ID WINDOW_ADDRESS
     while IFS= read -r cmd; do
       "$SCRIPT_DIR/../util/run_conditional_command.sh" "$cmd"
     done <<< "$on_destroy_cmds"

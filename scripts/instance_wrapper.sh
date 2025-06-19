@@ -99,7 +99,8 @@ export MINECRAFT_ROOT
     done
   fi
 
-  # Run minecraft.onStart (all in background, with all relevant environment variables)
+  # Run minecraft.onStart (all in background, mit allen relevanten Umgebungsvariablen)
+  export HYPRMCSR_PROFILE PROFILE HYPRMCSR_BIN STATE_DIR SCRIPT_DIR PRISM_PREFIX MINECRAFT_ROOT PRISM_INSTANCE_ID WINDOW_ADDRESS
   mc_on_start_cmds=$(jq -c '.minecraft.onStart[]?' "$CONFIG_FILE")
   if [ -n "$mc_on_start_cmds" ]; then
     while IFS= read -r cmd; do

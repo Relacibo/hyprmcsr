@@ -1,16 +1,24 @@
 #!/bin/bash
-SCRIPT_DIR=$(dirname "${BASH_SOURCE[0]}")
-source "$SCRIPT_DIR/../util/env_runtime.sh"
-source "$SCRIPT_DIR/../util/env_prism.sh"
+export SCRIPT_DIR="$(dirname "$(realpath "$0")")"
+source "$SCRIPT_DIR/env_prism.sh"
+source "$SCRIPT_DIR/env_runtime.sh"
+
+# Export all relevant environment variables for child processes
+export HYPRMCSR_PROFILE
+export PROFILE
+export HYPRMCSR_BIN
+export STATE_DIR
+export SCRIPT_DIR
+export PRISM_PREFIX
+export MINECRAFT_ROOT
+export PRISM_INSTANCE_ID
+export WINDOW_ADDRESS
 
 [ "$BINDS_ENABLED" = "1" ] || exit 0
 
 CMDS_JSON="$1"
 
-# Import zentrale Kommando-Logik
-source "$SCRIPT_DIR/../util/run_conditional_command.sh"
-
-echo "$CMDS_JSON" | jq -c '.[]' | while IFS= read -r cmd; do
+echo "$CMDS_JSON" | jq -r '.[]' | while IFS= read -r cmd; do
   [ -z "$cmd" ] && continue
-  run_conditional_command "$cmd"
+  bash -c "$cmd" &
 done

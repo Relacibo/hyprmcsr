@@ -8,9 +8,18 @@ SCRIPT_DIR=$(dirname "${BASH_SOURCE[0]}")
 
 export HYPRMCSR_PROFILE="${HYPRMCSR_PROFILE:-default}"
 export PROFILE="${PROFILE:-default}"
+
 # Source env scripts from util
 source "$SCRIPT_DIR/../util/env_core.sh"
 source "$SCRIPT_DIR/../util/env_prism.sh"
+
+# Ensure all relevant environment variables are exported for child processes
+export HYPRMCSR_BIN
+export STATE_DIR
+export SCRIPT_DIR
+export PRISM_PREFIX
+export MINECRAFT_ROOT
+export PRISM_INSTANCE_ID
 
 if ! command -v jq >/dev/null; then
   echo "jq is required!"
