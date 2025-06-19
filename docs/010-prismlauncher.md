@@ -1,7 +1,7 @@
 # PrismLauncher & Minecraft Setup
 
 PrismLauncher is required to manage your Minecraft instances for speedrunning.
-It is recommended to use the **Flatpak version** for best compatibility with hyprmcsr.
+You can use the **Flatpak version** aswell as the native version.
 
 ## Installation (Flatpak)
 
