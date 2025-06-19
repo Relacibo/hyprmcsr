@@ -1,7 +1,7 @@
 #!/bin/bash
 # filepath: /home/reinhard/git/hyprmcsr/scripts/instance_wrapper.sh
 
-SCRIPT_DIR=$(dirname "${BASH_SOURCE[0]}")
+export SCRIPT_DIR=$(dirname "${BASH_SOURCE[0]}")
 source "$SCRIPT_DIR/../util/env_core.sh"
 source "$SCRIPT_DIR/../util/env_prism.sh"
 source "$SCRIPT_DIR/../util/env_runtime.sh"
@@ -100,7 +100,7 @@ export MINECRAFT_ROOT
   fi
 
   # Run minecraft.onStart (all in background, mit allen relevanten Umgebungsvariablen)
-  export HYPRMCSR_PROFILE PROFILE HYPRMCSR_BIN STATE_DIR SCRIPT_DIR PRISM_PREFIX MINECRAFT_ROOT PRISM_INSTANCE_ID WINDOW_ADDRESS
+  export HYPRMCSR_PROFILE PROFILE HYPRMCSR_BIN STATE_DIR PRISM_PREFIX MINECRAFT_ROOT PRISM_INSTANCE_ID WINDOW_ADDRESS
   mc_on_start_cmds=$(jq -c '.minecraft.onStart[]?' "$CONFIG_FILE")
   if [ -n "$mc_on_start_cmds" ]; then
     while IFS= read -r cmd; do

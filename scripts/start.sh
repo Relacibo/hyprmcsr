@@ -1,6 +1,6 @@
 #!/bin/bash
 
-SCRIPT_DIR=$(dirname "${BASH_SOURCE[0]}")
+export SCRIPT_DIR=$(dirname "${BASH_SOURCE[0]}")
 
 # General profile logic
 # Entfernt: Argumenten-Parsing für PROFILE und HYPRMCSR_PROFILE

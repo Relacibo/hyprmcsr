@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DIR=$(dirname "${BASH_SOURCE[0]}")
+export SCRIPT_DIR=$(dirname "${BASH_SOURCE[0]}")
 # env_runtime.sh, env_core.sh und env_prism.sh werden jetzt alle aus util/ bezogen
 source "$SCRIPT_DIR/../util/env_core.sh"
 source "$SCRIPT_DIR/../util/env_prism.sh"
@@ -61,7 +61,7 @@ hyprctl --batch "
 "
 
 # Run onEnter: run all commands in array
-export WINDOW_ADDRESS SCRIPT_DIR HYPRMCSR_PROFILE PRISM_INSTANCE_ID MINECRAFT_ROOT PREVIOUS_MODE NEXT_MODE
+export WINDOW_ADDRESS HYPRMCSR_PROFILE PRISM_INSTANCE_ID MINECRAFT_ROOT PREVIOUS_MODE NEXT_MODE
 jq -c --arg m "$NEXT_MODE" '.modeSwitch.modes[$m].onEnter[]? // .modeSwitch.default.onEnter[]? // empty' "$PROFILE_CONFIG_FILE" | while IFS= read -r cmd; do
   [ -z "$cmd" ] && continue
   "$SCRIPT_DIR/../util/run_conditional_command.sh" "$cmd"
