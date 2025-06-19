@@ -1,6 +1,6 @@
 #!/bin/bash
 
-SCRIPT_DIR=$(dirname "$(realpath "$0")")
+SCRIPT_DIR=$(dirname "${BASH_SOURCE[0]}")
 CONFIG_ROOT="${XDG_CONFIG_HOME:-$HOME/.config}/hyprmcsr"
 CONFIG_FILE="$CONFIG_ROOT/config.json"
 PROFILE_CONFIG_FILE="$CONFIG_ROOT/default.profile.json"

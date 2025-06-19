@@ -1,13 +1,13 @@
 #!/bin/bash
 
-SCRIPT_DIR=$(dirname "$(realpath "$0")")
+SCRIPT_DIR=$(dirname "${BASH_SOURCE[0]}")
 CONFIG_ROOT="${XDG_CONFIG_HOME:-$HOME/.config}/hyprmcsr"
 CONFIG_FILE="$CONFIG_ROOT/config.json"
 
 # Download root, read from global config if present, else default
 DOWNLOAD_ROOT=$(jq -r '.download.root // empty' "$CONFIG_FILE")
 if [ -z "$DOWNLOAD_ROOT" ] || [ "$DOWNLOAD_ROOT" = "null" ]; then
-  DOWNLOAD_ROOT="$SCRIPT_DIR/../download"
+  DOWNLOAD_ROOT=$(realpath "$SCRIPT_DIR/../download")
 fi
 JARS_DIR="$DOWNLOAD_ROOT/jar"
 

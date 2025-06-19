@@ -78,7 +78,7 @@ fi
 SCRIPT_NAME=$(echo "$CMD" | tr '-' '_').sh
 
 # Directory where the actual scripts are located
-SCRIPT_DIR="$(dirname "$(realpath "$0")")/../scripts"
+SCRIPT_DIR=$(realpath "$(dirname "$(realpath "$0")")/../scripts")
 
 SCRIPT_PATH="$SCRIPT_DIR/$SCRIPT_NAME"
 
@@ -95,6 +95,6 @@ fi
 
 # Set environment variables if specified
 [ -n "$HYPRMCSR_PROFILE" ] && export HYPRMCSR_PROFILE="$HYPRMCSR_PROFILE"
-[ -n "$PROFILE" ] && set -- "$PROFILE" "$@"
+[ -n "$PROFILE" ] && export PROFILE="$PROFILE"
 
 exec "$SCRIPT_PATH" "$@"

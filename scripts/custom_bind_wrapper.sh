@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DIR="$(dirname "$(realpath "$0")")"
+SCRIPT_DIR=$(dirname "${BASH_SOURCE[0]}")
 source "$SCRIPT_DIR/../util/env_runtime.sh"
 source "$SCRIPT_DIR/../util/env_prism.sh"
 

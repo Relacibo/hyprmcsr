@@ -1,10 +1,9 @@
 #!/bin/bash
-SCRIPT_DIR="$(dirname "$(realpath "$0")")"
+SCRIPT_DIR=$(dirname "${BASH_SOURCE[0]}")
 # env_runtime.sh, env_core.sh und env_prism.sh werden jetzt alle aus util/ bezogen
 source "$SCRIPT_DIR/../util/env_core.sh"
 source "$SCRIPT_DIR/../util/env_prism.sh"
 source "$SCRIPT_DIR/../util/env_runtime.sh"
-source "$SCRIPT_DIR/../util/run_conditional_command.sh"
 
 MODE="$1"
 STATE_FILE="$STATE_DIR/current_mode"

@@ -2,7 +2,7 @@
 # filepath: /home/reinhard/git/hyprmcsr/scripts/toggle_binds.sh
 
 # Source env scripts from util
-SCRIPT_DIR="$(dirname "$(realpath "$0")")"
+SCRIPT_DIR=$(dirname "${BASH_SOURCE[0]}")
 source "$SCRIPT_DIR/../util/env_core.sh"
 source "$SCRIPT_DIR/../util/env_prism.sh"
 source "$SCRIPT_DIR/../util/env_runtime.sh"

@@ -1,7 +1,7 @@
 #!/bin/bash
 # filepath: /home/reinhard/git/hyprmcsr/scripts/instance_wrapper.sh
 
-SCRIPT_DIR="$(dirname "$(realpath "$0")")"
+SCRIPT_DIR=$(dirname "${BASH_SOURCE[0]}")
 source "$SCRIPT_DIR/../util/env_core.sh"
 source "$SCRIPT_DIR/../util/env_prism.sh"
 source "$SCRIPT_DIR/../util/env_runtime.sh"
