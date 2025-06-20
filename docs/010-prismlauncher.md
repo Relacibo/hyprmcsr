@@ -36,7 +36,7 @@ For best performance and compatibility, it is recommended to:
 - Disable the Java compatibility check.
 - Set the Java version to a preinstalled Java (preferably GraalVM or any modern JDK, Java 21+ is recommended).
 - For Flatpak users, you may need to install Java on your system and point PrismLauncher to the correct path.
-- For optimal JVM flags, see the recommendations in [Osh's video at this timestamp](https://youtu.be/OEpZlv6cQsI?si=Pv2prKsP1xYSzXIc&t=280).
+- For optimal JVM flags, see the recommendations in [Osh's video at 4:40](https://youtu.be/OEpZlv6cQsI?si=Pv2prKsP1xYSzXIc&t=280).
 
 This setup ensures maximum performance and compatibility for speedrunning and modded Minecraft.
 
