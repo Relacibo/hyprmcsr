@@ -29,6 +29,23 @@ For best compatibility with modern Linux systems, Wayland, and input handling, y
 4. Select the latest available LWJGL version (preferably 3.3.x or newer).
 5. Save and launch Minecraft again.
 
+---
+
+## Java Version & JVM Flags
+
+For best performance and compatibility, it is recommended to:
+
+- Open your Minecraft instance settings in PrismLauncher.
+- Enable the option to use a custom Java version for the instance.
+- Disable the Java compatibility check.
+- Set the Java version to a preinstalled Java (preferably GraalVM or any modern JDK, Java 21+ is recommended).
+- For Flatpak users, you may need to install Java on your system and point PrismLauncher to the correct path.
+- For optimal JVM flags, see the recommendations in [Osh's video at this timestamp](https://youtu.be/OEpZlv6cQsI?si=Pv2prKsP1xYSzXIc&t=280).
+
+This setup ensures maximum performance and compatibility for speedrunning and modded Minecraft.
+
+## Wrapper Command
+
 **Important:**  
 Do **not** manually set a wrapper script in the PrismLauncher GUI for your Minecraft instance if your profile config has `"prismWrapperCommand.autoReplace": true` (or if you omit this field).
 The automation will automatically set `instance_wrapper.sh` as the WrapperCommand for you.
@@ -40,7 +57,7 @@ If you want to manage the wrapper manually, set `"prismWrapperCommand.autoReplac
 Then you can set any wrapper you like in the PrismLauncher GUI (e.g., `obs-gamecapture`). Remember though to also set `hyprmcsr -h <profile> instance-wrapper` as one of the wrapper commands.
 
 **Note:**
-When specifying your PrismLauncher instance IDs in your config, use the `prismWrapperCommand.prismMinecraftInstanceIds` array. Each entry should be the folder name of the instance (as found in `~/.local/share/PrismLauncher/instances/`).
+When specifying your PrismLauncher instance IDs in your config, use the `prismWrapperCommand.prismMinecraftInstanceIds` array. Each entry should be the folder name of the instance (as found in `~/.var/app/org.prismlauncher.PrismLauncher/data/PrismLauncher/instances/` for Flatpak, or `~/.local/share/PrismLauncher/instances/` for native installs).
 
 Example:
 
@@ -52,15 +69,27 @@ Example:
 }
 ```
 
-The old field `minecraft.prismInstanceId` is obsolete and should not be used.
-
 **Tip:**
 You can start Minecraft directly from your onStart array using:
 
-    prismlauncher -l "instance id"
+    flatpak run org.prismlauncher.PrismLauncher -l "instance id"
 
 Replace "instance id" with the folder name of your instance (not the display name in PrismLauncher).
 
-This is the recommended way to launch Minecraft from automation scripts.
+This is the recommended way to launch Minecraft from automation scripts if you installed PrismLauncher via Flatpak (the default for this guide).
 
 > **Note:** For the wrapper command to be reliably updated in your PrismLauncher instance, PrismLauncher must not be running while the wrapper is being set. If PrismLauncher is open, it may overwrite or ignore changes made to the instance configuration file. Always close PrismLauncher before running the setup script or before starting your profile to ensure the wrapper command is applied correctly.
+
+---
+
+## Native vs Flatpak PrismLauncher
+
+- **Flatpak PrismLauncher:**
+  - Start command: `flatpak run org.prismlauncher.PrismLauncher -l "<instance id>"`
+  - Data directory: `~/.var/app/org.prismlauncher.PrismLauncher/data/PrismLauncher`
+- **Native PrismLauncher:**
+  - Start command: `prismlauncher -l "<instance id>"`
+  - Data directory: `~/.local/share/PrismLauncher`
+
+> **Note:**
+> If you use the Flatpak version, set `prismPrefix` in your profile config to the Flatpak data directory. The default for native is `~/.local/share/PrismLauncher`.

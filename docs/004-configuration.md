@@ -32,10 +32,10 @@ See [example.default.profile.json](../example.default.profile.json) for a full e
 - **binds.modeSwitch**: Key combinations for switching between window modes.
 - **binds.custom**:  
   Define your own keybinds and associated commands here.  
-  The commands will be executed with the environment variables `$WINDOW_ADDRESS`, `$SCRIPT_DIR`, `$PROFILE`, `$HYPRMCSR_PROFILE`, `$PRISM_INSTANCE_ID`, and `$MINECRAFT_ROOT` set. See [Command Syntax](#command-syntax-string-or-object)
+  The commands will be executed with the environment variables `$HYPRMCSR`, `$WINDOW_ADDRESS`, `$SCRIPT_DIR`, `$PROFILE`, `$HYPRMCSR_PROFILE`, `$PRISM_INSTANCE_ID`, and `$MINECRAFT_ROOT` set. 
 - **modeSwitch.default**: Default window size, sensitivity, and optional `onEnter`/`onExit` arrays for commands to run when entering or exiting a mode. See [Command Syntax](#command-syntax-string-or-object)
 - **modeSwitch.modes**: Per-mode overrides for size, sensitivity, and `onEnter`/`onExit` commands. See [Command Syntax](#command-syntax-string-or-object)
-- **minecraft.prismPrefixOverride**: (Optional) Path to your PrismLauncher data directory.
+- **minecraft.prismPrefix**: (Optional) Path to your PrismLauncher data directory.
 - **minecraft.windowClassRegex**:  
   (Optional) Regular expression to detect the Minecraft window by its window class.
 - **minecraft.windowTitleRegex**:  
@@ -95,5 +95,17 @@ All command fields (e.g. `onStart`, `onDestroy`, `onToggleBinds`, `modeSwitch.*.
   { "exec": "do-special", "if": "[ \"$PROFILE\" = \"special\" ]" }
 ]
 ```
+
+## PrismLauncher command and data directory
+
+- **Native PrismLauncher:**
+  - Command: `prismlauncher -l "<instance id>"`
+  - Data directory (`prismPrefix`): `~/.local/share/PrismLauncher`
+- **Flatpak PrismLauncher:**
+  - Command: `flatpak run org.prismlauncher.PrismLauncher -l "<instance id>"`
+  - Data directory (`prismPrefix`): `~/.var/app/org.prismlauncher.PrismLauncher/data/PrismLauncher`
+
+> **Tip:**
+> Make sure to set the correct `prismPrefix` in your profile config if you use the Flatpak version. The default for native is `~/.local/share/PrismLauncher`.
 
 # removed: autoStartInstanceId and autoStart (now recommend prismlauncher -l "instance id" in onStart)

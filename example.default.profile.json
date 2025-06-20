@@ -15,7 +15,7 @@
     },
     {
       "if": "[ \"$PROFILE\" = \"default\" ]",
-      "exec": "flatpak run org.prismlauncher.PrismLauncher -l \"1.16.1\""
+      "exec": "~/.var/app/org.prismlauncher.PrismLauncher/data/PrismLauncher"
     }
   ],
   "onDestroy": [
@@ -68,7 +68,7 @@
   },
   "minecraft": {
     "onStart": [],
-    "prismPrefixOverride": "~/.var/app/org.prismlauncher.PrismLauncher/data/PrismLauncher",
+    "prismPrefix": "~/.var/app/org.prismlauncher.PrismLauncher/data/PrismLauncher",
     "windowClassRegex": "Minecraft",
     "windowTitleRegex": "Minecraft",
     "prismWrapperCommand": {
