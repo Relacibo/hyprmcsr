@@ -27,7 +27,7 @@ done
 on_destroy_cmds=$(jq -c '.onDestroy[]?' "$PROFILE_CONFIG_FILE")
 if [ -n "$on_destroy_cmds" ]; then
   (
-    export PROFILE HYPRMCSR_PROFILE HYPRMCSR_BIN STATE_DIR PRISM_PREFIX MINECRAFT_ROOT PRISM_INSTANCE_ID WINDOW_ADDRESS
+    export PROFILE HYPRMCSR_PROFILE HYPRMCSR STATE_DIR PRISM_PREFIX MINECRAFT_ROOT PRISM_INSTANCE_ID WINDOW_ADDRESS
     while IFS= read -r cmd; do
       "$SCRIPT_DIR/../util/run_conditional_command.sh" "$cmd"
     done <<< "$on_destroy_cmds"

@@ -14,11 +14,11 @@ else
 fi
 mkdir -p "$STATE_DIR"
 
-HYPRMCSR_BIN=$(realpath "$SCRIPT_DIR/../bin/hyprmcsr")
+HYPRMCSR=$(realpath "$SCRIPT_DIR/../bin/hyprmcsr")
 
 export CONFIG_ROOT
 export HYPRMCSR_PROFILE
 export CONFIG_FILE
 export PROFILE_CONFIG_FILE
 export STATE_DIR
-export HYPRMCSR_BIN
+export HYPRMCSR

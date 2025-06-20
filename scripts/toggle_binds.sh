@@ -28,7 +28,7 @@ fi
 echo "$BINDS_ENABLED" > "$STATE_DIR/binds_enabled"
 
 # Export all relevant environment variables for onToggleBinds commands
-export HYPRMCSR_PROFILE PROFILE HYPRMCSR_BIN STATE_DIR PRISM_PREFIX MINECRAFT_ROOT PRISM_INSTANCE_ID WINDOW_ADDRESS BINDS_ENABLED
+export HYPRMCSR_PROFILE PROFILE HYPRMCSR STATE_DIR PRISM_PREFIX MINECRAFT_ROOT PRISM_INSTANCE_ID WINDOW_ADDRESS BINDS_ENABLED
 
 # Run onToggleBinds (with all relevant environment variables incl. BINDS_ENABLED)
 on_toggle_cmds=$(jq -c '.onToggleBinds[]?' "$PROFILE_CONFIG_FILE")

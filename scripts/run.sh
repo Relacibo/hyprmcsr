@@ -14,7 +14,7 @@ source "$SCRIPT_DIR/../util/env_core.sh"
 source "$SCRIPT_DIR/../util/env_prism.sh"
 
 # Ensure all relevant environment variables are exported for child processes
-export HYPRMCSR_BIN
+export HYPRMCSR
 export STATE_DIR
 export SCRIPT_DIR
 export PRISM_PREFIX
@@ -37,12 +37,12 @@ echo "$HYPRMCSR_PROFILE" > "$STATE_DIR/profile"
 
 # Set keybinds for mode switches
 jq -r '.binds.modeSwitch | to_entries[] | "\(.key) \(.value)"' "$PROFILE_CONFIG_FILE" | while read -r mode key; do
-    hyprctl keyword bindni $key,exec,"$HYPRMCSR_BIN -h $HYPRMCSR_PROFILE toggle_mode $mode"
+    hyprctl keyword bindni $key,exec,"$HYPRMCSR -h $HYPRMCSR_PROFILE toggle_mode $mode"
 done
 
 toggle_binds_key=$(jq -r '.binds.toggleBinds' "$PROFILE_CONFIG_FILE")
 if [ -n "$toggle_binds_key" ] && [ "$toggle_binds_key" != "null" ]; then
-  hyprctl keyword bind $toggle_binds_key,exec,"$HYPRMCSR_BIN -h $HYPRMCSR_PROFILE toggle_binds"
+  hyprctl keyword bind $toggle_binds_key,exec,"$HYPRMCSR -h $HYPRMCSR_PROFILE toggle_binds"
 fi
 
 # Evaluate prismWrapperCommand
@@ -52,9 +52,9 @@ PRISM_INSTANCE_IDS=$(jq -r '.minecraft.prismWrapperCommand.prismMinecraftInstanc
 
 # Fallback: Use only the outer command if innerCommand is empty/null
 if [ "$INNER_WRAPPER_CMD" = "null" ] || [ "$INNER_WRAPPER_CMD" = "empty" ] || [ -z "$INNER_WRAPPER_CMD" ]; then
-  WRAPPER_CMD="$HYPRMCSR_BIN -h $HYPRMCSR_PROFILE instance-wrapper"
+  WRAPPER_CMD="$HYPRMCSR -h $HYPRMCSR_PROFILE instance-wrapper"
 else
-  WRAPPER_CMD="$HYPRMCSR_BIN -h $HYPRMCSR_PROFILE instance-wrapper $INNER_WRAPPER_CMD"
+  WRAPPER_CMD="$HYPRMCSR -h $HYPRMCSR_PROFILE instance-wrapper $INNER_WRAPPER_CMD"
 fi
 
 if [ "$PRISM_WRAPPER_AUTO_REPLACE" = "true" ]; then
@@ -78,7 +78,7 @@ if [ -n "$custom_binds" ]; then
   while IFS= read -r entry; do
     bind=$(echo "$entry" | awk '{print $1}')
     cmds=$(echo "$entry" | cut -d' ' -f2-)
-    hyprctl keyword bind "$bind,exec,$HYPRMCSR_BIN -h $HYPRMCSR_PROFILE custom-bind-wrapper '$cmds'"
+    hyprctl keyword bind "$bind,exec,HYPRMCSR_PROFILE=\"$HYPRMCSR_PROFILE\" $SCRIPT_DIR/../util/custom_bind_wrapper.sh '$cmds'"
   done <<< "$custom_binds"
 fi
 

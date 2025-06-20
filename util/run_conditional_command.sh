@@ -11,7 +11,7 @@ INPUT="$1"
 # Ensure all relevant environment variables are exported for child processes
 export HYPRMCSR_PROFILE
 export PROFILE
-export HYPRMCSR_BIN
+export HYPRMCSR
 export STATE_DIR
 export SCRIPT_DIR
 export PRISM_PREFIX

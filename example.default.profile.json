@@ -2,10 +2,10 @@
   "requireSudo": true,
   "onStart": [
     {
-      "exec": "JAR_WORKDIR=\"$HOME/.config/NinjaLink\" $SCRIPT_DIR/run_jar.sh NinjaLink",
+      "exec": "JAR_WORKDIR=\"$HOME/.config/NinjaLink\" $HYPRMCSR run-jar NinjaLink",
       "if": "[ \"$PROFILE\" = \"coop\" ]"
     },
-    "$SCRIPT_DIR/run_jar.sh Ninjabrain-Bot",
+    "$HYPRMCSR run-jar Ninjabrain-Bot",
     "flatpak run com.obsproject.Studio",
     "sudo input-remapper-control --command start --device \"Ducky Ducky One 3 TKL \" --preset \"MCSR\"",
     "input-remapper-control --command start --device \"Razer Razer Viper V3 Pro\" --preset \"MCSR\"",
