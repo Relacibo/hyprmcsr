@@ -2,20 +2,20 @@
   "requireSudo": true,
   "onStart": [
     {
-      "exec": "JAR_WORKDIR=\"$HOME/.config/NinjaLink\" $HYPRMCSR run-jar NinjaLink",
-      "if": "[ \"$PROFILE\" = \"coop\" ]"
+      "if": "[ \"$PROFILE\" = \"coop\" ]",
+      "exec": "JAR_WORKDIR=\"$HOME/.config/NinjaLink\" $HYPRMCSR run-jar NinjaLink"
     },
     "$HYPRMCSR run-jar Ninjabrain-Bot",
     "flatpak run com.obsproject.Studio",
     "sudo input-remapper-control --command start --device \"Ducky Ducky One 3 TKL \" --preset \"MCSR\"",
     "input-remapper-control --command start --device \"Razer Razer Viper V3 Pro\" --preset \"MCSR\"",
     {
-      "exec": "prismlauncher -l \"ranked\"",
-      "if": "[ \"$PROFILE\" = \"ranked\" ]"
+      "if": "[ \"$PROFILE\" = \"ranked\" ]",
+      "exec": "flatpak run org.prismlauncher.PrismLauncher -l \"ranked\""
     },
     {
-      "exec": "prismlauncher -l \"1.16.1\"",
-      "if": "[ \"$PROFILE\" = \"default\" ]"
+      "if": "[ \"$PROFILE\" = \"default\" ]",
+      "exec": "flatpak run org.prismlauncher.PrismLauncher -l \"1.16.1\""
     }
   ],
   "onDestroy": [
@@ -68,7 +68,7 @@
   },
   "minecraft": {
     "onStart": [],
-    "prismPrefixOverride": "~/.local/share/PrismLauncher",
+    "prismPrefixOverride": "~/.var/app/org.prismlauncher.PrismLauncher/data/PrismLauncher",
     "windowClassRegex": "Minecraft",
     "windowTitleRegex": "Minecraft",
     "prismWrapperCommand": {
