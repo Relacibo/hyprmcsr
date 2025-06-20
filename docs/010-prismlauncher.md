@@ -16,8 +16,6 @@ hyprmcsr will automatically detect and use your configured PrismLauncher instanc
 
 See also: [Modcheck](https://github.com/Relacibo/hyprmcsr/blob/main/docs/jar-download.md#modcheck)
 
----
-
 ## LWJGL Version
 
 For best compatibility with modern Linux systems, Wayland, and input handling, you should always use the latest stable version of LWJGL (Lightweight Java Game Library) in your PrismLauncher Minecraft instance.
@@ -28,8 +26,6 @@ For best compatibility with modern Linux systems, Wayland, and input handling, y
 3. Go to "Version" → "LWJGL Version".
 4. Select the latest available LWJGL version (preferably 3.3.x or newer).
 5. Save and launch Minecraft again.
-
----
 
 ## Java Version & JVM Flags
 
@@ -72,15 +68,13 @@ Example:
 **Tip:**
 You can start Minecraft directly from your onStart array using:
 
-    flatpak run org.prismlauncher.PrismLauncher -l "instance id"
+    flatpak run org.prismlauncher.PrismLauncher -l "<instance id>"
 
-Replace "instance id" with the folder name of your instance (not the display name in PrismLauncher).
+Replace `<instance id>` with the folder name of your instance (not the display name in PrismLauncher).
 
 This is the recommended way to launch Minecraft from automation scripts if you installed PrismLauncher via Flatpak (the default for this guide).
 
 > **Note:** For the wrapper command to be reliably updated in your PrismLauncher instance, PrismLauncher must not be running while the wrapper is being set. If PrismLauncher is open, it may overwrite or ignore changes made to the instance configuration file. Always close PrismLauncher before running the setup script or before starting your profile to ensure the wrapper command is applied correctly.
-
----
 
 ## Native vs Flatpak PrismLauncher
 
