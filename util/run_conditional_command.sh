@@ -8,15 +8,10 @@ set -e
 
 INPUT="$1"
 
-# Ensure all relevant environment variables are exported for child processes
-export HYPRMCSR_PROFILE
-export PROFILE
-export HYPRMCSR
-export STATE_DIR
-export SCRIPT_DIR
-export PRISM_PREFIX
-export MINECRAFT_ROOT
-export PRISM_INSTANCE_ID
+# Export all relevant environment variables for child processes
+UTIL_DIR=$(dirname "${BASH_SOURCE[0]}")
+SCRIPT_DIR="${SCRIPT_DIR:-$(realpath "$UTIL_DIR/../scripts")}"
+source "$UTIL_DIR/export_env.sh"
 
 # Check if input is a JSON object (idiomatisch mit jq)
 if echo "$INPUT" | jq -e 'type == "object"' >/dev/null 2>&1; then

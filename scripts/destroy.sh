@@ -6,6 +6,10 @@ source "$SCRIPT_DIR/../util/env_core.sh"
 source "$SCRIPT_DIR/../util/env_prism.sh"
 source "$SCRIPT_DIR/../util/env_runtime.sh"
 
+# Export all relevant environment variables for child processes
+SCRIPT_DIR="${SCRIPT_DIR:-$(dirname "$0")}"
+source "$SCRIPT_DIR/../util/export_env.sh"
+
 toggle_binds_key=$(jq -r '.binds.toggleBinds' "$PROFILE_CONFIG_FILE")
 if [ -n "$toggle_binds_key" ] && [ "$toggle_binds_key" != "null" ]; then
   hyprctl keyword unbind $toggle_binds_key

@@ -26,6 +26,10 @@ fi
 export PRISM_INSTANCE_ID
 export MINECRAFT_ROOT
 
+# Export all relevant environment variables for child processes
+SCRIPT_DIR="${SCRIPT_DIR:-$(dirname "$0")}"
+source "$SCRIPT_DIR/../util/export_env.sh"
+
 # Start parallel actions in subprocess
 (
   timeout=20

@@ -13,13 +13,9 @@ export PROFILE="${PROFILE:-default}"
 source "$SCRIPT_DIR/../util/env_core.sh"
 source "$SCRIPT_DIR/../util/env_prism.sh"
 
-# Ensure all relevant environment variables are exported for child processes
-export HYPRMCSR
-export STATE_DIR
-export SCRIPT_DIR
-export PRISM_PREFIX
-export MINECRAFT_ROOT
-export PRISM_INSTANCE_ID
+# Export all relevant environment variables for child processes
+SCRIPT_DIR="${SCRIPT_DIR:-$(dirname "$0")}"
+source "$SCRIPT_DIR/../util/export_env.sh"
 
 if ! command -v jq >/dev/null; then
   echo "jq is required!"
