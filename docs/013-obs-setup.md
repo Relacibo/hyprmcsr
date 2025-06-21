@@ -1,18 +1,33 @@
 # OBS Setup
 
-For capturing Minecraft, this setup uses [obs-vkcapture](https://github.com/nowrep/obs-vkcapture).  
-It is recommended to install the Flatpak versions of both OBS Studio and PrismLauncher, as well as the Flatpak version of obs-vkcapture.
+For capturing Minecraft, this setup uses [obs-vkcapture](https://github.com/nowrep/obs-vkcapture).
 
-## Installation (Flatpak)
+It is recommended to install the **native** versions of both OBS Studio and PrismLauncher, as well as obs-vkcapture.
 
-You can install OBS Studio and obs-vkcapture via Flatpak with:
+## Installation (Native)
+
+On Fedora:
 
 ```bash
-flatpak install flathub com.obsproject.Studio
-flatpak install flathub com.obsproject.Studio.Plugin.OBSVkCapture
+sudo dnf install obs-studio
 ```
 
-Make sure you have Flatpak and the Flathub repository enabled on your system.
+On Arch Linux:
+
+```bash
+sudo pacman -S obs-studio
+```
+
+On Ubuntu/Debian:
+
+```bash
+sudo apt install obs-studio
+```
+
+For obs-vkcapture, follow the instructions in the [obs-vkcapture GitHub repo](https://github.com/nowrep/obs-vkcapture#installation).
+
+> **Note:**
+> Flatpak is not recommended for OBS or PrismLauncher due to file access and integration issues. For Flatpak-specific instructions and limitations, see [Flatpak Setup](./030-flatpak.md).
 
 ## Minecraft Capture
 

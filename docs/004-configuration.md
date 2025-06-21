@@ -35,7 +35,7 @@ See [example.default.profile.json](../example.default.profile.json) for a full e
   The commands will be executed with the environment variables `$HYPRMCSR`, `$WINDOW_ADDRESS`, `$SCRIPT_DIR`, `$PROFILE`, `$HYPRMCSR_PROFILE`, `$PRISM_INSTANCE_ID`, and `$MINECRAFT_ROOT` set. 
 - **modeSwitch.default**: Default window size, sensitivity, and optional `onEnter`/`onExit` arrays for commands to run when entering or exiting a mode. See [Command Syntax](#command-syntax-string-or-object)
 - **modeSwitch.modes**: Per-mode overrides for size, sensitivity, and `onEnter`/`onExit` commands. See [Command Syntax](#command-syntax-string-or-object)
-- **minecraft.prismPrefix**: (Optional) Path to your PrismLauncher data directory.
+- **minecraft.prismPrefix**: (Optional) Path to your PrismLauncher data directory. Default: `~/.local/share/PrismLauncher`
 - **minecraft.windowClassRegex**:  
   (Optional) Regular expression to detect the Minecraft window by its window class.
 - **minecraft.windowTitleRegex**:  
@@ -68,7 +68,7 @@ See [example.default.profile.json](../example.default.profile.json) for a full e
     }
   }
   ```
-  - **prismWrapperCommand.prismMinecraftInstanceIds**: Array of PrismLauncher instance IDs (folder names) to which the wrapper should be applied. Example: `["1.16.1"]`.
+  - **prismWrapperCommand.prismMinecraftInstanceIds**: Array of PrismLauncher instance IDs (folder names) to which the wrapper should be applied. Example: `["1.16.1"]` (see `~/.local/share/PrismLauncher/instances/`).
   - If `autoReplace` is omitted or set to `true`, the wrapper will be set automatically and `instance_wrapper.sh` will be configured as the WrapperCommand for your PrismLauncher instance.
   - If `autoReplace` is `false`, **you must manually ensure that `instance_wrapper.sh` is set as the WrapperCommand in your PrismLauncher instance and that the environment variable `HYPRMCSR_PROFILE` is set correctly when launching Minecraft.**
   - `innerCommand` can be any wrapper tool (e.g., `"obs-gamecapture"`).
@@ -101,11 +101,6 @@ All command fields (e.g. `onStart`, `onDestroy`, `onToggleBinds`, `modeSwitch.*.
 - **Native PrismLauncher:**
   - Command: `prismlauncher -l "<instance id>"`
   - Data directory (`prismPrefix`): `~/.local/share/PrismLauncher`
-- **Flatpak PrismLauncher:**
-  - Command: `flatpak run org.prismlauncher.PrismLauncher -l "<instance id>"`
-  - Data directory (`prismPrefix`): `~/.var/app/org.prismlauncher.PrismLauncher/data/PrismLauncher`
 
-> **Tip:**
-> Make sure to set the correct `prismPrefix` in your profile config if you use the Flatpak version. The default for native is `~/.local/share/PrismLauncher`.
-
-# removed: autoStartInstanceId and autoStart (now recommend prismlauncher -l "instance id" in onStart)
+> **Note:**
+> Flatpak is not recommended due to file access and integration issues. For Flatpak-specific instructions and limitations, see [Flatpak Setup](./030-flatpak.md).

@@ -11,11 +11,11 @@
     "input-remapper-control --command start --device \"Razer Razer Viper V3 Pro\" --preset \"MCSR\"",
     {
       "if": "[ \"$PROFILE\" = \"ranked\" ]",
-      "exec": "flatpak run org.prismlauncher.PrismLauncher -l \"ranked\""
+      "exec": "prismlauncher -l \"ranked\""
     },
     {
       "if": "[ \"$PROFILE\" = \"default\" ]",
-      "exec": "~/.var/app/org.prismlauncher.PrismLauncher/data/PrismLauncher"
+      "exec": "prismlauncher -l \"1.16.1\""
     }
   ],
   "onDestroy": [
@@ -68,7 +68,6 @@
   },
   "minecraft": {
     "onStart": [],
-    "prismPrefix": "~/.var/app/org.prismlauncher.PrismLauncher/data/PrismLauncher",
     "windowClassRegex": "Minecraft",
     "windowTitleRegex": "Minecraft",
     "prismWrapperCommand": {
