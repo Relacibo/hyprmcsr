@@ -86,4 +86,4 @@ This is the recommended way to launch Minecraft from automation scripts if you i
   - Data directory: `~/.local/share/PrismLauncher`
 
 > **Note:**
-> If you use the Flatpak version, set `prismPrefix` in your profile config to the Flatpak data directory. The default for native is `~/.local/share/PrismLauncher`.
+> If you use the Flatpak version, set `minecraft.prismPrefix` in your profile config to the Flatpak data directory. The default for native is `~/.local/share/PrismLauncher`.
