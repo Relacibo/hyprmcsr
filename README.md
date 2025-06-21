@@ -6,6 +6,9 @@
 > This project and its documentation are still experimental and under active development.  
 > [See the full documentation and guide in the `docs/` folder.](./docs/README.md)
 
+> **Disclaimer:**
+> This README and parts of the automation were created with help from [GitHub Copilot](https://github.com/features/copilot).
+
 ## Overview
 
 **hyprmcsr** is a toolkit for automating a modern Minecraft speedrunning environment on Linux, with a focus on performance, usability, and automation.  
@@ -40,8 +43,6 @@ For setup instructions, usage, and all details, see the
 - Some components (like obs-vkcapture, InputRemapper) have their own licenses—see the respective files.
 
 ---
-
-**This README and parts of the automation were created with help from [GitHub Copilot](https://github.com/features/copilot).**
 
 **Questions or issues?**  
 Check the script comments or [open an issue](https://github.com/Relacibo/hyprmcsr/issues)!
