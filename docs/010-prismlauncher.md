@@ -35,7 +35,12 @@ For best performance and compatibility, it is recommended to:
 - Enable the option to use a custom Java version for the instance.
 - Disable the Java compatibility check.
 - Set the Java version to a preinstalled Java (preferably GraalVM or any modern JDK, Java 21+ is recommended). To use the system version of java use `/usr/bin/java`.
-- For Flatpak users, you might need to use [FlatSeal](https://flathub.org/apps/com.github.tchx84.Flatseal) to allow Prism to access your custom java installation. Alternatively you could use the `Download Java`-Button in Prism to download a recent version of java. You might also have success putting your java version into the folder `~/.var/app/org.prismlauncher.PrismLauncher/data/PrismLauncher/java/` and use it like for example `~/.var/app/org.prismlauncher.PrismLauncher/data/PrismLauncher/java/java-runtime-delta/bin/java`.
+- For Flatpak users:
+  - You might need to use [FlatSeal](https://flathub.org/apps/com.github.tchx84.Flatseal) to allow Prism to access your custom Java installation.
+  - Alternatively, use the `Download Java` button in Prism to download a recent version of Java.
+  - You can also place your custom Java version in `~/.var/app/org.prismlauncher.PrismLauncher/data/PrismLauncher/java/`.
+    Make sure the binary is accessible at:
+    `~/.var/app/org.prismlauncher.PrismLauncher/data/PrismLauncher/java/<arbitrary-jre-name>/bin/java`
 - For optimal JVM flags, see the recommendations in [Osh's video at 4:40](https://youtu.be/OEpZlv6cQsI?si=Pv2prKsP1xYSzXIc&t=280).
 
 This setup ensures maximum performance and compatibility for speedrunning and modded Minecraft.
