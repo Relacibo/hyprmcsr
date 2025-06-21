@@ -23,11 +23,6 @@ Or on Ubuntu/Debian:
 sudo apt install prismlauncher
 ```
 
-After installation, launch PrismLauncher and set up your Minecraft instances as usual.  
-hyprmcsr will automatically detect and use your configured PrismLauncher instance.
-
-See also: [Modcheck](https://github.com/Relacibo/hyprmcsr/blob/main/docs/jar-download.md#modcheck)
-
 > **Note:**
 > If you want to use Flatpak, see [Flatpak Setup](./030-flatpak.md) for details and limitations. The recommended and supported way is the native installation.
 
@@ -92,3 +87,7 @@ Replace `<instance id>` with the folder name of your instance (not the display n
 This is the recommended way to launch Minecraft from automation scripts.
 
 > **Note:** For the wrapper command to be reliably updated in your PrismLauncher instance, PrismLauncher must not be running while the wrapper is being set. If PrismLauncher is open, it may overwrite or ignore changes made to the instance configuration file. Always close PrismLauncher before running the setup script or before starting your profile to ensure the wrapper command is applied correctly.
+
+## Download Mods
+
+You can easily download and update all recommended mods and helper tools for your Minecraft instance using [modcheck](https://github.com/tildejustin/modcheck). See: [Modcheck](https://github.com/Relacibo/hyprmcsr/blob/main/docs/jar-download.md#modcheck) for details and instructions.

@@ -6,7 +6,7 @@
       "exec": "JAR_WORKDIR=\"$HOME/.config/NinjaLink\" $HYPRMCSR run-jar NinjaLink"
     },
     "$HYPRMCSR run-jar Ninjabrain-Bot",
-    "flatpak run com.obsproject.Studio",
+    "obs --startreplaybuffer",
     "sudo input-remapper-control --command start --device \"Ducky Ducky One 3 TKL \" --preset \"MCSR\"",
     "input-remapper-control --command start --device \"Razer Razer Viper V3 Pro\" --preset \"MCSR\"",
     {
