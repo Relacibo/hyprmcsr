@@ -90,4 +90,4 @@ This is the recommended way to launch Minecraft from automation scripts.
 
 ## Download Mods
 
-You can easily download and update all recommended mods and helper tools for your Minecraft instance using [modcheck](https://github.com/tildejustin/modcheck). See: [Modcheck](https://github.com/Relacibo/hyprmcsr/blob/main/docs/jar-download.md#modcheck) for details and instructions.
+You can easily download and update all recommended mods and helper tools for your Minecraft instance using [modcheck](https://github.com/tildejustin/modcheck). See: [Modcheck](https://github.com/Relacibo/hyprmcsr/blob/main/docs/015-jar-download.md#modcheck) for details and instructions.
