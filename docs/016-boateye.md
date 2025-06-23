@@ -44,7 +44,7 @@ Example configuration in your profile (`<profile>.profile.json`):
 
 Correct pointer speed is important for precise gameplay in Boat Eye mode.  
 A video explaining the settings:  
-[Boat Eye Setup Guide (YouTube) by osh](https://www.youtube.com/watch?v=HcrrfsHrR_c)
+[Boat Eye Setup Guide (YouTube) by osh](https://youtu.be/HcrrfsHrR_c?si=cBb7WcvToLk3ukHg)
 
 **To calculate the optimal pointer speed:**  
 Use this tool: [Pixel-Perfect-Tools/calc](https://priffin.github.io/Pixel-Perfect-Tools/calc.html)  

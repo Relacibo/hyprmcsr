@@ -12,3 +12,5 @@
 - [NinjaLink](https://github.com/DuncanRuns/NinjaLink)
 - [modcheck](https://github.com/tildejustin/modcheck)
 - [paceman](https://github.com/PaceMan-MCSR/PaceMan-Tracker)
+- [osh's: MCSR Setup Guide (Video)](https://youtu.be/OEpZlv6cQsI?si=Pv2prKsP1xYSzXIc)
+- [osh's: Boat Eye Guide (Video)](https://youtu.be/HcrrfsHrR_c?si=cBb7WcvToLk3ukHg)
