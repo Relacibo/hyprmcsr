@@ -3,10 +3,10 @@
 
 # Source env scripts from util
 export SCRIPT_DIR=$(dirname "${BASH_SOURCE[0]}")
-source "$SCRIPT_DIR/../util/env_core.sh"
-source "$SCRIPT_DIR/../util/env_prism.sh"
-source "$SCRIPT_DIR/../util/env_runtime.sh"
-source "$SCRIPT_DIR/../util/run_conditional_command.sh"
+UTIL_DIR="$SCRIPT_DIR/../util"
+source "$UTIL_DIR/env_core.sh"
+source "$UTIL_DIR/env_prism.sh"
+source "$UTIL_DIR/env_runtime.sh"
 
 if [ $# -ge 1 ]; then
   # Set argument as value (only 0 or 1 allowed)
@@ -24,6 +24,7 @@ else
     BINDS_ENABLED=1
   fi
 fi
+
 
 echo "$BINDS_ENABLED" > "$STATE_DIR/binds_enabled"
 

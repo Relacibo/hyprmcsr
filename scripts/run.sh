@@ -38,7 +38,7 @@ done
 
 toggle_binds_key=$(jq -r '.binds.toggleBinds' "$PROFILE_CONFIG_FILE")
 if [ -n "$toggle_binds_key" ] && [ "$toggle_binds_key" != "null" ]; then
-  hyprctl keyword bind $toggle_binds_key,exec,"$HYPRMCSR -h $HYPRMCSR_PROFILE toggle_binds"
+  hyprctl keyword bind $toggle_binds_key,exec,"$HYPRMCSR -h $HYPRMCSR_PROFILE toggle-binds"
 fi
 
 # Evaluate prismWrapperCommand
