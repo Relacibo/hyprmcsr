@@ -55,8 +55,9 @@ IFS="x" read -r TARGET_WIDTH TARGET_HEIGHT <<< "$TARGET_SIZE"
 
 # Set window size and sensitivity
 hyprctl --batch "
+  dispatch focuswindow address:$WINDOW_ADDRESS;
   dispatch resizewindowpixel exact $TARGET_WIDTH $TARGET_HEIGHT,address:$WINDOW_ADDRESS;
-  dispatch centerwindow address:$WINDOW_ADDRESS;
+  dispatch centerwindow;
   keyword input:sensitivity $TARGET_SENSITIVITY;
   dispatch focuswindow address:$WINDOW_ADDRESS
 "
