@@ -1,7 +1,7 @@
 #!/bin/bash
 
 export SCRIPT_DIR=$(dirname "${BASH_SOURCE[0]}")
-source "$SCRIPT_DIR/env_prism.sh"
+source "$SCRIPT_DIR/../util/env_prism.sh"
 
 LOGFILE="$MINECRAFT_ROOT/logs/latest.log"
 
