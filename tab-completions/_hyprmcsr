@@ -45,11 +45,17 @@ _hyprmcsr() {
             download_root=$(command jq -r '.download.root // empty' "$config_file" 2>/dev/null)
           fi
           if [[ -z $download_root || $download_root == "null" || $download_root == "" ]]; then
-            repo_dir=${0:A}
-            repo_dir=${repo_dir%/tab-completions/_hyprmcsr}
-            # Falls der Pfad auf .../hyprmcsr/_hyprmcsr endet (z.B. bei Symlink im PATH), nochmal ein Verzeichnis nach oben
-            if [[ $repo_dir == */_hyprmcsr ]]; then
-              repo_dir=${repo_dir%/_hyprmcsr}
+            # Versuche, das Repo-Verzeichnis über which hyprmcsr zu bestimmen
+            hyprmcsr_path=$(which hyprmcsr 2>/dev/null)
+            if [[ -n $hyprmcsr_path ]]; then
+              repo_dir=${hyprmcsr_path%/bin/hyprmcsr}
+            else
+              repo_dir=${0:A}
+              repo_dir=${repo_dir%/tab-completions/_hyprmcsr}
+              # Falls der Pfad auf .../hyprmcsr/_hyprmcsr endet (z.B. bei Symlink im PATH), nochmal ein Verzeichnis nach oben
+              if [[ $repo_dir == */_hyprmcsr ]]; then
+                repo_dir=${repo_dir%/_hyprmcsr}
+              fi
             fi
             jars_dir="$repo_dir/download/jar"
           else
