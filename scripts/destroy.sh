@@ -7,7 +7,6 @@ source "$SCRIPT_DIR/../util/env_prism.sh"
 source "$SCRIPT_DIR/../util/env_runtime.sh"
 
 # Export all relevant environment variables for child processes
-SCRIPT_DIR="${SCRIPT_DIR:-$(dirname "$0")}"
 source "$SCRIPT_DIR/../util/export_env.sh"
 
 toggle_binds_key=$(jq -r '.binds.toggleBinds' "$PROFILE_CONFIG_FILE")
@@ -37,6 +36,16 @@ if [ -n "$on_destroy_cmds" ]; then
     done <<< "$on_destroy_cmds"
   )
 fi
+
+# Stoppe observe_log-Prozess, falls PID-Datei existiert
+if [ -f "$STATE_DIR/observe_log.pid" ]; then
+  OBSERVE_PID=$(cat "$STATE_DIR/observe_log.pid")
+  if kill -0 "$OBSERVE_PID" 2>/dev/null; then
+    kill "$OBSERVE_PID"
+  fi
+  rm -f "$STATE_DIR/observe_log.pid"
+fi
+
 
 # Only remove state files, but keep prism_instance_id and minecraft_root for session persistence
 find "$STATE_DIR" -mindepth 1 -maxdepth 1 ! -name 'prism_instance_id' ! -name 'minecraft_root' -exec rm -rf {} +

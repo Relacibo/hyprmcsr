@@ -92,6 +92,7 @@ if [ "$OBSERVE_LOG" = "true" ]; then
     export HYPRMCSR_PROFILE PRISM_INSTANCE_ID MINECRAFT_ROOT
     $SCRIPT_DIR/observe_log.sh &
     LOG_MONITOR_PID=$!
+    echo $LOG_MONITOR_PID > "$STATE_DIR/observe_log.pid"
   )
 fi
 
@@ -103,13 +104,13 @@ if [ "$REQUIRE_SUDO" = "true" ]; then
   if [ "$auto_destroy" = "true" ]; then
     while true; do sudo -v; sleep 60; done &
     SUDO_REFRESH_PID=$!
-    trap 'kill $SUDO_REFRESH_PID 2>/dev/null; kill $LOG_MONITOR_PID 2>/dev/null; sudo -v; $SCRIPT_DIR/destroy.sh; exit' SIGINT SIGTERM
+    trap 'kill $SUDO_REFRESH_PID 2>/dev/null; sudo -v; $SCRIPT_DIR/destroy.sh; exit' SIGINT SIGTERM
     echo "Press Ctrl+C to exit. On exit, destroy.sh will be executed automatically."
     sleep infinity
   fi
 else
   if [ "$auto_destroy" = "true" ]; then
-    trap 'kill $LOG_MONITOR_PID 2>/dev/null; $SCRIPT_DIR/destroy.sh; exit' SIGINT SIGTERM
+    trap '$SCRIPT_DIR/destroy.sh; exit' SIGINT SIGTERM
     echo "Press Ctrl+C to exit. On exit, destroy.sh will be executed automatically."
     sleep infinity
   fi
