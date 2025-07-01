@@ -7,11 +7,10 @@ REPO_DIR="$(realpath "$SCRIPT_DIR/..")"
 
 REPO="Relacibo/hyprmcsr"
 
-# Hole die neueste Release-URL (tar.gz oder zip bevorzugt)
-ASSET_URL=$(curl -s https://api.github.com/repos/$REPO/releases/latest | \
-  grep "browser_download_url" | grep 'tar.gz' | cut -d '"' -f 4 | head -n1)
+# Hole die neueste Release-Tarball-URL direkt per jq
+ASSET_URL=$(curl -s https://api.github.com/repos/$REPO/releases/latest | jq -r '.tarball_url')
 
-if [ -z "$ASSET_URL" ]; then
+if [ -z "$ASSET_URL" ] || [ "$ASSET_URL" = "null" ]; then
   echo "Kein Release-Archiv gefunden!"
   exit 1
 fi
