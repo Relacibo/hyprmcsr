@@ -61,12 +61,12 @@ To update your hyprmcsr installation to the latest official release, simply run:
 hyprmcsr update
 ```
 
-- This command will automatically download and extract the latest release from GitHub into your current repository directory (one level above the `scripts` folder).
+- This command will first try to use the git CLI to update to the latest release tag if your installation is a git repository. If git is not available, it will automatically fall back to downloading and extracting the latest release tarball from GitHub.
 - All files will be updated in place. Local changes may be overwritten.
 - You can run this command from anywhere; it will always update the repository where hyprmcsr is installed.
 - Make sure you have write permissions for the repository directory.
 
-> **Note:** The update script requires `curl`, `tar`, and `jq` to be installed on your system.
+> **Note:** The update script requires `curl`, `tar`, and `jq` (and optionally `git`) to be installed on your system.
 
 ---
 
