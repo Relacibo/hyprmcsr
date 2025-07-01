@@ -7,7 +7,22 @@ REPO_DIR="$(realpath "$SCRIPT_DIR/..")"
 
 REPO="Relacibo/hyprmcsr"
 
-# Hole die neueste Release-Tarball-URL direkt per jq
+# Prüfe, ob git-Repo und git vorhanden
+if [ -d "$REPO_DIR/.git" ] && command -v git >/dev/null 2>&1; then
+  echo "Git-Repository erkannt. Aktualisiere über git ..."
+  cd "$REPO_DIR"
+  git fetch --tags origin
+  LATEST_TAG=$(git tag --sort=-v:refname | head -n1)
+  if [ -z "$LATEST_TAG" ]; then
+    echo "Kein Tag gefunden! Breche ab."
+    exit 1
+  fi
+  git checkout "$LATEST_TAG"
+  echo "Update abgeschlossen auf Version: $LATEST_TAG (per git checkout) im Verzeichnis: $REPO_DIR"
+  exit 0
+fi
+
+# Fallback: Release-Tarball herunterladen und entpacken
 ASSET_URL=$(curl -s https://api.github.com/repos/$REPO/releases/latest | jq -r '.tarball_url')
 
 if [ -z "$ASSET_URL" ] || [ "$ASSET_URL" = "null" ]; then
@@ -26,4 +41,4 @@ tar -xzf latest.tar.gz -C "$REPO_DIR" --strip-components=1
 cd "$REPO_DIR"
 rm -rf "$TMP_DIR"
 
-echo "Update abgeschlossen im Verzeichnis: $REPO_DIR"
+echo "Update abgeschlossen im Verzeichnis: $REPO_DIR (per tarball)"
