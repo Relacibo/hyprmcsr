@@ -31,14 +31,16 @@ if [[ "$1" == "--version" || "$1" == "version" ]]; then
         ref_file="$GIT_DIR/.git/$(echo "$ref" | cut -d' ' -f2)"
         if [ -f "$ref_file" ]; then
           commit=$(cat "$ref_file" | head -c 40)
-          echo "$version_str-$commit"
+          echo "$version_str"
+          echo "git commit: $commit"
         else
           echo "$version_str"
         fi
       else
         # detached HEAD
         commit=$(echo "$ref" | head -c 40)
-        echo "$version_str-$commit"
+        echo "$version_str"
+        echo "git commit: $commit"
       fi
     else
       echo "$version_str"
