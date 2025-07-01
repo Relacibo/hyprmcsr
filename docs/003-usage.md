@@ -66,7 +66,7 @@ hyprmcsr update
 - You can run this command from anywhere; it will always update the repository where hyprmcsr is installed.
 - Make sure you have write permissions for the repository directory.
 
-> **Note:** The update script requires `curl` and `tar` to be installed on your system.
+> **Note:** The update script requires `curl`, `tar`, and `jq` to be installed on your system.
 
 ---
 
