@@ -53,6 +53,21 @@ hyprmcsr delete-old-worlds <regex> <keep_n>
   "onDestroy": ["$SCRIPT_DIR/delete_old_worlds.sh \"^Random Speedrun \" 50"]
   ```
 
+## Update hyprmcsr to the latest release
+
+To update your hyprmcsr installation to the latest official release, simply run:
+
+```bash
+hyprmcsr update
+```
+
+- This command will automatically download and extract the latest release from GitHub into your current repository directory (one level above the `scripts` folder).
+- All files will be updated in place. Local changes may be overwritten.
+- You can run this command from anywhere; it will always update the repository where hyprmcsr is installed.
+- Make sure you have write permissions for the repository directory.
+
+> **Note:** The update script requires `curl` and `tar` to be installed on your system.
+
 ---
 
 ## Next Steps
