@@ -84,6 +84,9 @@ for entry in "${JAR_REPOS[@]}"; do
   if [ -f "$JARS_DIR/$jar_name" ]; then
     echo "$jar_name already present."
   else
+    echo "Updating $entry..."
+    repo_prefix=$(basename "$entry")
+    find "$JARS_DIR" -type f -name "${repo_prefix}-*.jar" ! -name "$jar_name" -exec rm {} \;
     echo "Downloading $jar_url..."
     curl -L "$jar_url" -o "$JARS_DIR/$jar_name"
   fi
