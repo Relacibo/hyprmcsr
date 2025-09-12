@@ -85,18 +85,7 @@ if [ -n "$on_start_cmds" ]; then
     "$SCRIPT_DIR/../util/run_conditional_command.sh" "$cmd"
   done <<< "$on_start_cmds"
 fi
-# Wait for MINECRAFT_ROOT being set  (max. 20 Seconds)
-tries=0
-while [ -z "$MINECRAFT_ROOT" ] && [ $tries -lt 20 ]; do
-  sleep 1
-  source "$SCRIPT_DIR/../util/env_prism.sh"
-  tries=$((tries+1))
-done
 
-if [ -z "$MINECRAFT_ROOT" ]; then
-  echo "MINECRAFT_ROOT could not be set. Minecraft did not start correctly."
-  exit 1
-fi
 OBSERVE_LOG=$(jq -r '.minecraft.observeLog.enabled // true' "$PROFILE_CONFIG_FILE")
 if [ "$OBSERVE_LOG" = "true" ]; then
   (
