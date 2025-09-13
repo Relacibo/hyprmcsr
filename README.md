@@ -1,6 +1,6 @@
 # hyprmcsr
 
-<img src="resources/gpt-logo.png" width="768" height="512" alt="banner">
+<img src="resources/logo4.png" width="537.5" height="264" alt="banner">
 
 > **Note:**  
 > This project and its documentation are still experimental and under active development.  
