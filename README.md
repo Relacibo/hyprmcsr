@@ -1,6 +1,8 @@
 # hyprmcsr
 
-<img src="resources/logo4.png" width="537.5" height="264" alt="banner">
+<p align="center">
+  <img src="resources/logo4.png" width="537.5" height="264" alt="banner">
+</p>
 
 > **Note:**  
 > This project and its documentation are still experimental and under active development.  
