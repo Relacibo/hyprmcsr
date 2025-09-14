@@ -16,7 +16,7 @@ Creating the Boat Eye OBS scene:
 4. **Project** this scene to a separate monitor if you like. Alternatively, press `mainMod + V` while hovering over the magnifier scene projection window to set it to floating. Then move or resize the window with `mainMod + LMB/RMB` and dragging.  
 Note: this only works if you’ve set it up that way in your `hyprland.conf`. If you are using "V" as a hotkey while playing, change this to something different.
 
-To ensure Boat Eye works correctly, the entire Minecraft window must be captured. The recommended way to achieve this on Linux is by using [obs-vkcapture](https://github.com/nowrep/obs-vkcapture), as it reliably records the full game window including during the necessary vertical stretch.  
+To ensure Boat Eye works correctly, the entire Minecraft window must be captured. The recommended way to achieve this on Linux is by using [obs-vkcapture](https://github.com/nowrep/obs-vkcapture), as it reliably records the full game window, even while it is stretched vertically.
 See the [With obs-vkcapture](./013-obs-setup.md#with-obs-vkcapture) section for details on how to set up obs-vkcapture.
 
 ## Automatic Overlay Toggle with obs-cli
