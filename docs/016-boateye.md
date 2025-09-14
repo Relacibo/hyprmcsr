@@ -73,7 +73,7 @@ This conversion table isn’t perfectly accurate. The libinput sensitivity value
 | 13      | 1.75     | ~ 0.75    |
 | 14      | 2        | ~ 1       |
 
-- For **hyprmcsr**, you can set the value directly as `"sensitivity"` in your profile (libinput value).
+- For **hyprmcsr**, you can set the value directly as `"sensitivity"` in your [profile](004-configuration.md#profile-config-profileprofilejson) (libinput value).
 
 **Important:**  
 You also need to set mouse acceleration to `flat`.
