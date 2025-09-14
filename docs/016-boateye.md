@@ -75,7 +75,7 @@ This conversion table isn’t perfectly accurate. The libinput sensitivity value
 - For **hyprmcsr**, you can set the value directly as `"sensitivity"` in your profile (libinput value).
 
 **Important:**  
-You also need to set mouse acceleration to *flat*.
+You also need to set mouse acceleration to `flat`.
 
 - **Permanent:** In your `hyprland.conf`, set:  
   ```
