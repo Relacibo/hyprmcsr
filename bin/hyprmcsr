@@ -1,5 +1,4 @@
 #!/bin/bash
-# filepath: /home/reinhard/git/hyprmcsr/bin/hyprmcsr
 
 # Use defaults from environment if set
 HYPRMCSR_PROFILE="${HYPRMCSR_PROFILE:-}"
