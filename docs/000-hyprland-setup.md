@@ -66,4 +66,4 @@ For more details, troubleshooting, and advanced configuration, see the [official
 
 ---
 
-Continue with [Cloning and Installation](./001-cloning-and-installation.md)
+Continue with [Installation and Setup](./001-install-and-setup.md)

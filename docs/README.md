@@ -7,7 +7,7 @@ This documentation will guide you through the setup and usage of hyprmcsr on a m
 ## Table of Contents
 
 - [Hyprland Setup](./000-hyprland-setup.md)
-- [Cloning and Installation](./001-cloning-and-installation.md)
+- [Cloning and Installation](./001-install-and-setup.md)
 - [hyprmcsr CLI](./002-cli.md)
 - [Usage](./003-usage.md)
 - [Configuration](./004-configuration.md)
