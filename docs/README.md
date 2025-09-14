@@ -17,7 +17,7 @@ This documentation will guide you through the setup and usage of hyprmcsr on a m
 - [OBS Setup](./013-obs-setup.md)
 - [Input Remapper](./014-input-remapper.md)
 - [Mod Management & Optional Tools](./015-jar-download.md)
-- [Boat Eye Mode](./016-boateye.md)
+- [Boat Eye](./016-boateye.md)
 - [Troubleshooting](./020-troubleshooting.md)
 - [Further Reading & Links](./021-links.md)
 
