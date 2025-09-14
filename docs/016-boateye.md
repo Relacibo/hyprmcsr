@@ -57,20 +57,20 @@ This conversion table isn’t perfectly accurate. The libinput sensitivity value
 
 | Windows | xinput   | libinput        |
 |---------|----------|-----------------|
-| 1       | 0.03125  | approx. -0.96875 |
-| 2       | 0.0625   | approx. -0.9375  |
-| 3       | 0.125    | approx. -0.875   |
-| 4       | 0.25     | approx. -0.75    |
-| 5       | 0.375    | approx. -0.625   |
-| 6       | 0.5      | approx. -0.5     |
-| 7       | 0.625    | approx. -0.375   |
-| 8       | 0.75     | approx. -0.25    |
-| 9       | 0.875    | approx. -0.125   |
+| 1       | 0.03125  | ~ -0.96875 |
+| 2       | 0.0625   | ~ -0.9375  |
+| 3       | 0.125    | ~ -0.875   |
+| 4       | 0.25     | ~ -0.75    |
+| 5       | 0.375    | ~ -0.625   |
+| 6       | 0.5      | ~ -0.5     |
+| 7       | 0.625    | ~ -0.375   |
+| 8       | 0.75     | ~ -0.25    |
+| 9       | 0.875    | ~ -0.125   |
 | 10      | 1        | 0               |
-| 11      | 1.25     | approx. 0.25    |
-| 12      | 1.5      | approx. 0.5     |
-| 13      | 1.75     | approx. 0.75    |
-| 14      | 2        | approx. 1       |
+| 11      | 1.25     | ~ 0.25    |
+| 12      | 1.5      | ~ 0.5     |
+| 13      | 1.75     | ~ 0.75    |
+| 14      | 2        | ~ 1       |
 
 - For **hyprmcsr**, you can set the value directly as `"sensitivity"` in your profile (libinput value).
 
