@@ -23,7 +23,7 @@ See the [With obs-vkcapture](./013-obs-setup.md#with-obs-vkcapture) section for 
 ## Automatic Overlay Toggle with obs-cli
 
 To show or hide the Boat Eye overlay, you can use [obs-cli](https://github.com/pschmitt/obs-cli).  
-Example configuration in your profile (`<profile>.profile.json`):
+Example configuration in your [profile](004-configuration.md#profile-config-profileprofilejson) (`<profile>.profile.json`):
 
 ```json
 "boat-eye": {
