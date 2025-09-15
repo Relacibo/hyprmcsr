@@ -13,7 +13,7 @@ UTIL_DIR=$(dirname "${BASH_SOURCE[0]}")
 SCRIPT_DIR="${SCRIPT_DIR:-$(realpath "$UTIL_DIR/../scripts")}"
 source "$UTIL_DIR/export_env.sh"
 
-# Check if input is a JSON object (idiomatisch mit jq)
+# Check if input is a JSON object (idiomatic with jq)
 if echo "$INPUT" | jq -e 'type == "object"' >/dev/null 2>&1; then
   exec_cmd=$(echo "$INPUT" | jq -r '.exec // empty')
   if_cond=$(echo "$INPUT" | jq -r '.if // empty')
@@ -27,12 +27,12 @@ if echo "$INPUT" | jq -e 'type == "object"' >/dev/null 2>&1; then
     fi
   fi
 else
-  # Prüfe, ob der Input ein gültiger JSON-String ist und extrahiere ggf. den Wert
+  # Check if the input is a valid JSON string and extract the value if possible
   plain_cmd=$(echo "$INPUT" | jq -r 'if type=="string" then . else empty end' 2>/dev/null)
   if [ -n "$plain_cmd" ]; then
     eval "$plain_cmd" || echo "[hyprmcsr] Command failed: $plain_cmd" >&2 &
   else
-    # Fallback: führe den Input direkt aus, falls kein valider JSON-String
+    # Fallback: execute the input directly if it is not a valid JSON string
     [ -z "$INPUT" ] && exit 0
     eval $INPUT || echo "[hyprmcsr] Command failed: $INPUT" >&2 &
   fi

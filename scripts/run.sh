@@ -3,8 +3,8 @@
 export SCRIPT_DIR=$(dirname "${BASH_SOURCE[0]}")
 
 # General profile logic
-# Entfernt: Argumenten-Parsing für PROFILE und HYPRMCSR_PROFILE
-# Die Umgebungsvariablen werden direkt verwendet, wie sie gesetzt sind
+# Removed: argument parsing for PROFILE and HYPRMCSR_PROFILE
+# The environment variables are used directly as they are set
 
 export HYPRMCSR_PROFILE="${HYPRMCSR_PROFILE:-default}"
 export PROFILE="${PROFILE:-default}"

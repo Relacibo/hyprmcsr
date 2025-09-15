@@ -7,7 +7,7 @@ HYPRMCSR_PROFILE="${HYPRMCSR_PROFILE:-default}"
 PROFILE_CONFIG_FILE="$CONFIG_ROOT/${HYPRMCSR_PROFILE}.profile.json"
 CONFIG_FILE="$CONFIG_ROOT/config.json"
 
-# STATE_DIR aus profile config lesen, falls vorhanden (jq und Profil-Datei werden vorausgesetzt)
+# Read STATE_DIR from profile config if present (requires jq and profile file)
 STATE_DIR=$(jq -r '.stateDir // empty' "$PROFILE_CONFIG_FILE")
 
 if [ -z "$STATE_DIR" ]; then

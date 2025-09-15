@@ -3,7 +3,7 @@
 export SCRIPT_DIR=$(dirname "${BASH_SOURCE[0]}")
 source "$SCRIPT_DIR/../util/env_prism.sh"
 
-# Wait for MINECRAFT_ROOT being set  (max. 20 Seconds)
+# Wait for MINECRAFT_ROOT being set  (max. 20 seconds)
 tries=0
 while [ -z "$MINECRAFT_ROOT" ] && [ $tries -lt 20 ]; do
   sleep 1
@@ -17,7 +17,7 @@ fi
 
 LOGFILE="$MINECRAFT_ROOT/logs/latest.log"
 
-# Robuste Überwachung, auch wenn die Logdatei neu erstellt wird
+
 tail_loop() {
   while true; do
     if [[ -f "$LOGFILE" ]]; then
@@ -33,7 +33,7 @@ tail_loop() {
     else
       sleep 1
     fi
-    # Kurze Pause, falls tail beendet wurde (z.B. bei Log-Rotation)
+    # Short pause in case tail was terminated (e.g. due to log rotation)
     sleep 1
   done
 }

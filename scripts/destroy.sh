@@ -37,7 +37,7 @@ if [ -n "$on_destroy_cmds" ]; then
   )
 fi
 
-# Stoppe observe_log-Prozess, falls PID-Datei existiert
+# Stop observe_log process if PID file exists
 if [ -f "$STATE_DIR/observe_log.pid" ]; then
   OBSERVE_PID=$(cat "$STATE_DIR/observe_log.pid")
   if kill -0 "$OBSERVE_PID" 2>/dev/null; then

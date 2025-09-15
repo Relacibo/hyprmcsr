@@ -103,7 +103,7 @@ source "$SCRIPT_DIR/../util/export_env.sh"
     done
   fi
 
-  # Run minecraft.onStart (all in background, mit allen relevanten Umgebungsvariablen)
+  # Run minecraft.onStart (all in background, with all relevant environment variables)
   export HYPRMCSR_PROFILE PROFILE HYPRMCSR STATE_DIR PRISM_PREFIX MINECRAFT_ROOT PRISM_INSTANCE_ID WINDOW_ADDRESS
   mc_on_start_cmds=$(jq -c '.minecraft.onStart[]?' "$CONFIG_FILE")
   if [ -n "$mc_on_start_cmds" ]; then
