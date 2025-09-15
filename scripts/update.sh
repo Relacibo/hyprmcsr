@@ -41,4 +41,4 @@ tar -xzf latest.tar.gz -C "$REPO_DIR" --strip-components=1
 cd "$REPO_DIR"
 rm -rf "$TMP_DIR"
 
-echo "Update completed in directory: $REPO_DIR
+echo "Update completed in directory: $REPO_DIR (via tarball)"
