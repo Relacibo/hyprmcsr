@@ -77,7 +77,7 @@
         "1.16.1"
       ]
     },
-    "observeLog": {
+    "observeState": {
       "enabled": true
     }
   },
