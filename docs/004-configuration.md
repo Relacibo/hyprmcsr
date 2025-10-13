@@ -48,7 +48,8 @@ See [example.default.profile.json](../example.default.profile.json) for a full e
   > - If **both** are set, both must match.  
   >   You can check the values with `hyprctl clients -j`.
 - **minecraft.observeState.enabled**: Enable or disable State Outputs `wpstateout.txt` observation.
-- **minecraft.observeState.useInotifywait**: If you want to observe `wpstateout.txt` with useInotifywait you have to install `inotify-tools`.If you don't have it installed or you disable it the file is checked serveral times per second instead
+- **minecraft.observeState.useInotifywait**: Use `inotifywait` (from inotify-tools) to monitor `wpstateout.txt` in real time (recommended).
+  If not installed or disabled, the script falls back to frequent file polling.
 - **minecraft.onStart**: Array of shell commands/scripts to run after Minecraft has started (executed by `instance_wrapper.sh`). See [Command Syntax](#command-syntax-string-or-object)
 - **pipewireLoopback.enabled**: Enable or disable Pipewire audio loopback/splitting.
 - **pipewireLoopback.playbackTarget**: Audio output for Pipewire split (e.g., your headset).  

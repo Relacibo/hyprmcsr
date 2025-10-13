@@ -17,11 +17,13 @@
 It is especially useful for runners looking for a streamlined, performant alternative to the typical Windows-based MCSR setup.
 
 The toolkit leverages [Hyprland](https://hyprland.org/) (Wayland compositor), Pipewire, PrismLauncher, and various helper tools to provide:
-- Automated window management and keybinds
-- Audio splitting for game/Discord/OBS
-- Input remapping for optimal controls
-- Easy mod and tool management (auto-download)
-- Integration with OBS and other speedrun helpers
+-Automated setup and download/update of all desired tools, such as Ninjabrain-bot, Paceman-tracker, etc.
+-Automated window size management
+-Configurable keybinds and window sizes
+-Multiple profiles support
+-Audio splitting (game / Discord)
+-Automated start of all necessary tools when you begin a speedrunning session, including Minecraft, input remapper, OBS, and your speedrun helper tools
+-Automated closing and cleanup after ending your session
 
 All core functionality is controlled via the `hyprmcsr` CLI, which manages setup, teardown, and automation for your speedrun sessions.
 
