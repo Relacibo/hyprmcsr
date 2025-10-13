@@ -57,15 +57,18 @@ if [ "$USE_INOTIFYWAIT" != "true" ]; then
 else
     inotifywait -m -q -e modify "$STATE_FILE" | while read path action file; do
         current_state=$(cat "$STATE_FILE" 2>/dev/null)
-        case "$current_state" in
-            wall)
-                "$SCRIPT_DIR/toggle_mode.sh" normal
-                "$SCRIPT_DIR/toggle_binds.sh" 0
-            ;;
-            generating,0)
-                "$SCRIPT_DIR/toggle_mode.sh" normal
-                "$SCRIPT_DIR/toggle_binds.sh" 1
-            ;;
-        esac
+        if [ "$current_state" != "$LAST_STATE" ]; then
+            LAST_STATE="$current_state"
+            case "$current_state" in
+                wall)
+                    "$SCRIPT_DIR/toggle_mode.sh" normal
+                    "$SCRIPT_DIR/toggle_binds.sh" 0
+                ;;
+                generating,0)
+                    "$SCRIPT_DIR/toggle_mode.sh" normal
+                    "$SCRIPT_DIR/toggle_binds.sh" 1
+                ;;
+            esac
+        fi
     done
 fi
