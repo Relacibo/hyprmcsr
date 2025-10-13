@@ -78,7 +78,8 @@
       ]
     },
     "observeState": {
-      "enabled": true
+      "enabled": true,
+      "useInotifywait": true
     }
   },
   "autoDestroyOnExit": true

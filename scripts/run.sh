@@ -90,9 +90,9 @@ OBSERVE_STATE=$(jq -r '.minecraft.observeState.enabled // true' "$PROFILE_CONFIG
 if [ "$OBSERVE_STATE" = "true" ]; then
   (
     export HYPRMCSR_PROFILE PRISM_INSTANCE_ID MINECRAFT_ROOT
-    $SCRIPT_DIR/observe_state.sh &
+    setsid "$SCRIPT_DIR/observe_state.sh" >/dev/null 2>&1 &
     STATE_MONITOR_PID=$!
-    echo $STATE_MONITOR_PID > "$STATE_DIR/observe_state.pid"
+    echo "$STATE_MONITOR_PID" > "$STATE_DIR/observe_state.pid"
   )
 fi
 

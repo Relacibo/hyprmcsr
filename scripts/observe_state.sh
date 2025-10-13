@@ -16,10 +16,16 @@ if [ -z "$MINECRAFT_ROOT" ]; then
 fi
 
 STATE_FILE="$MINECRAFT_ROOT/wpstateout.txt"
+USE_INOTIFYWAIT=$(jq -r '.minecraft.observeState.useInotifywait // true' "$PROFILE_CONFIG_FILE")
 LAST_STATE=""
+if [ "$USE_INOTIFYWAIT" = "true" ]; then
+  if ! command -v inotifywait >/dev/null 2>&1; then
+    echo "inotifywait not found. Falling back to polling."
+    USE_INOTIFYWAIT="false"
+  fi
+fi
+if [ "$USE_INOTIFYWAIT" != "true" ]; then
 LAST_MTIME=0
-
-echo "Observing state file: $STATE_FILE"
 
 while true; do
   if [ -f "$STATE_FILE" ]; then
@@ -32,16 +38,36 @@ while true; do
 
         case "$current_state" in
           wall)
+            "$SCRIPT_DIR/toggle_mode.sh" normal
             "$SCRIPT_DIR/toggle_binds.sh" 0
-            "$SCRIPT_DIR/toggle_mode.sh" normal
             ;;
-          generating*)
-            "$SCRIPT_DIR/toggle_binds.sh" 1
+          generating,*)
             "$SCRIPT_DIR/toggle_mode.sh" normal
+            "$SCRIPT_DIR/toggle_binds.sh" 1
             ;;
         esac
       fi
     fi
   fi
-  sleep 0.05
+  sleep 0.03
 done
+fi
+
+  inotifywait -m -e modify "$STATE_FILE" | while read path action file; do
+  current_state=$(cat "$STATE_FILE" 2>/dev/null)
+
+  case "$current_state" in
+    wall)
+      "$SCRIPT_DIR/toggle_mode.sh" normal
+      "$SCRIPT_DIR/toggle_binds.sh" 0
+      ;;
+    generating,0)
+      "$SCRIPT_DIR/toggle_mode.sh" normal
+      "$SCRIPT_DIR/toggle_binds.sh" 1
+      ;;
+  esac
+done
+
+
+
+
