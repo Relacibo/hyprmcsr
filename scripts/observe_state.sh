@@ -1,7 +1,5 @@
 #!/bin/sh
 
-#renice -n -10 $$ >/dev/null 2>&1
-
 export SCRIPT_DIR=$(dirname "${BASH_SOURCE[0]}")
 source "$SCRIPT_DIR/../util/env_prism.sh"
 
