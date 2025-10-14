@@ -60,7 +60,6 @@ hyprctl --batch "
   dispatch resizewindowpixel exact $TARGET_WIDTH $TARGET_HEIGHT,address:$WINDOW_ADDRESS;
   dispatch centerwindow;
   keyword input:sensitivity $TARGET_SENSITIVITY;
-  sleep 0.01;
   dispatch focuswindow address:$WINDOW_ADDRESS
 "
 

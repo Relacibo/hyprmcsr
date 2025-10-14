@@ -29,42 +29,37 @@ fi
 if [ "$USE_INOTIFYWAIT" != "true" ]; then
     # doesn't work 100% reliably, better use inotifywait if possible
     "$SCRIPT_DIR/toggle_binds.sh" 1
+    stateToggle="inworld"
+    LAST_STATE=""
+    
     while true; do
-        current_state=$(cat "$STATE_FILE" 2>/dev/null || "")
+        tmp_state=$(cat "$STATE_FILE" 2>/dev/null || echo "")
+        
+        case "$tmp_state" in
+            wall|inworld,*)
+                current_state="$tmp_state"
+            ;;
+        esac
         
         if [ "$current_state" != "$LAST_STATE" ]; then
+            LAST_STATE="$current_state"
+            
             case "$current_state" in
-                inworld,*|wall)
-                    # determine if states start with "inworld,"
-                    case "$current_state" in
-                        inworld,*) curr_inworld=1 ;;
-                        *)          curr_inworld=0 ;;
-                    esac
-                    
-                    case "$LAST_STATE" in
-                        inworld,*) last_inworld=1 ;;
-                        *)          last_inworld=0 ;;
-                    esac
-                    # If both are inworld,* skip processing
-                    if [ "$curr_inworld" -eq 0 ] || [ "$last_inworld" -eq 0 ]; then
-                        case "$current_state" in
-                            wall)
-                                "$SCRIPT_DIR/toggle_mode.sh" normal
-                                "$SCRIPT_DIR/toggle_binds.sh" 0
-                            ;;
-                            inworld,*)
-                                "$SCRIPT_DIR/toggle_mode.sh" normal
-                                "$SCRIPT_DIR/toggle_binds.sh" 1
-                            ;;
-                        esac
-                        LAST_STATE="$current_state"
+                wall)
+                    if [ "$stateToggle" != "wall" ]; then
+                        "$SCRIPT_DIR/toggle_mode.sh" normal
+                        "$SCRIPT_DIR/toggle_binds.sh" 0
+                        stateToggle="wall"
+                    fi
+                ;;
+                inworld,*)
+                    if [ "$stateToggle" != "inworld" ]; then
+                        "$SCRIPT_DIR/toggle_binds.sh" 1
+                        stateToggle="inworld"
                     fi
                 ;;
             esac
-            
         fi
-        
-        
         sleep 0.2
     done
     
