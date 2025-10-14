@@ -54,11 +54,13 @@ echo "$NEXT_MODE" > "$STATE_FILE"
 IFS="x" read -r TARGET_WIDTH TARGET_HEIGHT <<< "$TARGET_SIZE"
 
 # Set window size and sensitivity
+# small delay to wait fo window finishing resizing
 hyprctl --batch "
   dispatch focuswindow address:$WINDOW_ADDRESS;
   dispatch resizewindowpixel exact $TARGET_WIDTH $TARGET_HEIGHT,address:$WINDOW_ADDRESS;
   dispatch centerwindow;
   keyword input:sensitivity $TARGET_SENSITIVITY;
+  sleep 0.01;
   dispatch focuswindow address:$WINDOW_ADDRESS
 "
 

@@ -86,7 +86,7 @@ if [ -n "$on_start_cmds" ]; then
   done <<< "$on_start_cmds"
 fi
 
-OBSERVE_STATE=$(jq -r '.minecraft.observeState.enabled // true' "$PROFILE_CONFIG_FILE")
+OBSERVE_STATE=$(jq -r '.minecraft.observeLog.enabled // true' "$PROFILE_CONFIG_FILE")
 if [ "$OBSERVE_STATE" = "true" ]; then
   (
     export HYPRMCSR_PROFILE PRISM_INSTANCE_ID MINECRAFT_ROOT

@@ -77,7 +77,7 @@
         "1.16.1"
       ]
     },
-    "observeState": {
+    "observeLog": {
       "enabled": true,
       "useInotifywait": true
     }
