@@ -1,7 +1,7 @@
 # Installation and Setup
 ## Requirements
 
-For the program to be able to run, you have to make sure, that the following commands are installed. 
+For the program to be able to run, you have to make sure, that the following commands are installed:
 - jq
 - inotifywait
 
