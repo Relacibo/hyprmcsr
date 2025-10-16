@@ -77,4 +77,4 @@ chmod +x /path/to/hyprmcsr/bin/*
 Replace `/path/to/hyprmcsr` with the actual path to your hyprmcsr installation.
 
 ### More
-For instructions on starting, stopping, and using hyprmcsr in practice, continue with [Usage](003-usage.md).
+For instructions on how to use the cli, continue with [CLI](002-cli.md).
