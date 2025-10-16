@@ -1,12 +1,17 @@
 # Installation and Setup
+## Requirements
+
+For the program to be able to run, you have to make sure, that the following commands are installed. 
+- jq
+- inotifywait
+
+## 1. Install (two options)
 
 This section explains how to install hyprmcsr and set up the initial configuration.
 
 > Requirements:
 > - Option A (recommended): git
 > - Option B (tarball): curl, jq, tar
-
-## 1. Install (two options)
 
 Option A — Recommended: Clone the repository (requires git)
 ```bash
