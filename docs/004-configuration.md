@@ -47,7 +47,7 @@ See [example.default.profile.json](../example.default.profile.json) for a full e
   > - If **one** is set, it must match.
   > - If **both** are set, both must match.  
   >   You can check the values with `hyprctl clients -j`.
-- **minecraft.observeLog.enabled**: Enable or disable log observation for Minecraft state.
+- **minecraft.observeLog.enabled**: Enable or disable State Outputs `wpstateout.txt` observation.
 - **minecraft.onStart**: Array of shell commands/scripts to run after Minecraft has started (executed by `instance_wrapper.sh`). See [Command Syntax](#command-syntax-string-or-object)
 - **pipewireLoopback.enabled**: Enable or disable Pipewire audio loopback/splitting.
 - **pipewireLoopback.playbackTarget**: Audio output for Pipewire split (e.g., your headset).  

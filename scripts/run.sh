@@ -93,13 +93,13 @@ if [ -n "$on_start_cmds" ]; then
   done <<< "$on_start_cmds"
 fi
 
-OBSERVE_LOG=$(jq -r '.minecraft.observeLog.enabled // true' "$PROFILE_CONFIG_FILE")
-if [ "$OBSERVE_LOG" = "true" ]; then
+OBSERVE_STATE=$(jq -r '.minecraft.observeLog.enabled // true' "$PROFILE_CONFIG_FILE")
+if [ "$OBSERVE_STATE" = "true" ]; then
   (
     export HYPRMCSR_PROFILE PRISM_INSTANCE_ID MINECRAFT_ROOT
-    $SCRIPT_DIR/observe_log.sh &
-    LOG_MONITOR_PID=$!
-    echo $LOG_MONITOR_PID > "$STATE_DIR/observe_log.pid"
+    setsid "$SCRIPT_DIR/observe_state.sh" >/dev/null 2>&1 &
+    STATE_MONITOR_PID=$!
+    echo "$STATE_MONITOR_PID" > "$STATE_DIR/observe_state.pid"
   )
 fi
 

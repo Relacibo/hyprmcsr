@@ -37,13 +37,13 @@ if [ -n "$on_destroy_cmds" ]; then
   )
 fi
 
-# Stop observe_log process if PID file exists
-if [ -f "$STATE_DIR/observe_log.pid" ]; then
-  OBSERVE_PID=$(cat "$STATE_DIR/observe_log.pid")
+# Stop observe_state process group if PID file exists
+if [ -f "$STATE_DIR/observe_state.pid" ]; then
+  OBSERVE_PID=$(cat "$STATE_DIR/observe_state.pid")
   if kill -0 "$OBSERVE_PID" 2>/dev/null; then
-    kill "$OBSERVE_PID"
+   kill -TERM -"$OBSERVE_PID"
   fi
-  rm -f "$STATE_DIR/observe_log.pid"
+  rm -f "$STATE_DIR/observe_state.pid"
 fi
 
 
