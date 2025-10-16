@@ -22,6 +22,13 @@ if ! command -v jq >/dev/null; then
   exit 1
 fi
 
+# Check for inotifywait if observeLog is enabled
+OBSERVE_LOG=$(jq -r '.minecraft.observeLog.enabled // true' "$PROFILE_CONFIG_FILE")
+if [ "$OBSERVE_LOG" = "true" ] && ! command -v inotifywait >/dev/null; then
+  echo "inotifywait (from inotify-tools) is required when minecraft.observeLog.enabled is true!"
+  exit 1
+fi
+
 # Check for sudo requirement early
 REQUIRE_SUDO=$(jq -r '.requireSudo // false' "$PROFILE_CONFIG_FILE")
 if [ "$REQUIRE_SUDO" = "true" ]; then
