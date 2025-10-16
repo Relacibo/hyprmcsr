@@ -79,4 +79,5 @@ Replace `/path/to/hyprmcsr` with the actual path to your hyprmcsr installation.
 ### More
 
 For optional instructions how to add the cli to PATH, continue with [CLI](002-cli.md).
+
 For instructions on starting, stopping, and using hyprmcsr in practice, continue with [Usage](./003-usage.md).
