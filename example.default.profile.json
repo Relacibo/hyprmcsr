@@ -78,8 +78,7 @@
       ]
     },
     "observeLog": {
-      "enabled": true,
-      "useInotifywait": true
+      "enabled": true
     }
   },
   "autoDestroyOnExit": true
