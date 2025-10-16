@@ -26,14 +26,14 @@ inotifywait -m -q -e modify "$STATE_FILE" | while read path action file; do
             wall)
                 "$SCRIPT_DIR/toggle_mode.sh" normal
                 "$SCRIPT_DIR/toggle_binds.sh" 0
-                "$SCRIPT_DIR/center_cursor.sh"
+                "$SCRIPT_DIR/../util/center_cursor.sh"
             ;;
             generating,0)
                 "$SCRIPT_DIR/toggle_mode.sh" normal
                 "$SCRIPT_DIR/toggle_binds.sh" 1
             ;;
             inworld,paused | inworld,gamescreenopen)
-                "$SCRIPT_DIR/center_cursor.sh"
+                "$SCRIPT_DIR/../util/center_cursor.sh"
             ;;
         esac
     fi
