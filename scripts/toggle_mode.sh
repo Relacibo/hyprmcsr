@@ -1,7 +1,6 @@
 #!/bin/bash
 export SCRIPT_DIR=$(dirname "${BASH_SOURCE[0]}")
 UTIL_DIR="$SCRIPT_DIR/../util"
-# env_runtime.sh, env_core.sh und env_prism.sh werden jetzt alle aus util/ bezogen
 source "$UTIL_DIR/env_core.sh"
 source "$UTIL_DIR/env_prism.sh"
 source "$UTIL_DIR/env_runtime.sh"
@@ -54,7 +53,6 @@ echo "$NEXT_MODE" > "$STATE_FILE"
 IFS="x" read -r TARGET_WIDTH TARGET_HEIGHT <<< "$TARGET_SIZE"
 
 # Set window size and sensitivity
-# small delay to wait fo window finishing resizing
 hyprctl --batch "
   dispatch focuswindow address:$WINDOW_ADDRESS;
   dispatch resizewindowpixel exact $TARGET_WIDTH $TARGET_HEIGHT,address:$WINDOW_ADDRESS;

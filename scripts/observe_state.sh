@@ -49,6 +49,7 @@ if [ "$USE_INOTIFYWAIT" != "true" ]; then
                     if [ "$stateToggle" != "wall" ]; then
                         "$SCRIPT_DIR/toggle_mode.sh" normal
                         "$SCRIPT_DIR/toggle_binds.sh" 0
+                        "$SCRIPT_DIR/center_cursor.sh"
                         stateToggle="wall"
                     fi
                 ;;
@@ -72,10 +73,14 @@ else
                 wall)
                     "$SCRIPT_DIR/toggle_mode.sh" normal
                     "$SCRIPT_DIR/toggle_binds.sh" 0
+                    "$SCRIPT_DIR/center_cursor.sh"
                 ;;
                 generating,0)
                     "$SCRIPT_DIR/toggle_mode.sh" normal
                     "$SCRIPT_DIR/toggle_binds.sh" 1
+                ;;
+                inworld,paused | inworld,gamescreenopen)
+                    "$SCRIPT_DIR/center_cursor.sh"
                 ;;
             esac
         fi
