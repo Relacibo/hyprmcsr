@@ -61,6 +61,12 @@ else
 fi
 
 if [ "$PRISM_WRAPPER_AUTO_REPLACE" = "true" ]; then
+  # Check if PrismLauncher is already running
+  if hyprctl clients -j | jq -e '.[] | select(.class == "org.prismlauncher.PrismLauncher" or (.title // "" | startswith("Prism Launcher")))' >/dev/null 2>&1; then
+    echo "Warning: PrismLauncher is already running. Auto-replace of wrapper command will not work reliably while PrismLauncher is open."
+    echo "Please close PrismLauncher and restart the profile to ensure the wrapper command is applied correctly."
+  fi
+
   if [ -n "$PRISM_INSTANCE_IDS" ]; then
     echo "$PRISM_INSTANCE_IDS" | while IFS= read -r INSTANCE_ID; do
       [ -z "$INSTANCE_ID" ] && continue
