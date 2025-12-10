@@ -6,7 +6,7 @@ PROFILE="${PROFILE:-}"
 
 usage() {
   echo "Usage: $0 [-h HYPRMCSR_PROFILE] [-p PROFILE] <command> [args...]"
-  echo "Commands: start, destroy, delete-old-worlds, modcheck, run-jar, setup-audio-splitter, version"
+  echo "Commands: run, destroy, delete-old-worlds, modcheck, run-jar, setup-audio-splitter, version"
   exit 1
 }
 
