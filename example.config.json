@@ -1,14 +1,11 @@
 {
-  "pipewireLoopback": {
-    "enabled": false
-  },
   "download": {
-    "jar": [
-      "tildejustin/modcheck",
-      "Ninjabrain1/Ninjabrain-Bot",
-      "DuncanRuns/NinjaLink",
-      "PaceMan-MCSR/PaceMan-Tracker",
-      "cylorun/Map-Check"
-    ]
+    "jar": {
+      "modcheck": "tildejustin/modcheck",
+      "Ninjabrain-Bot": "Ninjabrain1/Ninjabrain-Bot",
+      "NinjaLink": "DuncanRuns/NinjaLink",
+      "PaceMan-Tracker": "PaceMan-MCSR/PaceMan-Tracker",
+      "Map-Check": "cylorun/Map-Check"
+    }
   }
 }

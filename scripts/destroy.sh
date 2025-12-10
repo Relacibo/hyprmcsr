@@ -26,7 +26,7 @@ jq -r '.binds.modeSwitch | to_entries[] | "\(.key) \(.value)"' "$PROFILE_CONFIG_
   hyprctl keyword unbind $key
 done
 
-# Run onDestroy commands from config.json (all in background, with all relevant environment variables)
+# Run onDestroy commands from profile config (all in background, with all relevant environment variables)
 on_destroy_cmds=$(jq -c '.onDestroy[]?' "$PROFILE_CONFIG_FILE")
 if [ -n "$on_destroy_cmds" ]; then
   (

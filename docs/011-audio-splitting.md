@@ -4,10 +4,18 @@ hyprmcsr uses Pipewire loopback to automatically split Minecraft audio into a se
 
 ## Enabling Audio Splitting
 
-By default, audio splitting is **disabled** (`pipewireLoopBack.enabled` is `false` in `config.json`).  
-To enable it, set `"pipewireLoopBack.enabled": true` in your `config.json` (usually in `~/.config/hyprmcsr/config.json`).
+By default, audio splitting is **disabled**.  
+To enable it, run:
 
-When you run `hyprmcsr install` and `pipewireLoopBack.playbackTarget` is empty or missing, the installer will automatically detect your current default output device and set it as the playback target. Audio splitting will then be configured so that Minecraft audio is routed to this device.
+```bash
+hyprmcsr setup-audio-splitter enable
+```
+
+This will automatically detect your current default output device and configure Pipewire to create virtual audio devices for splitting. You can also specify a custom playback target:
+
+```bash
+hyprmcsr setup-audio-splitter enable <playback_target>
+```
 
 ## Usage
 
@@ -18,12 +26,16 @@ When you run `hyprmcsr install` and `pipewireLoopBack.playbackTarget` is empty o
 
 ## Disabling Audio Splitting
 
-If you set `"pipewireLoopBack.enabled": false` and run the install script again, all virtual outputs (GameSound, DiscordSound, etc.) will be removed automatically.
+To disable audio splitting and remove the virtual outputs (GameSound, DiscordSound, etc.), run:
+
+```bash
+hyprmcsr setup-audio-splitter disable
+```
 
 ---
 
 **Tip:**  
-You can always check or change the playback target device by editing the `pipewireLoopBack.playbackTarget` field in your config. If you want to reset it, just remove the field and re-run `hyprmcsr install`.
+You can re-enable audio splitting at any time with a different playback target by running `hyprmcsr setup-audio-splitter enable <new_target>`.
 
 **Troubleshooting:**  
 If audio is not split, check your Pipewire setup and see [Troubleshooting](./020-troubleshooting.md).

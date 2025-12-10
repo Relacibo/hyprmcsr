@@ -80,8 +80,9 @@ source "$SCRIPT_DIR/../util/export_env.sh"
   fi
 
   # Sound splitting: search for new sink-input with node.name == "java" AND media.role == "game"
-  pipewire_enabled=$(jq -r '.pipewireLoopback.enabled // false' "$CONFIG_FILE")
-  if [ "$pipewire_enabled" = "true" ]; then
+  # Check if audio splitting is enabled by checking for the config file
+  SPLIT_AUDIO_CONF="${XDG_CONFIG_HOME:-$HOME/.config}/pipewire/pipewire.conf.d/split-audio.conf"
+  if [ -f "$SPLIT_AUDIO_CONF" ]; then
     for i in {1..20}; do
       after_sinks=$(pactl -f json list sink-inputs | jq '.[].index' | sort)
       new_sinks=$(comm -13 <(echo "$before_sinks") <(echo "$after_sinks"))
@@ -105,7 +106,7 @@ source "$SCRIPT_DIR/../util/export_env.sh"
 
   # Run minecraft.onStart (all in background, with all relevant environment variables)
   export HYPRMCSR_PROFILE PROFILE HYPRMCSR STATE_DIR PRISM_PREFIX MINECRAFT_ROOT PRISM_INSTANCE_ID WINDOW_ADDRESS
-  mc_on_start_cmds=$(jq -c '.minecraft.onStart[]?' "$CONFIG_FILE")
+  mc_on_start_cmds=$(jq -c '.minecraft.onStart[]?' "$PROFILE_CONFIG_FILE")
   if [ -n "$mc_on_start_cmds" ]; then
     while IFS= read -r cmd; do
       "$SCRIPT_DIR/../util/run_conditional_command.sh" "$cmd"

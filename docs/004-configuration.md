@@ -1,19 +1,27 @@
 # Configuration
 
-hyprmcsr uses two types of configuration files, that are created when running `hyprmcsr install` for the first time:
+hyprmcsr uses two types of configuration files, that are automatically created from example files when running `hyprmcsr start` for the first time:
 
-## Global config: `config.json`
+## JAR Repositories: `repositories.json`
 
-- Located in `~/.config/hyprmcsr/config.json`
-- Contains global settings like JAR download sources, pipewire loopback, etc.
-- **Typical fields:**
-  - `pipewireLoopback.enabled`: Enable or disable Pipewire audio loopback/splitting globally.
-  - `pipewireLoopback.playbackTarget`: Audio output for Pipewire split (e.g., your headset).
-  - `download.jar`: Array of GitHub repositories (or URLs) for required JARs to be downloaded automatically.
-  - `download.root`: (Optional) Custom download root for JARs.
-  - You can add further global options as needed. All other settings should go into your profile config.
+- Located in `~/.config/hyprmcsr/repositories.json`
+- Contains JAR download sources (GitHub repositories)
+- Format: Object with `jar` key mapping JAR names to GitHub repositories
+- JARs are downloaded automatically when using `hyprmcsr run-jar`
 
-See [example.config.json](../example.config.json) for a full example of the global config.
+Example structure:
+```json
+{
+  "jar": {
+    "modcheck": "tildejustin/modcheck",
+    "ninjabrain-bot": "Ninjabrain1/Ninjabrain-Bot"
+  }
+}
+```
+
+See [example.repositories.json](../example.repositories.json) for a full example.
+
+> **Note:** If you have an old `config.json` file, it will be automatically migrated to `repositories.json` on first run.
 
 ## Profile config: `<profile>.profile.json`
 
@@ -49,10 +57,7 @@ See [example.default.profile.json](../example.default.profile.json) for a full e
   >   You can check the values with `hyprctl clients -j`.
 - **minecraft.observeLog.enabled**: Enable or disable State Outputs `wpstateout.txt` observation.
 - **minecraft.onStart**: Array of shell commands/scripts to run after Minecraft has started (executed by `instance_wrapper.sh`). See [Command Syntax](#command-syntax-string-or-object)
-- **pipewireLoopback.enabled**: Enable or disable Pipewire audio loopback/splitting.
-- **pipewireLoopback.playbackTarget**: Audio output for Pipewire split (e.g., your headset).  
-  Tip: You can leave this field empty. If loopback is enabled, running `install.sh` will automatically detect and set your default output here.
-- **download.jar**: Array of GitHub repositories (or URLs in the future) for required JARs to be downloaded automatically.
+- **downloadRoot**: (Optional) Custom download root for JARs. If not set, defaults to `<repo>/download`.
 - **autoDestroyOnExit**: If true, runs cleanup automatically when the main script exits.
 - **requireSudo**: If true, you will be prompted for sudo at start and it will be kept alive for all commands in `onStart`/`onDestroy` (useful for input-remapper or other tools needing root).
 - **minecraft.prismWrapperCommand**:  

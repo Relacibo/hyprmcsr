@@ -1,16 +1,40 @@
 # Mod Management & Optional Tools
 
-hyprmcsr can automatically download and update required JARs for your speedrun setup using the `hyprmcsr install` command.
+hyprmcsr can automatically download and update required JARs for your speedrun setup using the `hyprmcsr run-jar` command.
 
 ## How it works
 
-- The required JARs are defined in your profile config under the `download.jar` array.
-- On first install (or when you run `hyprmcsr install`), all listed JARs are downloaded from their respective sources.
-- Updates are handled automatically if you re-run the install command.
+- The required JARs are defined in `~/.config/hyprmcsr/repositories.json` under the `jar` object.
+- When you run `hyprmcsr run-jar <jar-name>`, the JAR is automatically downloaded from the latest GitHub release if not present.
+- Updates are handled automatically - if a newer version is available on GitHub, it will be downloaded and old versions removed.
+
+## Configuration Format
+
+The `repositories.json` file (located in `~/.config/hyprmcsr/repositories.json`) contains a `jar` object mapping JAR names to GitHub repositories:
+
+```json
+{
+  "jar": {
+    "ninjabrain-bot": "Ninjabrain1/Ninjabrain-Bot",
+    "ninjalink": "DuncanRuns/NinjaLink",
+    "paceman": "PaceMan-MCSR/PaceMan-Tracker",
+    "modcheck": "tildejustin/modcheck"
+  }
+}
+```
+
+You can then start these tools in your `onStart` section using the JAR names defined above, for example:
+
+```json
+"onStart": [
+  "hyprmcsr run-jar ninjabrain-bot",
+  "hyprmcsr run-jar ninjalink"
+]
+```
 
 ## Ninjabrain Bot, NinjaLink, PaceMan-Tracker
 
-[Ninjabrain Bot](https://github.com/Ninjabrain1/Ninjabrain-Bot), [NinjaLink](https://github.com/DuncanRuns/NinjaLink) and [PaceMan-Tracker](https://github.com/PaceMan-MCSR/PaceMan-Tracker) are examples of jar files, that you might want to have in the `onStart` section of your profile config.
+[Ninjabrain Bot](https://github.com/Ninjabrain1/Ninjabrain-Bot), [NinjaLink](https://github.com/DuncanRuns/NinjaLink) and [PaceMan-Tracker](https://github.com/PaceMan-MCSR/PaceMan-Tracker) are examples of JAR files that you might want to have in the `onStart` section of your profile config.
   
 ## ModCheck
 

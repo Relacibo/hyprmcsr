@@ -42,22 +42,18 @@ Replace `/path/to/hyprmcsr` with the absolute path to your installation. To make
 
 > For more details, see [hyprmcsr CLI](./002-cli.md)
 
-## 3. Run the install command
+## 3. Configuration files
 
-```bash
-hyprmcsr install
-```
-This command will:
-- Download required JARs
-- Create default configuration files
-- Set up audio splitting, if enabled in your `config.json` (disabled by default)
+Configuration files are automatically created when you run `hyprmcsr start` for the first time:
 
-## 4. Configuration files
+- JAR repositories: `repositories.json` (created from `example.repositories.json`)  
+- Default profile: `default.profile.json` (created from `example.default.profile.json`)
 
-- Global configuration: `config.json` (created from `example.config.json` on first install)  
-- Default profile: `default.profile.json` (created from `example.default.profile.json` on first install)
+All configuration files are located in `~/.config/hyprmcsr/`.
 
 Create additional profiles by copying and editing the example profile. Use the `HYPRMCSR_PROFILE` environment variable or `-h <profile>` to select a profile.
+
+> **Note:** If you have an old `config.json` from a previous version, it will be automatically migrated to `repositories.json`.
 
 ## Updating hyprmcsr
 

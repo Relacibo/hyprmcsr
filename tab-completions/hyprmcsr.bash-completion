@@ -4,7 +4,7 @@ _hyprmcsr_completions() {
   COMPREPLY=()
   cur="${COMP_WORDS[COMP_CWORD]}"
   prev="${COMP_WORDS[COMP_CWORD-1]}"
-  opts="start destroy delete-old-worlds install modcheck run-jar version"
+  opts="start destroy delete-old-worlds modcheck run-jar version"
 
   # config_root dynamisch am Anfang bestimmen
   if [[ -n "$XDG_CONFIG_HOME" ]]; then

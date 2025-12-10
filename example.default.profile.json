@@ -1,4 +1,5 @@
 {
+  "downloadRoot": "",
   "requireSudo": true,
   "onStart": [
     {

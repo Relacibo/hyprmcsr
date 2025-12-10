@@ -5,7 +5,7 @@ mkdir -p "$CONFIG_ROOT"
 
 HYPRMCSR_PROFILE="${HYPRMCSR_PROFILE:-default}"
 PROFILE_CONFIG_FILE="$CONFIG_ROOT/${HYPRMCSR_PROFILE}.profile.json"
-CONFIG_FILE="$CONFIG_ROOT/config.json"
+REPOSITORIES_FILE="$CONFIG_ROOT/repositories.json"
 
 # Read STATE_DIR from profile config if present (requires jq and profile file)
 STATE_DIR=$(jq -r '.stateDir // empty' "$PROFILE_CONFIG_FILE")
@@ -20,7 +20,7 @@ HYPRMCSR=$(realpath "$SCRIPT_DIR/../bin/hyprmcsr")
 
 export CONFIG_ROOT
 export HYPRMCSR_PROFILE
-export CONFIG_FILE
+export REPOSITORIES_FILE
 export PROFILE_CONFIG_FILE
 export STATE_DIR
 export HYPRMCSR
