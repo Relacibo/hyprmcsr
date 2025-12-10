@@ -3,7 +3,7 @@
 _hyprmcsr() {
   local -a commands profiles
   local config_root config_file download_root repo_dir jars_dir
-  commands=(start destroy delete-old-worlds install modcheck run-jar version)
+  commands=(run destroy delete-old-worlds modcheck run-jar setup-audio-splitter version)
 
   # config_root dynamisch bestimmen
   config_root="${XDG_CONFIG_HOME:-$HOME/.config}/hyprmcsr"
@@ -20,7 +20,7 @@ _hyprmcsr() {
   _arguments -C \
     '-h[Set global config profile]:profile:(${profiles})' \
     '-p[Set profile]: :_nothing' \
-    '1:command:((start destroy delete-old-worlds install modcheck run-jar version))' \
+    '1:command:((run destroy delete-old-worlds modcheck run-jar setup-audio-splitter version))' \
     '*::args:->args'
 
   case $state in
