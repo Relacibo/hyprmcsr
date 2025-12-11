@@ -7,6 +7,15 @@ This section explains how to start, stop, and use hyprmcsr after installation.
 - `-h <hyprmcsr_profile>`: Sets the global config profile (e.g. for different global setups, instances)
 - `-p <profile>`: Sets the profile allowing some variants in how the profile behaves (e.g. coop, etc.)
 
+## Initialize configuration files
+
+```bash
+hyprmcsr init
+```
+
+- Creates `repositories.json` and `default.profile.json` in `~/.config/hyprmcsr/`
+- Optional: Configuration files are also created automatically on first `hyprmcsr run`
+
 ## Start all tools and automation
 
 ```bash
