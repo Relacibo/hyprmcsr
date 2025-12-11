@@ -1,6 +1,6 @@
 # Configuration
 
-hyprmcsr uses two types of configuration files, that are automatically created from example files when running `hyprmcsr start` for the first time:
+hyprmcsr uses two types of configuration files, that are automatically created from example files when running `hyprmcsr run` for the first time:
 
 ## JAR Repositories: `repositories.json`
 

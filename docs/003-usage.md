@@ -10,20 +10,19 @@ This section explains how to start, stop, and use hyprmcsr after installation.
 ## Start all tools and automation
 
 ```bash
-hyprmcsr start
+hyprmcsr run
 ```
-(or `hyprmcsr run` as an alias)
 
 - On first run, this will automatically create configuration files from the example templates in `~/.config/hyprmcsr/`
 - Sets up keybinds, input remapper, and environment.
 - Automatically sets the `instance_wrapper.sh` as the "WrapperCommand" in your PrismLauncher instance config.
 - You can restart Minecraft yourself, if it crashes via PrismLauncher (GUI or CLI).
 - All post-launch actions (window handling, audio, etc.) are now handled by `instance_wrapper.sh` after Minecraft starts.
-- By default, `hyprmcsr destroy` will be called automatically if you cancel or close `hyprmcsr start` (e.g. with Ctrl+C), so all keybinds and remaps are cleaned up safely.
+- By default, `hyprmcsr destroy` will be called automatically if you cancel or close `hyprmcsr run` (e.g. with Ctrl+C), so all keybinds and remaps are cleaned up safely.
 
 Example for an alternative profile:
 ```bash
-hyprmcsr -p coop start
+hyprmcsr -p coop run
 ```
 
 > **Important:**  
