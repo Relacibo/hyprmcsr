@@ -3,6 +3,31 @@
 export SCRIPT_DIR=$(dirname "${BASH_SOURCE[0]}")
 CONFIG_ROOT="${XDG_CONFIG_HOME:-$HOME/.config}/hyprmcsr"
 REPOSITORIES_FILE="$CONFIG_ROOT/repositories.json"
+EXAMPLE_REPOSITORIES="$SCRIPT_DIR/../example.repositories.json"
+
+mkdir -p "$CONFIG_ROOT"
+
+# Migration: convert old config.json to repositories.json
+OLD_CONFIG_FILE="$CONFIG_ROOT/config.json"
+if [ -f "$OLD_CONFIG_FILE" ] && [ ! -f "$REPOSITORIES_FILE" ]; then
+  echo "Migrating config.json to repositories.json..."
+  if command -v jq &>/dev/null; then
+    if jq 'if .download.jar then { jar: .download.jar } else { jar: {} } end' "$OLD_CONFIG_FILE" > "$REPOSITORIES_FILE"; then
+      echo "Migration complete. You can safely delete $OLD_CONFIG_FILE"
+    else
+      echo "Error: Migration failed. Please check $OLD_CONFIG_FILE format."
+      rm -f "$REPOSITORIES_FILE"
+    fi
+  else
+    echo "Warning: jq not found, cannot auto-migrate config.json"
+  fi
+fi
+
+# Copy example repositories if still no repositories.json exists
+if [ ! -f "$REPOSITORIES_FILE" ]; then
+  cp "$EXAMPLE_REPOSITORIES" "$REPOSITORIES_FILE"
+  echo "Copied example.repositories.json to $REPOSITORIES_FILE."
+fi
 
 if [ $# -lt 1 ]; then
   echo "Usage: $0 <jar_name> [args...]"

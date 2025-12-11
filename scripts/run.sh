@@ -11,28 +11,10 @@ export PROFILE="${PROFILE:-default}"
 
 # Copy example configs if not present
 CONFIG_ROOT="${XDG_CONFIG_HOME:-$HOME/.config}/hyprmcsr"
-REPOSITORIES_FILE="$CONFIG_ROOT/repositories.json"
 PROFILE_CONFIG_FILE="$CONFIG_ROOT/default.profile.json"
-EXAMPLE_REPOSITORIES="$SCRIPT_DIR/../example.repositories.json"
 EXAMPLE_PROFILE="$SCRIPT_DIR/../example.default.profile.json"
 
-# Migration: convert old config.json to repositories.json
-OLD_CONFIG_FILE="$CONFIG_ROOT/config.json"
-if [ -f "$OLD_CONFIG_FILE" ] && [ ! -f "$REPOSITORIES_FILE" ]; then
-  echo "Migrating config.json to repositories.json..."
-  if command -v jq &>/dev/null; then
-    jq '{ jar: .download.jar // {} }' "$OLD_CONFIG_FILE" > "$REPOSITORIES_FILE"
-    echo "Migration complete. You can safely delete $OLD_CONFIG_FILE"
-  else
-    echo "Warning: jq not found, cannot auto-migrate config.json"
-  fi
-fi
-
 mkdir -p "$CONFIG_ROOT"
-if [ ! -f "$REPOSITORIES_FILE" ]; then
-  cp "$EXAMPLE_REPOSITORIES" "$REPOSITORIES_FILE"
-  echo "Copied example.repositories.json to $REPOSITORIES_FILE."
-fi
 if [ ! -f "$PROFILE_CONFIG_FILE" ]; then
   cp "$EXAMPLE_PROFILE" "$PROFILE_CONFIG_FILE"
   echo "Copied example.default.profile.json to $PROFILE_CONFIG_FILE."
