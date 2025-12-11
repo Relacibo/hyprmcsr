@@ -21,8 +21,6 @@ Example structure:
 
 See [example.repositories.json](../example.repositories.json) for a full example.
 
-> **Note:** If you have an old `config.json` file, it will be automatically migrated to `repositories.json` on first run.
-
 ## Profile config: `<profile>.profile.json`
 
 - Located in `~/.config/hyprmcsr/<profile>.profile.json` (e.g. `default.profile.json`)

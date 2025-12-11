@@ -53,8 +53,6 @@ All configuration files are located in `~/.config/hyprmcsr/`.
 
 Create additional profiles by copying and editing the example profile. Use the `HYPRMCSR_PROFILE` environment variable or `-h <profile>` to select a profile.
 
-> **Note:** If you have an old `config.json` from a previous version, it will be automatically migrated to `repositories.json`.
-
 ## Updating hyprmcsr
 
 Always update using the bundled CLI helper:
