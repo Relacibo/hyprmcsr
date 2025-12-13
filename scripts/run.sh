@@ -116,17 +116,43 @@ else
 fi
 
 if [ "$AUTO_REPLACE" = "true" ] && [ -n "$WRAPPER_CMD" ]; then
-  # Check if PrismLauncher is already running - if so, close it first
-  if hyprctl clients -j | jq -e '.[] | select(.class == "org.prismlauncher.PrismLauncher" or (.title // "" | startswith("Prism Launcher")))' >/dev/null 2>&1; then
-    echo "PrismLauncher is running. Closing it to update wrapper command..."
-    PRISM_PID=$(pgrep -f "prismlauncher" | head -n1)
-    if [ -n "$PRISM_PID" ]; then
-      kill "$PRISM_PID"
-      sleep 1
+  # Check if wrapper command needs to be updated
+  NEEDS_UPDATE=false
+  if [ -n "$PRISM_INSTANCE_IDS" ]; then
+    while IFS= read -r INSTANCE_ID; do
+      [ -z "$INSTANCE_ID" ] && continue
+      INSTANCE_CONFIG="$PRISM_PREFIX/instances/$INSTANCE_ID/instance.cfg"
+      if [ -f "$INSTANCE_CONFIG" ]; then
+        CURRENT_WRAPPER=$(grep "^WrapperCommand=" "$INSTANCE_CONFIG" | cut -d'=' -f2-)
+        if [ "$CURRENT_WRAPPER" != "$WRAPPER_CMD" ]; then
+          NEEDS_UPDATE=true
+          break
+        fi
+      fi
+    done <<< "$PRISM_INSTANCE_IDS"
+  fi
+
+  # Only ask to close PrismLauncher if wrapper needs updating and it's running
+  if [ "$NEEDS_UPDATE" = "true" ]; then
+    if hyprctl clients -j | jq -e '.[] | select(.class == "org.prismlauncher.PrismLauncher" or (.title // "" | startswith("Prism Launcher")))' >/dev/null 2>&1; then
+      echo "PrismLauncher is currently running."
+      echo "It needs to be closed to update the wrapper command configuration."
+      read -p "Close PrismLauncher now? (y/n): " -n 1 -r
+      echo
+      if [[ $REPLY =~ ^[Yy]$ ]]; then
+        PRISM_PID=$(pgrep -f "prismlauncher" | head -n1)
+        if [ -n "$PRISM_PID" ]; then
+          kill "$PRISM_PID"
+          sleep 1
+        fi
+      else
+        echo "Skipping wrapper command configuration. PrismLauncher will not be restarted."
+        AUTO_REPLACE="false"
+      fi
     fi
   fi
 
-  if [ -n "$PRISM_INSTANCE_IDS" ]; then
+  if [ "$AUTO_REPLACE" = "true" ] && [ -n "$PRISM_INSTANCE_IDS" ]; then
     while IFS= read -r INSTANCE_ID; do
       [ -z "$INSTANCE_ID" ] && continue
       INSTANCE_CONFIG="$PRISM_PREFIX/instances/$INSTANCE_ID/instance.cfg"

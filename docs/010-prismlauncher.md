@@ -89,8 +89,6 @@ If you want to use only the hyprmcsr wrapper without an inner command:
 
 If you prefer to manage the wrapper manually, simply omit the `autoReplaceWrapperCommand` section or set `enabled: false`. Then you can configure the wrapper in the PrismLauncher GUI. If you do this, make sure to include `hyprmcsr -h <profile> instance-wrapper` in your wrapper command chain.
 
-> **Important:** For the wrapper command to be reliably updated, PrismLauncher must not be running while the wrapper is being set. If PrismLauncher is open, it may overwrite or ignore changes. Always close PrismLauncher before starting your profile to ensure the wrapper command is applied correctly.
-
 ### Auto-Launch Minecraft
 
 You can automatically start Minecraft when running `hyprmcsr run` by setting `autoLaunch: true`:
