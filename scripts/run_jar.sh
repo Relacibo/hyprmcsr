@@ -111,10 +111,21 @@ JAR_FILE=""
 if [[ "$JAR_REPO" == */* ]]; then
   # GitHub repo (owner/repo)
   api_url="https://api.github.com/repos/$JAR_REPO/releases/latest"
-  release_json=$(curl -s "$api_url")
-  jar_url=$(echo "$release_json" | jq -r '.assets[] | select(.name | endswith(".jar")) | .browser_download_url' | head -n1)
+  release_json=$(curl -s -f "$api_url")
+  curl_status=$?
+  if [ $curl_status -ne 0 ] || ! echo "$release_json" | jq empty >/dev/null 2>&1; then
+    echo "Warning: Failed to fetch or parse release information from GitHub API."
+    repo_prefix=$(basename "$JAR_REPO")
+    JAR_FILE=$(find "$JARS_DIR" -maxdepth 1 -type f -name "${repo_prefix}-*.jar" | head -n1)
+    if [ -z "$JAR_FILE" ]; then
+      echo "Error: No local version available and could not fetch remote information."
+      exit 2
+    fi
+    echo "Using existing version: $(basename "$JAR_FILE")"
+  else
+    jar_url=$(echo "$release_json" | jq -r '.assets[] | select(.name | endswith(".jar")) | .browser_download_url' | head -n1)
   
-  if [ -n "$jar_url" ] && [ "$jar_url" != "null" ]; then
+    if [ -n "$jar_url" ] && [ "$jar_url" != "null" ]; then
     jar_name=$(basename "$jar_url")
     repo_prefix=$(basename "$JAR_REPO")
     
