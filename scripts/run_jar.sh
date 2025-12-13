@@ -63,6 +63,14 @@ fi
 JAR_NAME="$1"
 shift
 
+# If JAR_NAME ends with .jar, try to extract the prefix (remove -version.jar)
+if [[ "$JAR_NAME" == *.jar ]]; then
+  # Remove .jar extension
+  JAR_NAME="${JAR_NAME%.jar}"
+  # Remove version pattern (e.g., -1.5.1, -v2.0.0, etc.)
+  JAR_NAME=$(echo "$JAR_NAME" | sed -E 's/-[0-9]+(\.[0-9]+)*(-[a-zA-Z0-9]+)?$//')
+fi
+
 # Download root, read from profile config if present, else default
 source "$SCRIPT_DIR/../util/env_core.sh"
 DOWNLOAD_ROOT=$(jq -r '.downloadRoot // empty' "$PROFILE_CONFIG_FILE")
@@ -126,43 +134,44 @@ if [[ "$JAR_REPO" == */* ]]; then
     jar_url=$(echo "$release_json" | jq -r '.assets[] | select(.name | endswith(".jar")) | .browser_download_url' | head -n1)
   
     if [ -n "$jar_url" ] && [ "$jar_url" != "null" ]; then
-    jar_name=$(basename "$jar_url")
-    repo_prefix=$(basename "$JAR_REPO")
-    
-    # Check if we already have this exact version
-    if [ -f "$JARS_DIR/$jar_name" ]; then
-      echo "$jar_name already up to date."
-      JAR_FILE="$JARS_DIR/$jar_name"
-    else
-      # Try to download new version
-      echo "New version available: $jar_name"
-      echo "Downloading $jar_url..."
-      if curl -L "$jar_url" -o "$JARS_DIR/$jar_name" 2>/dev/null; then
-        # Remove old versions after successful download
-        find "$JARS_DIR" -type f -name "${repo_prefix}-*.jar" ! -name "$jar_name" -exec rm {} \;
-        echo "Download successful."
+      jar_name=$(basename "$jar_url")
+      repo_prefix=$(basename "$JAR_REPO")
+      
+      # Check if we already have this exact version
+      if [ -f "$JARS_DIR/$jar_name" ]; then
+        echo "$jar_name already up to date."
         JAR_FILE="$JARS_DIR/$jar_name"
       else
-        echo "Warning: Download failed. Checking for existing version..."
-        # Try to find any existing version
-        JAR_FILE=$(find "$JARS_DIR" -maxdepth 1 -type f -name "${repo_prefix}-*.jar" | head -n1)
-        if [ -z "$JAR_FILE" ]; then
-          echo "Error: No local version available and download failed."
-          exit 2
+        # Try to download new version
+        echo "New version available: $jar_name"
+        echo "Downloading $jar_url..."
+        if curl -L "$jar_url" -o "$JARS_DIR/$jar_name" 2>/dev/null; then
+          # Remove old versions after successful download
+          find "$JARS_DIR" -type f -name "${repo_prefix}-*.jar" ! -name "$jar_name" -exec rm {} \;
+          echo "Download successful."
+          JAR_FILE="$JARS_DIR/$jar_name"
+        else
+          echo "Warning: Download failed. Checking for existing version..."
+          # Try to find any existing version
+          JAR_FILE=$(find "$JARS_DIR" -maxdepth 1 -type f -name "${repo_prefix}-*.jar" | head -n1)
+          if [ -z "$JAR_FILE" ]; then
+            echo "Error: No local version available and download failed."
+            exit 2
+          fi
+          echo "Using existing version: $(basename "$JAR_FILE")"
         fi
-        echo "Using existing version: $(basename "$JAR_FILE")"
       fi
+    else
+      # API call failed or no JAR in release, try to use existing
+      echo "Warning: Could not fetch latest release information."
+      repo_prefix=$(basename "$JAR_REPO")
+      JAR_FILE=$(find "$JARS_DIR" -maxdepth 1 -type f -name "${repo_prefix}-*.jar" | head -n1)
+      if [ -z "$JAR_FILE" ]; then
+        echo "Error: No local version available and could not fetch remote information."
+        exit 2
+      fi
+      echo "Using existing version: $(basename "$JAR_FILE")"
     fi
-  else
-    # API call failed or no JAR in release, try to use existing
-    echo "Warning: Could not fetch latest release information."
-    repo_prefix=$(basename "$JAR_REPO")
-    JAR_FILE=$(find "$JARS_DIR" -maxdepth 1 -type f -name "${repo_prefix}-*.jar" | head -n1)
-    if [ -z "$JAR_FILE" ]; then
-      echo "Error: No local version available and could not fetch remote information."
-      exit 2
-    fi
-    echo "Using existing version: $(basename "$JAR_FILE")"
   fi
 else
   echo "Error: Invalid repository format for '$JAR_NAME': $JAR_REPO"

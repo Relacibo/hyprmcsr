@@ -40,42 +40,18 @@ _hyprmcsr() {
           _arguments '1:regex:' '2:keep_n:'
           ;;
         run-jar)
-          # download_root dynamisch aus config.json
-          if [[ -f $config_file ]]; then
-            download_root=$(command jq -r '.download.root // empty' "$config_file" 2>/dev/null)
-          fi
-          if [[ -z $download_root || $download_root == "null" || $download_root == "" ]]; then
-            # Versuche, das Repo-Verzeichnis über which hyprmcsr zu bestimmen
-            hyprmcsr_path=$(which hyprmcsr 2>/dev/null)
-            if [[ -n $hyprmcsr_path ]]; then
-              repo_dir=${hyprmcsr_path%/bin/hyprmcsr}
-            else
-              repo_dir=${0:A}
-              repo_dir=${repo_dir%/tab-completions/_hyprmcsr}
-              # Falls der Pfad auf .../hyprmcsr/_hyprmcsr endet (z.B. bei Symlink im PATH), nochmal ein Verzeichnis nach oben
-              if [[ $repo_dir == */_hyprmcsr ]]; then
-                repo_dir=${repo_dir%/_hyprmcsr}
-              fi
-            fi
-            jars_dir="$repo_dir/download/jar"
+          # Read JAR names from repositories.json
+          local repositories_file="${XDG_CONFIG_HOME:-$HOME/.config}/hyprmcsr/repositories.json"
+          local -a jar_names
+          if [[ -f $repositories_file ]]; then
+            jar_names=(${(f)"$(command jq -r '.jar | keys[]' "$repositories_file" 2>/dev/null)"})
           else
-            jars_dir="$download_root/jar"
+            jar_names=()
           fi
-          local -a jars
-          if [[ -d $jars_dir ]]; then
-            jars=()
-            for f in "$jars_dir"/*.jar(.N); do
-              [[ -e $f ]] && jars+="${f:t}"
-            done
+          if (( ${#jar_names[@]} )); then
+            _values 'jar name' $jar_names
           else
-            jars=()
-          fi
-          print -rl -- "[DEBUG] jars_dir: $jars_dir" > /tmp/hyprmcsr-zsh-debug.log
-          print -rl -- "[DEBUG] jars: $jars[@]" >> /tmp/hyprmcsr-zsh-debug.log
-          if (( ${#jars[@]} )); then
-            _values 'jar file' $jars
-          else
-            _message 'no jar files found'
+            _message 'no jars configured in repositories.json'
           fi
           ;;
         "")
