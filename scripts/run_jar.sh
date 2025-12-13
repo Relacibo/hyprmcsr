@@ -145,7 +145,7 @@ if [[ "$JAR_REPO" == */* ]]; then
         # Try to download new version
         echo "New version available: $jar_name"
         echo "Downloading $jar_url..."
-        if curl -L "$jar_url" -o "$JARS_DIR/$jar_name" 2>/dev/null; then
+        if curl -L "$jar_url" -o "$JARS_DIR/$jar_name"; then
           # Remove old versions after successful download
           find "$JARS_DIR" -type f -name "${repo_prefix}-*.jar" ! -name "$jar_name" -exec rm {} \;
           echo "Download successful."
