@@ -9,15 +9,7 @@
     "$HYPRMCSR run-jar Ninjabrain-Bot",
     "obs --startreplaybuffer",
     "sudo input-remapper-control --command start --device \"Ducky Ducky One 3 TKL \" --preset \"MCSR\"",
-    "input-remapper-control --command start --device \"Razer Razer Viper V3 Pro\" --preset \"MCSR\"",
-    {
-      "if": "[ \"$PROFILE\" = \"ranked\" ]",
-      "exec": "prismlauncher -l \"ranked\""
-    },
-    {
-      "if": "[ \"$PROFILE\" = \"default\" ]",
-      "exec": "prismlauncher -l \"1.16.1\""
-    }
+    "input-remapper-control --command start --device \"Razer Razer Viper V3 Pro\" --preset \"MCSR\""
   ],
   "onDestroy": [
     "sudo input-remapper-control --command stop-all"
@@ -71,12 +63,13 @@
     "onStart": [],
     "windowClassRegex": "Minecraft",
     "windowTitleRegex": "Minecraft",
-    "prismWrapperCommand": {
-      "autoReplace": true,
-      "innerCommand": "obs-gamecapture",
-      "prismMinecraftInstanceIds": [
-        "1.16.1"
-      ]
+    "prismLauncher": {
+      "wrapperCommand": {
+        "autoInsert": true,
+        "innerCommand": "obs-gamecapture"
+      },
+      "instanceId": "1.16.1",
+      "autoLaunch": false
     },
     "observeLog": {
       "enabled": true

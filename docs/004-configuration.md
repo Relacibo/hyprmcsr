@@ -58,24 +58,84 @@ See [example.default.profile.json](../example.default.profile.json) for a full e
 - **downloadRoot**: (Optional) Custom download root for JARs. If not set, defaults to `<repo>/download`.
 - **autoDestroyOnExit**: If true, runs cleanup automatically when the main script exits.
 - **requireSudo**: If true, you will be prompted for sudo at start and it will be kept alive for all commands in `onStart`/`onDestroy` (useful for input-remapper or other tools needing root).
-- **minecraft.prismWrapperCommand**:  
-  Controls whether the instance wrapper is set automatically and which inner wrapper (like obs-gamecapture) is used.  
-  Example:
+- **minecraft.prismLauncher**:  
+  Configure PrismLauncher wrapper command, instance ID, and automatic launching.  
+  
+  **Example (with wrapper and auto-launch):**
   ```json
   "minecraft": {
     ...
-    "prismWrapperCommand": {
-      "autoReplace": true,
-      "prismMinecraftInstanceIds": ["1.16.1"],
-      "innerCommand": "obs-gamecapture"
+    "prismLauncher": {
+      "wrapperCommand": {
+        "autoInsert": true,
+        "innerCommand": "obs-gamecapture"
+      },
+      "instanceId": "1.16.1",
+      "autoLaunch": true
     }
   }
   ```
-  - **prismWrapperCommand.prismMinecraftInstanceIds**: Array of PrismLauncher instance IDs (folder names) to which the wrapper should be applied. Example: `["1.16.1"]` (see `~/.local/share/PrismLauncher/instances/`).
-  - If `autoReplace` is omitted or set to `true`, the wrapper will be set automatically and `instance_wrapper.sh` will be configured as the WrapperCommand for your PrismLauncher instance.
-  - If `autoReplace` is `false`, **you must manually ensure that `instance_wrapper.sh` is set as the WrapperCommand in your PrismLauncher instance and that the environment variable `HYPRMCSR_PROFILE` is set correctly when launching Minecraft.**
-  - `innerCommand` can be any wrapper tool (e.g., `"obs-gamecapture"`).
-  - If you don't need a wrapper, you can omit this field.
+  
+  **Example (only auto-launch, no wrapper):**
+  ```json
+  "minecraft": {
+    ...
+    "prismLauncher": {
+      "instanceId": "1.16.1",
+      "autoLaunch": true
+    }
+  }
+  ```
+  
+  **Example (only wrapper without innerCommand):**
+  ```json
+  "minecraft": {
+    ...
+    "prismLauncher": {
+      "wrapperCommand": {
+        "autoInsert": true
+      },
+      "instanceId": "1.16.1"
+    }
+  }
+  ```
+  
+  **Example (dynamic instance ID):**
+  ```json
+  "minecraft": {
+    ...
+    "prismLauncher": {
+      "wrapperCommand": {
+        "autoInsert": true,
+        "innerCommand": "obs-gamecapture"
+      },
+      "instanceIdScript": "echo $PROFILE",
+      "autoLaunch": true
+    }
+  }
+  ```
+  
+  **Fields:**
+  - **prismLauncher.wrapperCommand**: (Optional) Object to configure the wrapper command.
+    - **wrapperCommand.autoInsert**: (boolean) When `true`, automatically configures the wrapper command in the PrismLauncher instance configuration file.
+    - **wrapperCommand.innerCommand**: (Optional, string) The inner wrapper command to use (e.g., `"obs-gamecapture"`). If omitted, only the hyprmcsr instance wrapper (`instance_wrapper.sh`) is used without an inner command.
+  - **prismLauncher.instanceId**: (Optional) Static instance ID to configure (e.g., `"1.16.1"`). See `~/.local/share/PrismLauncher/instances/` for available instances.
+  - **prismLauncher.instanceIdScript**: (Optional) Shell command/script to dynamically determine the instance ID. The script's output will be used as the instance ID. If both `instanceId` and `instanceIdScript` are set, `instanceIdScript` takes precedence.  
+    
+    The script has access to the following environment variables:
+    - `$PROFILE` - Current profile name
+    - `$HYPRMCSR_PROFILE` - Current hyprmcsr profile
+    - `$SCRIPT_DIR` - Path to the hyprmcsr scripts directory
+    - `$STATE_DIR` - Path to the hyprmcsr state directory
+    - `$PRISM_PREFIX` - Path to PrismLauncher data directory
+    
+    Examples: 
+    - `"echo $PROFILE"` - Use the current profile name as instance ID
+    - `"jq -r '.instances[$PROFILE]' ~/.config/my-instances.json"` - Look up instance ID from a JSON file
+    - `"cat $STATE_DIR/current-instance.txt"` - Read instance ID from a state file
+  - **prismLauncher.autoLaunch**: (Optional, boolean, default: `false`) When `true`, automatically launches Minecraft with `prismlauncher -l <instanceId>` when starting hyprmcsr. Requires `instanceId` or `instanceIdScript` to be set.
+  
+  > **Note:** The entire `prismLauncher` section is optional. If you don't need any of these features, you can omit it completely.
 
 ---
 

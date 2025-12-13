@@ -54,39 +54,57 @@ This setup ensures maximum performance and compatibility for speedrunning and mo
 
 ## Wrapper Command
 
-**Important:**  
-Do **not** manually set a wrapper script in the PrismLauncher GUI for your Minecraft instance if your profile config has `"prismWrapperCommand.autoReplace": true` (or if you omit this field).
-The automation will automatically set `instance_wrapper.sh` as the WrapperCommand for you.
+hyprmcsr can automatically configure the wrapper command for your PrismLauncher instances.
 
-If you want to use a specific wrapper (like `obs-gamecapture`), set it as `"innerCommand"` in your profile config under `"prismWrapperCommand"`.
-**Do not** set it directly in the PrismLauncher GUI, as it will be overwritten by the automation.
+### Automatic Configuration (Recommended)
 
-If you want to manage the wrapper manually, set `"prismWrapperCommand.autoReplace": false` in your config.
-Then you can set any wrapper you like in the PrismLauncher GUI (e.g., `obs-gamecapture`). Remember though to also set `hyprmcsr -h <profile> instance-wrapper` as one of the wrapper commands.
+When you set `wrapperCommand.autoInsert: true` in your profile config, hyprmcsr will automatically configure the `instance_wrapper.sh` as the wrapper command for your specified instance(s).
 
-**Note:**
-When specifying your PrismLauncher instance IDs in your config, use the `prismWrapperCommand.prismMinecraftInstanceIds` array. Each entry should be the folder name of the instance (as found in `~/.local/share/PrismLauncher/instances/`).
+**Do not** manually set a wrapper script in the PrismLauncher GUI when using automatic configuration - it will be overwritten.
 
-Example:
+Example configuration:
 
 ```json
-"prismWrapperCommand": {
-  "autoReplace": true,
-  "prismMinecraftInstanceIds": ["1.16.1", "1.16.1(2)"],
-  "innerCommand": "obs-gamecapture"
+"prismLauncher": {
+  "wrapperCommand": {
+    "autoInsert": true,
+    "innerCommand": "obs-gamecapture"
+  },
+  "instanceId": "1.16.1"
 }
 ```
 
-**Tip:**
-You can start Minecraft directly from your onStart array using:
+If you want to use only the hyprmcsr wrapper without an inner command:
 
-    prismlauncher -l "<instance id>"
+```json
+"prismLauncher": {
+  "wrapperCommand": {
+    "autoInsert": true
+  },
+  "instanceId": "1.16.1"
+}
+```
 
-Replace `<instance id>` with the folder name of your instance (not the display name in PrismLauncher).
+### Manual Configuration
 
-This is the recommended way to launch Minecraft from automation scripts.
+If you prefer to manage the wrapper manually, simply omit the `wrapperCommand` section or set `autoInsert: false`. Then you can configure the wrapper in the PrismLauncher GUI. If you do this, make sure to include `hyprmcsr -h <profile> instance-wrapper` in your wrapper command chain.
 
-> **Note:** For the wrapper command to be reliably updated in your PrismLauncher instance, PrismLauncher must not be running while the wrapper is being set. If PrismLauncher is open, it may overwrite or ignore changes made to the instance configuration file. Always close PrismLauncher before running the setup script or before starting your profile to ensure the wrapper command is applied correctly.
+> **Important:** For the wrapper command to be reliably updated, PrismLauncher must not be running while the wrapper is being set. If PrismLauncher is open, it may overwrite or ignore changes. Always close PrismLauncher before starting your profile to ensure the wrapper command is applied correctly.
+
+### Auto-Launch Minecraft
+
+You can automatically start Minecraft when running `hyprmcsr run` by setting `autoLaunch: true`:
+
+```json
+"prismLauncher": {
+  "instanceId": "1.16.1",
+  "autoLaunch": true
+}
+```
+
+This is equivalent to running `prismlauncher -l "1.16.1"` automatically on start.
+
+> **Tip:** The instance ID should be the folder name of your instance (as found in `~/.local/share/PrismLauncher/instances/`), not the display name in PrismLauncher.
 
 ## Download Mods
 

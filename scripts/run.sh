@@ -59,19 +59,58 @@ if [ -n "$toggle_binds_key" ] && [ "$toggle_binds_key" != "null" ]; then
   hyprctl keyword bind $toggle_binds_key,exec,"$HYPRMCSR -h $HYPRMCSR_PROFILE toggle-binds"
 fi
 
-# Evaluate prismWrapperCommand
-PRISM_WRAPPER_AUTO_REPLACE=$(jq -r '.minecraft.prismWrapperCommand.autoReplace // true' "$PROFILE_CONFIG_FILE")
-INNER_WRAPPER_CMD=$(jq -r '.minecraft.prismWrapperCommand.innerCommand // empty' "$PROFILE_CONFIG_FILE")
-PRISM_INSTANCE_IDS=$(jq -r '.minecraft.prismWrapperCommand.prismMinecraftInstanceIds[]?' "$PROFILE_CONFIG_FILE")
+# Evaluate prismLauncher config (new) or prismWrapperCommand (deprecated)
+# New format: minecraft.prismLauncher.{wrapperCommand: {autoInsert, innerCommand}, instanceId, instanceIdScript, autoLaunch}
+WRAPPER_CMD=""
+PRISM_INSTANCE_IDS=""
+AUTO_REPLACE="false"
+AUTOLAUNCH="false"
 
-# Fallback: Use only the outer command if innerCommand is empty/null
-if [ "$INNER_WRAPPER_CMD" = "null" ] || [ "$INNER_WRAPPER_CMD" = "empty" ] || [ -z "$INNER_WRAPPER_CMD" ]; then
-  WRAPPER_CMD="$HYPRMCSR -h $HYPRMCSR_PROFILE instance-wrapper"
-else
-  WRAPPER_CMD="$HYPRMCSR -h $HYPRMCSR_PROFILE instance-wrapper $INNER_WRAPPER_CMD"
+# Try new prismLauncher format first
+AUTO_INSERT=$(jq -r '.minecraft.prismLauncher.wrapperCommand.autoInsert // false' "$PROFILE_CONFIG_FILE")
+INNER_WRAPPER_CMD=$(jq -r '.minecraft.prismLauncher.wrapperCommand.innerCommand // empty' "$PROFILE_CONFIG_FILE")
+AUTOLAUNCH=$(jq -r '.minecraft.prismLauncher.autoLaunch // false' "$PROFILE_CONFIG_FILE")
+
+# Get instance ID - either static or from script
+PRISM_INSTANCE_ID=$(jq -r '.minecraft.prismLauncher.instanceId // empty' "$PROFILE_CONFIG_FILE")
+PRISM_INSTANCE_ID_SCRIPT=$(jq -r '.minecraft.prismLauncher.instanceIdScript // empty' "$PROFILE_CONFIG_FILE")
+
+if [ -n "$PRISM_INSTANCE_ID_SCRIPT" ] ]; then
+  # Execute script to get instance ID (with environment variables available)
+  export PROFILE HYPRMCSR_PROFILE SCRIPT_DIR STATE_DIR PRISM_PREFIX
+  PRISM_INSTANCE_IDS=$(eval "$PRISM_INSTANCE_ID_SCRIPT")
+elif [ -n "$PRISM_INSTANCE_ID" ] ]; then
+  PRISM_INSTANCE_IDS="$PRISM_INSTANCE_ID"
 fi
 
-if [ "$PRISM_WRAPPER_AUTO_REPLACE" = "true" ]; then
+if [ "$AUTO_INSERT" = "true" ]; then
+  # autoInsert is enabled - configure wrapper
+  AUTO_REPLACE="true"
+  if [ -n "$INNER_WRAPPER_CMD" ] && [ "$INNER_WRAPPER_CMD" != "null" ]; then
+    WRAPPER_CMD="$HYPRMCSR -h $HYPRMCSR_PROFILE instance-wrapper $INNER_WRAPPER_CMD"
+  else
+    WRAPPER_CMD="$HYPRMCSR -h $HYPRMCSR_PROFILE instance-wrapper"
+  fi
+else
+  # Fallback to deprecated prismWrapperCommand
+  PRISM_WRAPPER_AUTO_REPLACE=$(jq -r '.minecraft.prismWrapperCommand.autoReplace // false' "$PROFILE_CONFIG_FILE")
+  INNER_WRAPPER_CMD=$(jq -r '.minecraft.prismWrapperCommand.innerCommand // empty' "$PROFILE_CONFIG_FILE")
+  PRISM_INSTANCE_IDS=$(jq -r '.minecraft.prismWrapperCommand.prismMinecraftInstanceIds[]?' "$PROFILE_CONFIG_FILE")
+  
+  if [ "$PRISM_WRAPPER_AUTO_REPLACE" = "true" ]; then
+    echo "Warning: minecraft.prismWrapperCommand is deprecated. Please use minecraft.prismLauncher instead."
+    AUTO_REPLACE="true"
+    
+    # Use only the outer command if innerCommand is empty/null
+    if [ -n "$INNER_WRAPPER_CMD" ] && [ "$INNER_WRAPPER_CMD" != "null" ]; then
+      WRAPPER_CMD="$HYPRMCSR -h $HYPRMCSR_PROFILE instance-wrapper $INNER_WRAPPER_CMD"
+    else
+      WRAPPER_CMD="$HYPRMCSR -h $HYPRMCSR_PROFILE instance-wrapper"
+    fi
+  fi
+fi
+
+if [ "$AUTO_REPLACE" = "true" ] && [ -n "$WRAPPER_CMD" ]; then
   # Check if PrismLauncher is already running
   if hyprctl clients -j | jq -e '.[] | select(.class == "org.prismlauncher.PrismLauncher" or (.title // "" | startswith("Prism Launcher")))' >/dev/null 2>&1; then
     echo "Warning: PrismLauncher is already running. Auto-replace of wrapper command will not work reliably while PrismLauncher is open."
@@ -108,6 +147,15 @@ if [ -n "$on_start_cmds" ]; then
   while IFS= read -r cmd; do
     "$SCRIPT_DIR/../util/run_conditional_command.sh" "$cmd"
   done <<< "$on_start_cmds"
+fi
+
+# Autolaunch Minecraft if enabled
+if [ "$AUTOLAUNCH" = "true" ] && [ -n "$PRISM_INSTANCE_IDS" ]; then
+  LAUNCH_INSTANCE_ID=$(echo "$PRISM_INSTANCE_IDS" | head -n1)
+  if [ -n "$LAUNCH_INSTANCE_ID" ]; then
+    echo "Autolaunching Minecraft instance: $LAUNCH_INSTANCE_ID"
+    prismlauncher -l "$LAUNCH_INSTANCE_ID" &
+  fi
 fi
 
 OBSERVE_STATE=$(jq -r '.minecraft.observeLog.enabled // true' "$PROFILE_CONFIG_FILE")
