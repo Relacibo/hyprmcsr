@@ -67,8 +67,13 @@ shift
 if [[ "$JAR_NAME" == *.jar ]]; then
   # Remove .jar extension
   JAR_NAME="${JAR_NAME%.jar}"
-  # Remove version pattern (e.g., -1.5.1, -v2.0.0, etc.)
-  JAR_NAME=$(echo "$JAR_NAME" | sed -E 's/-[0-9]+(\.[0-9]+)*(-[a-zA-Z0-9]+)?$//')
+  # Remove the last hyphen and everything after it (assume that's the version)
+  JAR_NAME=$(echo "$JAR_NAME" | awk -F'-' 'NF>1{NF--; print $0}' OFS='-' | sed 's/-$//')
+  # Validate that JAR_NAME is not empty and looks reasonable (alphanumeric, dashes, underscores)
+  if [[ -z "$JAR_NAME" || ! "$JAR_NAME" =~ ^[a-zA-Z0-9._-]+$ ]]; then
+    echo "Error: Could not extract a valid JAR name from input. Please specify the repository name as in repositories.json."
+    exit 1
+  fi
 fi
 
 # Download root, read from profile config if present, else default
