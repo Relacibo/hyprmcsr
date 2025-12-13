@@ -12,7 +12,27 @@ OLD_CONFIG_FILE="$CONFIG_ROOT/config.json"
 if [ -f "$OLD_CONFIG_FILE" ] && [ ! -f "$REPOSITORIES_FILE" ]; then
   echo "Migrating config.json to repositories.json..."
   if command -v jq &>/dev/null; then
-    if jq 'if .download.jar then { jar: .download.jar } else { jar: {} } end' "$OLD_CONFIG_FILE" > "$REPOSITORIES_FILE"; then
+    # Extract jar config from various possible locations
+    jar_data=$(jq -r '
+      if .download.jar then
+        # .download.jar exists - use it (object or string)
+        if (.download.jar | type) == "string" then
+          # String: wrap as single "default" entry
+          { jar: { default: .download.jar } }
+        else
+          # Object: use as-is
+          { jar: .download.jar }
+        end
+      elif .jar then
+        # Direct .jar on root level
+        { jar: .jar }
+      else
+        # No jar config found
+        { jar: {} }
+      end
+    ' "$OLD_CONFIG_FILE")
+    
+    if echo "$jar_data" | jq . > "$REPOSITORIES_FILE" 2>/dev/null; then
       echo "Migration complete. You can safely delete $OLD_CONFIG_FILE"
     else
       echo "Error: Migration failed. Please check $OLD_CONFIG_FILE format."
@@ -61,7 +81,11 @@ if [ -f "$REPOSITORIES_FILE" ]; then
   if [ -z "$JAR_REPO" ] || [ "$JAR_REPO" = "null" ]; then
     # Try prefix match
     matches=$(jq -r --arg prefix "$JAR_NAME" '.jar | to_entries[] | select(.key | startswith($prefix)) | .key' "$REPOSITORIES_FILE")
-    match_count=$(echo "$matches" | grep -c "^" 2>/dev/null || echo "0")
+    if [ -z "$matches" ]; then
+      match_count=0
+    else
+      match_count=$(echo "$matches" | wc -l | tr -d '[:space:]')
+    fi
     
     if [ "$match_count" -eq 1 ]; then
       matched_key=$(echo "$matches" | head -n1)
