@@ -35,9 +35,12 @@ if [ "$ACTION" = "enable" ]; then
   # Replace template and write
   sed "s|{{PW_TARGET}}|$PW_TARGET|g" "$TEMPLATE_FILE" > "$SPLIT_AUDIO_CONF"
   echo "split-audio.conf written to $SPLIT_AUDIO_CONF with target $PW_TARGET."
-else
+elif [ "$ACTION" = "disable" ]; then
   if [ -f "$SPLIT_AUDIO_CONF" ]; then
     rm "$SPLIT_AUDIO_CONF"
     echo "split-audio.conf removed (audio splitter disabled)."
   fi
+else
+  echo "Invalid action: '$ACTION'. Valid actions are 'enable' or 'disable'."
+  exit 1
 fi
