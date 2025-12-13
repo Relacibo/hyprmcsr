@@ -64,15 +64,15 @@ if [ -n "$toggle_binds_key" ] && [ "$toggle_binds_key" != "null" ]; then
 fi
 
 # Evaluate prismLauncher config (new) or prismWrapperCommand (deprecated)
-# New format: minecraft.prismLauncher.{wrapperCommand: {autoInsert, innerCommand}, instanceId, instanceIdScript, autoLaunch}
+# New format: minecraft.prismLauncher.{autoReplaceWrapperCommand: {enabled, innerCommand}, instanceId, instanceIdScript, autoLaunch}
 WRAPPER_CMD=""
 PRISM_INSTANCE_IDS=""
 AUTO_REPLACE="false"
 AUTOLAUNCH="false"
 
 # Try new prismLauncher format first
-AUTO_INSERT=$(jq -r '.minecraft.prismLauncher.wrapperCommand.autoInsert // false' "$PROFILE_CONFIG_FILE")
-INNER_WRAPPER_CMD=$(jq -r '.minecraft.prismLauncher.wrapperCommand.innerCommand // empty' "$PROFILE_CONFIG_FILE")
+AUTO_INSERT=$(jq -r '.minecraft.prismLauncher.autoReplaceWrapperCommand.enabled // false' "$PROFILE_CONFIG_FILE")
+INNER_WRAPPER_CMD=$(jq -r '.minecraft.prismLauncher.autoReplaceWrapperCommand.innerCommand // empty' "$PROFILE_CONFIG_FILE")
 AUTOLAUNCH=$(jq -r '.minecraft.prismLauncher.autoLaunch // false' "$PROFILE_CONFIG_FILE")
 
 # Get instance ID - either static or from script
@@ -88,7 +88,7 @@ elif [ -n "$PRISM_INSTANCE_ID" ] && [ "$PRISM_INSTANCE_ID" != "null" ]; then
 fi
 
 if [ "$AUTO_INSERT" = "true" ]; then
-  # autoInsert is enabled - configure wrapper
+  # enabled is true - configure wrapper
   AUTO_REPLACE="true"
   if [ -n "$INNER_WRAPPER_CMD" ] && [ "$INNER_WRAPPER_CMD" != "null" ]; then
     WRAPPER_CMD="$HYPRMCSR -h $HYPRMCSR_PROFILE instance-wrapper $INNER_WRAPPER_CMD"

@@ -64,8 +64,8 @@
     "windowClassRegex": "Minecraft",
     "windowTitleRegex": "Minecraft",
     "prismLauncher": {
-      "wrapperCommand": {
-        "autoInsert": true,
+      "autoReplaceWrapperCommand": {
+        "enabled": true,
         "innerCommand": "obs-gamecapture"
       },
       "instanceId": "1.16.1",

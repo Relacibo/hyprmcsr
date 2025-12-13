@@ -38,8 +38,8 @@ Just use monitor capture with Pipewire on the monitor where Minecraft is running
 - Set the following in your profile config under the `"minecraft"` section:
   ```json
   "prismLauncher": {
-    "wrapperCommand": {
-      "autoInsert": true,
+    "autoReplaceWrapperCommand": {
+      "enabled": true,
       "innerCommand": "obs-gamecapture"
     },
     "instanceId": "1.16.1"

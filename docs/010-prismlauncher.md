@@ -58,7 +58,7 @@ hyprmcsr can automatically configure the wrapper command for your PrismLauncher 
 
 ### Automatic Configuration (Recommended)
 
-When you set `wrapperCommand.autoInsert: true` in your profile config, hyprmcsr will automatically configure the `instance_wrapper.sh` as the wrapper command for your specified instance(s).
+When you set `autoReplaceWrapperCommand.enabled: true` in your profile config, hyprmcsr will automatically configure the `instance_wrapper.sh` as the wrapper command for your specified instance(s).
 
 **Do not** manually set a wrapper script in the PrismLauncher GUI when using automatic configuration - it will be overwritten.
 
@@ -66,8 +66,8 @@ Example configuration:
 
 ```json
 "prismLauncher": {
-  "wrapperCommand": {
-    "autoInsert": true,
+  "autoReplaceWrapperCommand": {
+    "enabled": true,
     "innerCommand": "obs-gamecapture"
   },
   "instanceId": "1.16.1"
@@ -78,8 +78,8 @@ If you want to use only the hyprmcsr wrapper without an inner command:
 
 ```json
 "prismLauncher": {
-  "wrapperCommand": {
-    "autoInsert": true
+  "autoReplaceWrapperCommand": {
+    "enabled": true
   },
   "instanceId": "1.16.1"
 }
@@ -87,7 +87,7 @@ If you want to use only the hyprmcsr wrapper without an inner command:
 
 ### Manual Configuration
 
-If you prefer to manage the wrapper manually, simply omit the `wrapperCommand` section or set `autoInsert: false`. Then you can configure the wrapper in the PrismLauncher GUI. If you do this, make sure to include `hyprmcsr -h <profile> instance-wrapper` in your wrapper command chain.
+If you prefer to manage the wrapper manually, simply omit the `autoReplaceWrapperCommand` section or set `enabled: false`. Then you can configure the wrapper in the PrismLauncher GUI. If you do this, make sure to include `hyprmcsr -h <profile> instance-wrapper` in your wrapper command chain.
 
 > **Important:** For the wrapper command to be reliably updated, PrismLauncher must not be running while the wrapper is being set. If PrismLauncher is open, it may overwrite or ignore changes. Always close PrismLauncher before starting your profile to ensure the wrapper command is applied correctly.
 

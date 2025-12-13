@@ -66,8 +66,8 @@ See [example.default.profile.json](../example.default.profile.json) for a full e
   "minecraft": {
     ...
     "prismLauncher": {
-      "wrapperCommand": {
-        "autoInsert": true,
+      "autoReplaceWrapperCommand": {
+        "enabled": true,
         "innerCommand": "obs-gamecapture"
       },
       "instanceId": "1.16.1",
@@ -92,8 +92,8 @@ See [example.default.profile.json](../example.default.profile.json) for a full e
   "minecraft": {
     ...
     "prismLauncher": {
-      "wrapperCommand": {
-        "autoInsert": true
+      "autoReplaceWrapperCommand": {
+        "enabled": true
       },
       "instanceId": "1.16.1"
     }
@@ -105,8 +105,8 @@ See [example.default.profile.json](../example.default.profile.json) for a full e
   "minecraft": {
     ...
     "prismLauncher": {
-      "wrapperCommand": {
-        "autoInsert": true,
+      "autoReplaceWrapperCommand": {
+        "enabled": true,
         "innerCommand": "obs-gamecapture"
       },
       "instanceIdScript": "echo $PROFILE",
@@ -116,9 +116,9 @@ See [example.default.profile.json](../example.default.profile.json) for a full e
   ```
   
   **Fields:**
-  - **prismLauncher.wrapperCommand**: (Optional) Object to configure the wrapper command.
-    - **wrapperCommand.autoInsert**: (boolean) When `true`, automatically configures the wrapper command in the PrismLauncher instance configuration file.
-    - **wrapperCommand.innerCommand**: (Optional, string) The inner wrapper command to use (e.g., `"obs-gamecapture"`). If omitted, only the hyprmcsr instance wrapper (`instance_wrapper.sh`) is used without an inner command.
+  - **prismLauncher.autoReplaceWrapperCommand**: (Optional) Object to configure automatic wrapper command replacement.
+    - **autoReplaceWrapperCommand.enabled**: (boolean) When `true`, automatically configures the wrapper command in the PrismLauncher instance configuration file, replacing any existing wrapper command.
+    - **autoReplaceWrapperCommand.innerCommand**: (Optional, string) The inner wrapper command to use (e.g., `"obs-gamecapture"`). If omitted, only the hyprmcsr instance wrapper (`instance_wrapper.sh`) is used without an inner command.
   - **prismLauncher.instanceId**: (Optional) Static instance ID to configure (e.g., `"1.16.1"`). See `~/.local/share/PrismLauncher/instances/` for available instances.
   - **prismLauncher.instanceIdScript**: (Optional) Shell command/script to dynamically determine the instance ID. The script's output will be used as the instance ID. If both `instanceId` and `instanceIdScript` are set, `instanceIdScript` takes precedence.  
     
