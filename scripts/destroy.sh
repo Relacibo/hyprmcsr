@@ -11,19 +11,19 @@ source "$SCRIPT_DIR/../util/export_env.sh"
 
 toggle_binds_key=$(jq -r '.binds.toggleBinds' "$PROFILE_CONFIG_FILE")
 if [ -n "$toggle_binds_key" ] && [ "$toggle_binds_key" != "null" ]; then
-  hyprctl keyword unbind $toggle_binds_key
+  hyprctl -q keyword unbind $toggle_binds_key
 fi
 
 # Remove custom binds
 custom_binds=$(jq -r '.binds.custom // {} | to_entries[] | .key' "$PROFILE_CONFIG_FILE")
 if [ -n "$custom_binds" ]; then
   while IFS= read -r bind; do
-    hyprctl keyword unbind "$bind"
+    hyprctl -q keyword unbind "$bind"
   done <<< "$custom_binds"
 fi
 
 jq -r '.binds.modeSwitch | to_entries[] | "\(.key) \(.value)"' "$PROFILE_CONFIG_FILE" | while read -r mode key; do
-  hyprctl keyword unbind $key
+  hyprctl -q keyword unbind $key
 done
 
 # Run onDestroy commands from profile config (all in background, with all relevant environment variables)

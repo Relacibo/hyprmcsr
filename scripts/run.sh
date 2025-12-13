@@ -55,12 +55,12 @@ echo "$HYPRMCSR_PROFILE" > "$STATE_DIR/profile"
 
 # Set keybinds for mode switches
 jq -r '.binds.modeSwitch | to_entries[] | "\(.key) \(.value)"' "$PROFILE_CONFIG_FILE" | while read -r mode key; do
-    hyprctl keyword bindni $key,exec,"$HYPRMCSR -h $HYPRMCSR_PROFILE toggle_mode $mode"
+    hyprctl -q keyword bindni $key,exec,"$HYPRMCSR -h $HYPRMCSR_PROFILE toggle_mode $mode"
 done
 
 toggle_binds_key=$(jq -r '.binds.toggleBinds' "$PROFILE_CONFIG_FILE")
 if [ -n "$toggle_binds_key" ] && [ "$toggle_binds_key" != "null" ]; then
-  hyprctl keyword bind $toggle_binds_key,exec,"$HYPRMCSR -h $HYPRMCSR_PROFILE toggle-binds"
+  hyprctl -q keyword bind $toggle_binds_key,exec,"$HYPRMCSR -h $HYPRMCSR_PROFILE toggle-binds"
 fi
 
 # Evaluate prismLauncher config (new) or prismWrapperCommand (deprecated)
@@ -172,7 +172,7 @@ if [ -n "$custom_binds" ]; then
   while IFS= read -r entry; do
     bind=$(echo "$entry" | awk '{print $1}')
     cmds=$(echo "$entry" | cut -d' ' -f2-)
-    hyprctl keyword bind "$bind,exec,HYPRMCSR_PROFILE=\"$HYPRMCSR_PROFILE\" $SCRIPT_DIR/../util/custom_bind_wrapper.sh '$cmds'"
+    hyprctl -q keyword bind "$bind,exec,HYPRMCSR_PROFILE=\"$HYPRMCSR_PROFILE\" $SCRIPT_DIR/../util/custom_bind_wrapper.sh '$cmds'"
   done <<< "$custom_binds"
 fi
 
