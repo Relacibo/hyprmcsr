@@ -134,6 +134,7 @@ if [ "$AUTO_REPLACE" = "true" ] && [ -n "$WRAPPER_CMD" ]; then
 
   # Only ask to close PrismLauncher if wrapper needs updating and it's running
   if [ "$NEEDS_UPDATE" = "true" ]; then
+    echo "[hyprmcsr] Wrapper command needs to be updated"
     if hyprctl clients -j | jq -e '.[] | select(.class == "org.prismlauncher.PrismLauncher" or (.title // "" | startswith("Prism Launcher")))' >/dev/null 2>&1; then
       echo "PrismLauncher is currently running."
       echo "It needs to be closed to update the wrapper command configuration."
@@ -150,6 +151,8 @@ if [ "$AUTO_REPLACE" = "true" ] && [ -n "$WRAPPER_CMD" ]; then
         AUTO_REPLACE="false"
       fi
     fi
+  else
+    echo "[hyprmcsr] Wrapper command already configured correctly"
   fi
 
   if [ "$AUTO_REPLACE" = "true" ] && [ -n "$PRISM_INSTANCE_IDS" ]; then
@@ -202,9 +205,10 @@ fi
 # Support deprecated observeLog for backward compatibility
 OBSERVE_STATE=$(jq -r '.minecraft.observeState.enabled // .minecraft.observeLog.enabled // true' "$PROFILE_CONFIG_FILE")
 if [ "$OBSERVE_STATE" = "true" ]; then
+  echo "[hyprmcsr] Starting state observer"
   (
     export HYPRMCSR_PROFILE PRISM_INSTANCE_ID MINECRAFT_ROOT
-    setsid "$SCRIPT_DIR/observe_state.sh" >/dev/null 2>&1 &
+    setsid "$SCRIPT_DIR/observe_state.sh" &
     STATE_MONITOR_PID=$!
     echo "$STATE_MONITOR_PID" > "$STATE_DIR/observe_state.pid"
   )

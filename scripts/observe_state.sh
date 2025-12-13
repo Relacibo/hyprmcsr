@@ -3,25 +3,35 @@
 export SCRIPT_DIR=$(dirname "${BASH_SOURCE[0]}")
 source "$SCRIPT_DIR/../util/env_prism.sh"
 
-# Wait for MINECRAFT_ROOT being set (max. 20 seconds)
+# Wait for MINECRAFT_ROOT being set (max. 10 seconds)
 tries=0
-while [ -z "$MINECRAFT_ROOT" ] && [ "$tries" -lt 20 ]; do
+while [ -z "$MINECRAFT_ROOT" ] && [ "$tries" -lt 10 ]; do
     sleep 1
     source "$SCRIPT_DIR/../util/env_prism.sh"
     tries=$((tries + 1))
 done
 
 if [ -z "$MINECRAFT_ROOT" ]; then
-    echo "MINECRAFT_ROOT could not be set."
+    echo "[hyprmcsr] Warning: MINECRAFT_ROOT could not be set after ${tries}s timeout"
+    exit 1
 fi
 
 STATE_FILE="$MINECRAFT_ROOT/wpstateout.txt"
 LAST_STATE=""
 
-inotifywait -m -q -e modify "$STATE_FILE" | while read path action file; do
+echo "[hyprmcsr] Observing state file: $STATE_FILE"
+
+# Check if state file exists
+if [ ! -f "$STATE_FILE" ]; then
+    echo "[hyprmcsr] Warning: State file does not exist: $STATE_FILE"
+    echo "[hyprmcsr] Waiting for state file to be created..."
+fi
+
+inotifywait -m -q -e modify "$STATE_FILE" 2>/dev/null | while read path action file; do
     current_state=$(cat "$STATE_FILE" 2>/dev/null)
     if [ "$current_state" != "$LAST_STATE" ]; then
         LAST_STATE="$current_state"
+        echo "[hyprmcsr] State changed to: $current_state"
         case "$current_state" in
             wall)
                 "$SCRIPT_DIR/toggle_mode.sh" normal
