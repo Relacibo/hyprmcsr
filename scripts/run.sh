@@ -98,16 +98,17 @@ if [ "$AUTO_INSERT" = "true" ]; then
 else
   # Fallback to deprecated prismWrapperCommand
   PRISM_WRAPPER_AUTO_REPLACE=$(jq -r '.minecraft.prismWrapperCommand.autoReplace // false' "$PROFILE_CONFIG_FILE")
-  INNER_WRAPPER_CMD=$(jq -r '.minecraft.prismWrapperCommand.innerCommand // empty' "$PROFILE_CONFIG_FILE")
-  PRISM_INSTANCE_IDS=$(jq -r '.minecraft.prismWrapperCommand.prismMinecraftInstanceIds[]?' "$PROFILE_CONFIG_FILE")
+  DEPRECATED_INNER_WRAPPER_CMD=$(jq -r '.minecraft.prismWrapperCommand.innerCommand // empty' "$PROFILE_CONFIG_FILE")
+  DEPRECATED_PRISM_INSTANCE_IDS=$(jq -r '.minecraft.prismWrapperCommand.prismMinecraftInstanceIds[]?' "$PROFILE_CONFIG_FILE")
   
   if [ "$PRISM_WRAPPER_AUTO_REPLACE" = "true" ]; then
     echo "Warning: minecraft.prismWrapperCommand is deprecated. Please use minecraft.prismLauncher instead."
     AUTO_REPLACE="true"
+    PRISM_INSTANCE_IDS="$DEPRECATED_PRISM_INSTANCE_IDS"
     
     # Use only the outer command if innerCommand is empty/null
-    if [ -n "$INNER_WRAPPER_CMD" ] && [ "$INNER_WRAPPER_CMD" != "null" ]; then
-      WRAPPER_CMD="$HYPRMCSR -h $HYPRMCSR_PROFILE instance-wrapper $INNER_WRAPPER_CMD"
+    if [ -n "$DEPRECATED_INNER_WRAPPER_CMD" ] && [ "$DEPRECATED_INNER_WRAPPER_CMD" != "null" ]; then
+      WRAPPER_CMD="$HYPRMCSR -h $HYPRMCSR_PROFILE instance-wrapper $DEPRECATED_INNER_WRAPPER_CMD"
     else
       WRAPPER_CMD="$HYPRMCSR -h $HYPRMCSR_PROFILE instance-wrapper"
     fi
@@ -115,14 +116,18 @@ else
 fi
 
 if [ "$AUTO_REPLACE" = "true" ] && [ -n "$WRAPPER_CMD" ]; then
-  # Check if PrismLauncher is already running
+  # Check if PrismLauncher is already running - if so, close it first
   if hyprctl clients -j | jq -e '.[] | select(.class == "org.prismlauncher.PrismLauncher" or (.title // "" | startswith("Prism Launcher")))' >/dev/null 2>&1; then
-    echo "Warning: PrismLauncher is already running. Auto-replace of wrapper command will not work reliably while PrismLauncher is open."
-    echo "Please close PrismLauncher and restart the profile to ensure the wrapper command is applied correctly."
+    echo "PrismLauncher is running. Closing it to update wrapper command..."
+    PRISM_PID=$(pgrep -f "prismlauncher" | head -n1)
+    if [ -n "$PRISM_PID" ]; then
+      kill "$PRISM_PID"
+      sleep 1
+    fi
   fi
 
   if [ -n "$PRISM_INSTANCE_IDS" ]; then
-    echo "$PRISM_INSTANCE_IDS" | while IFS= read -r INSTANCE_ID; do
+    while IFS= read -r INSTANCE_ID; do
       [ -z "$INSTANCE_ID" ] && continue
       INSTANCE_CONFIG="$PRISM_PREFIX/instances/$INSTANCE_ID/instance.cfg"
       if [ -f "$INSTANCE_CONFIG" ]; then
@@ -131,7 +136,7 @@ if [ "$AUTO_REPLACE" = "true" ] && [ -n "$WRAPPER_CMD" ]; then
           "$SCRIPT_DIR/../util/instance_cfg_util.sh" "$INSTANCE_CONFIG" "$WRAPPER_CMD"
         fi
       fi
-    done
+    done <<< "$PRISM_INSTANCE_IDS"
   fi
 fi
 
@@ -157,6 +162,8 @@ fi
 if [ "$AUTOLAUNCH" = "true" ] && [ -n "$PRISM_INSTANCE_IDS" ]; then
   LAUNCH_INSTANCE_ID=$(echo "$PRISM_INSTANCE_IDS" | head -n1)
   if [ -n "$LAUNCH_INSTANCE_ID" ]; then
+    # Small delay to ensure onStart commands have started
+    sleep 2
     echo "Autolaunching Minecraft instance: $LAUNCH_INSTANCE_ID"
     prismlauncher -l "$LAUNCH_INSTANCE_ID" &
   fi

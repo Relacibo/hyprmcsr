@@ -13,6 +13,7 @@ wrapper_cmd="$2"
 
 # Prepare fields for [General] (alphabetical order)
 fields=(
+  "OverrideCommands:override:true"
   "PostExitCommand:ensure-init:"
   "PreLaunchCommand:ensure-init:"
   "UseCustomCommands:override:true"
