@@ -51,7 +51,7 @@ fi
 
 if [ $# -lt 1 ]; then
   echo "Usage: $0 <jar_name> [args...]"
-  echo "  jar_name: Name or alias of the JAR to run (from repositories.json)"
+  echo "  jar_name: Name from repositories.json (e.g., 'ninjabrain-bot', 'modcheck')"
   exit 1
 fi
 
@@ -100,7 +100,9 @@ if [ -f "$REPOSITORIES_FILE" ]; then
 fi
 
 if [ -z "$JAR_REPO" ] || [ "$JAR_REPO" = "null" ]; then
-  echo "No JAR repository found for '$JAR_NAME' in repositories.json"
+  echo "Error: JAR '$JAR_NAME' not found in repositories.json"
+  echo "Please add it to the 'jar' section in $REPOSITORIES_FILE"
+  echo "Example: \"$JAR_NAME\": \"owner/repo\""
   exit 1
 fi
 
@@ -152,7 +154,9 @@ if [[ "$JAR_REPO" == */* ]]; then
     echo "Using existing version: $(basename "$JAR_FILE")"
   fi
 else
-  echo "Unknown JAR source: $JAR_REPO (expected format: owner/repo)"
+  echo "Error: Invalid repository format for '$JAR_NAME': $JAR_REPO"
+  echo "Expected format in repositories.json: \"$JAR_NAME\": \"owner/repo\""
+  echo "Example: \"ninjabrain-bot\": \"Ninjabrain1/Ninjabrain-Bot\""
   exit 3
 fi
 
