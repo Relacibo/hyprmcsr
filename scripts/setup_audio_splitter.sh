@@ -23,11 +23,7 @@ if [ "$ACTION" = "enable" ]; then
   # Get playback target if not provided
   if [ -z "$PW_TARGET" ]; then
     # Get default sink
-    if command -v pactl &>/dev/null && pactl get-default-sink &>/dev/null; then
-      PW_TARGET=$(pactl get-default-sink)
-    else
-      PW_TARGET=$(pactl info | grep "Default Sink" | awk '{print $3}')
-    fi
+    PW_TARGET=$(pactl get-default-sink)
 
     if [ -z "$PW_TARGET" ]; then
       echo "Could not find default sink!"
