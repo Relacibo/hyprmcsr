@@ -79,11 +79,11 @@ AUTOLAUNCH=$(jq -r '.minecraft.prismLauncher.autoLaunch // false' "$PROFILE_CONF
 PRISM_INSTANCE_ID=$(jq -r '.minecraft.prismLauncher.instanceId // empty' "$PROFILE_CONFIG_FILE")
 PRISM_INSTANCE_ID_SCRIPT=$(jq -r '.minecraft.prismLauncher.instanceIdScript // empty' "$PROFILE_CONFIG_FILE")
 
-if [ -n "$PRISM_INSTANCE_ID_SCRIPT" ] ]; then
+if [ -n "$PRISM_INSTANCE_ID_SCRIPT" ] && [ "$PRISM_INSTANCE_ID_SCRIPT" != "null" ]; then
   # Execute script to get instance ID (with environment variables available)
   export PROFILE HYPRMCSR_PROFILE SCRIPT_DIR STATE_DIR PRISM_PREFIX
   PRISM_INSTANCE_IDS=$(eval "$PRISM_INSTANCE_ID_SCRIPT")
-elif [ -n "$PRISM_INSTANCE_ID" ] ]; then
+elif [ -n "$PRISM_INSTANCE_ID" ] && [ "$PRISM_INSTANCE_ID" != "null" ]; then
   PRISM_INSTANCE_IDS="$PRISM_INSTANCE_ID"
 fi
 
