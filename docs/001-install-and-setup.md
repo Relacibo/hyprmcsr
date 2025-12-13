@@ -44,8 +44,15 @@ Replace `/path/to/hyprmcsr` with the absolute path to your installation. To make
 
 ## 3. Configuration files
 
-Configuration files are automatically created when you run `hyprmcsr run` for the first time:
+Configuration files are automatically created when you run `hyprmcsr run` for the first time.
 
+Optionally, you can initialize the configuration files manually:
+
+```bash
+hyprmcsr init
+```
+
+This creates:
 - JAR repositories: `repositories.json` (created from `example.repositories.json`)  
 - Default profile: `default.profile.json` (created from `example.default.profile.json`)
 
