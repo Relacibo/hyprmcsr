@@ -71,7 +71,7 @@ if [[ "$JAR_NAME" == *.jar ]]; then
   JAR_NAME=$(echo "$JAR_NAME" | awk -F'-' 'NF>1{NF--; print $0}' OFS='-' | sed 's/-$//')
   # Validate that JAR_NAME is not empty and looks reasonable (alphanumeric, dashes, underscores)
   if [[ -z "$JAR_NAME" || ! "$JAR_NAME" =~ ^[a-zA-Z0-9._-]+$ ]]; then
-    echo "Error: Could not extract a valid JAR name from input. Please specify the repository name as in repositories.json."
+    echo "Error: Could not extract a valid JAR name from the filename. Please use the name as configured in repositories.json instead."
     exit 1
   fi
 fi
