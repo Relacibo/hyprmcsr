@@ -151,10 +151,14 @@ if [ -n "$custom_binds" ]; then
 fi
 
 # Run onStart commands from profile config (all in background, with all relevant environment variables)
+LOG_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/hyprmcsr/logs"
+mkdir -p "$LOG_DIR"
 on_start_cmds=$(jq -c '.onStart[]?' "$PROFILE_CONFIG_FILE")
 if [ -n "$on_start_cmds" ]; then
+  index=0
   while IFS= read -r cmd; do
-    "$SCRIPT_DIR/../util/run_conditional_command.sh" "$cmd"
+    "$SCRIPT_DIR/../util/run_conditional_command.sh" "$cmd" "$LOG_DIR/onStart${index}.log"
+    index=$((index + 1))
   done <<< "$on_start_cmds"
 fi
 
