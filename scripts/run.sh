@@ -33,10 +33,14 @@ if ! command -v jq >/dev/null; then
   exit 1
 fi
 
-# Check for inotifywait if observeLog is enabled
-OBSERVE_LOG=$(jq -r '.minecraft.observeLog.enabled // true' "$PROFILE_CONFIG_FILE")
-if [ "$OBSERVE_LOG" = "true" ] && ! command -v inotifywait >/dev/null; then
-  echo "inotifywait (from inotify-tools) is required when minecraft.observeLog.enabled is true!"
+# Check for inotifywait if observeState is enabled
+# Support deprecated observeLog for backward compatibility
+if jq -e '.minecraft.observeLog' "$PROFILE_CONFIG_FILE" >/dev/null 2>&1; then
+  echo "Warning: minecraft.observeLog is deprecated. Please use minecraft.observeState instead."
+fi
+OBSERVE_STATE=$(jq -r '.minecraft.observeState.enabled // .minecraft.observeLog.enabled // true' "$PROFILE_CONFIG_FILE")
+if [ "$OBSERVE_STATE" = "true" ] && ! command -v inotifywait >/dev/null; then
+  echo "inotifywait (from inotify-tools) is required when minecraft.observeState.enabled is true!"
   exit 1
 fi
 
@@ -158,7 +162,8 @@ if [ "$AUTOLAUNCH" = "true" ] && [ -n "$PRISM_INSTANCE_IDS" ]; then
   fi
 fi
 
-OBSERVE_STATE=$(jq -r '.minecraft.observeLog.enabled // true' "$PROFILE_CONFIG_FILE")
+# Support deprecated observeLog for backward compatibility
+OBSERVE_STATE=$(jq -r '.minecraft.observeState.enabled // .minecraft.observeLog.enabled // true' "$PROFILE_CONFIG_FILE")
 if [ "$OBSERVE_STATE" = "true" ]; then
   (
     export HYPRMCSR_PROFILE PRISM_INSTANCE_ID MINECRAFT_ROOT

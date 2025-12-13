@@ -71,7 +71,7 @@
       "instanceId": "1.16.1",
       "autoLaunch": false
     },
-    "observeLog": {
+    "observeState": {
       "enabled": true
     }
   },
