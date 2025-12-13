@@ -70,7 +70,8 @@ if [[ "$JAR_NAME" == *.jar ]]; then
   # Remove the last hyphen and everything after it (assume that's the version)
   JAR_NAME=$(echo "$JAR_NAME" | awk -F'-' 'NF>1{NF--; print $0}' OFS='-' | sed 's/-$//')
   # Validate that JAR_NAME is not empty and looks reasonable (alphanumeric, dashes, underscores)
-  if [[ -z "$JAR_NAME" || ! "$JAR_NAME" =~ ^[a-zA-Z0-9._-]+$ ]]; then
+  # Disallow leading period, consecutive periods, and ".." anywhere
+  if [[ -z "$JAR_NAME" || "$JAR_NAME" == .* || "$JAR_NAME" == *..* || ! "$JAR_NAME" =~ ^[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)*$ ]]; then
     echo "Error: Could not extract a valid JAR name from the filename. Please use the name as configured in repositories.json instead."
     exit 1
   fi
