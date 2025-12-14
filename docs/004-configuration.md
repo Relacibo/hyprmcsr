@@ -40,7 +40,9 @@ See [example.default.profile.json](../example.default.profile.json) for a full e
   Define your own keybinds and associated commands here.  
   The commands will be executed with the environment variables `$HYPRMCSR`, `$WINDOW_ADDRESS`, `$SCRIPT_DIR`, `$PROFILE`, `$HYPRMCSR_PROFILE`, `$PRISM_INSTANCE_ID`, and `$MINECRAFT_ROOT` set. 
 - **modeSwitch.default**: Default window size, sensitivity, and optional `onEnter`/`onExit` arrays for commands to run when entering or exiting a mode. See [Command Syntax](#command-syntax-string-or-object)
-  - **size**: Window size in format `WIDTHxHEIGHT`. Should match your effective display resolution (native resolution ÷ Hyprland scale). Example: for a 2560x1600 monitor with `scale: 1.60`, use `1600x1000`. Check your monitor settings with `hyprctl monitors`.
+  - **size**: Window size. Can be either:
+    - A specific resolution in format `WIDTHxHEIGHT` (e.g., `1920x1080` or `350x750`)
+    - `"fullscreen"` to automatically use the full monitor size (taking Hyprland scale into account)
   - **sensitivity**: Mouse sensitivity value (e.g., `-0.9`)
 - **modeSwitch.modes**: Per-mode overrides for size, sensitivity, and `onEnter`/`onExit` commands. See [Command Syntax](#command-syntax-string-or-object)
 - **minecraft.prismPrefix**: (Optional) Path to your PrismLauncher data directory. Default: `~/.local/share/PrismLauncher`

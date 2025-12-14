@@ -28,7 +28,7 @@
   },
   "modeSwitch": {
     "default": {
-      "size": "1920x1080",
+      "size": "fullscreen",
       "sensitivity": "0.0",
       "onExit": [
         "# notify-send Leaving $PREVIOUS_MODE"
