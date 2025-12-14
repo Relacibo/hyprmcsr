@@ -21,10 +21,13 @@ LAST_STATE=""
 
 echo "[hyprmcsr] Observing state file: $STATE_FILE"
 
-# Check if state file exists
+# Wait for state file to exist (no timeout)
 if [ ! -f "$STATE_FILE" ]; then
-    echo "[hyprmcsr] Warning: State file does not exist: $STATE_FILE"
     echo "[hyprmcsr] Waiting for state file to be created..."
+    while [ ! -f "$STATE_FILE" ]; do
+        sleep 1
+    done
+    echo "[hyprmcsr] State file found"
 fi
 
 inotifywait -m -q -e modify "$STATE_FILE" 2>/dev/null | while read path action file; do
