@@ -1,8 +1,8 @@
 # Changelog
 
-## [Unreleased]
+## [0.7.0]
 
-### Breaking Changes - Configuration Updates Required
+### Changes in `*.profile.json`
 
 #### PrismLauncher Configuration Rename
 The PrismLauncher wrapper command configuration structure has been renamed for clarity:
@@ -26,7 +26,8 @@ The PrismLauncher wrapper command configuration structure has been renamed for c
     "autoReplaceWrapperCommand": {
       "enabled": true,
       "innerCommand": "obs-gamecapture"
-    }
+    },
+    ...
   }
 }
 ```
@@ -34,6 +35,69 @@ The PrismLauncher wrapper command configuration structure has been renamed for c
 **Migration:**
 - Rename `minecraft.prismLauncher.wrapperCommand` → `minecraft.prismLauncher.autoReplaceWrapperCommand`
 - Rename `autoInsert` → `enabled`
+
+**Additional PrismLauncher Options:**
+
+New optional fields for instance management and auto-launching:
+
+```json
+"minecraft": {
+  "prismLauncher": {
+    "autoReplaceWrapperCommand": {
+      "enabled": true,
+      "innerCommand": "obs-gamecapture"
+    },
+    "instanceId": "1.16.1",
+    "autoLaunch": true
+  }
+}
+```
+
+Or with dynamic instance ID:
+
+```json
+"minecraft": {
+  "prismLauncher": {
+    "autoReplaceWrapperCommand": {
+      "enabled": true
+    },
+    "instanceIdScript": "echo $PROFILE",
+    "autoLaunch": false
+  }
+}
+```
+
+**New fields:**
+- `instanceId`: Static instance ID to configure (e.g., `"1.16.1"`)
+- `instanceIdScript`: Shell script to dynamically determine instance ID (takes precedence over `instanceId`)
+- `autoLaunch`: When `true`, automatically launches Minecraft with the specified instance when running `hyprmcsr run`
+
+**Migration for autoLaunch:**
+
+If you previously had PrismLauncher in your `onStart` commands:
+
+**Old:**
+```json
+"onStart": [
+  "prismlauncher -l 1.16.1",
+  "other-command"
+]
+```
+
+**New:**
+```json
+"onStart": [
+  "other-command"
+],
+"minecraft": {
+  "prismLauncher": {
+    "instanceId": "1.16.1",
+    "autoLaunch": true
+  }
+}
+```
+
+Remove the `prismlauncher -l <instance-id>` command from `onStart` and use `autoLaunch: true` with `instanceId` instead.
 
 #### ObserveState Configuration Rename
 The state observation configuration has been renamed:
@@ -83,3 +147,4 @@ The state observation configuration has been renamed:
 ### Fixed
 - Window detection now correctly handles both `null` and empty string checks in jq filters
 - PID detection using `sort -n` for proper numerical sorting
+- Fixed waiting for state file, if it doesn't exist at start

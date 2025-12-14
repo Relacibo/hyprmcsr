@@ -34,6 +34,9 @@ All core functionality is controlled via the `hyprmcsr` CLI, which manages setup
 For setup instructions, usage, and all details, see the  
 👉 **[Full Guide & Documentation](./docs/README.md)** 👈
 
+For recent changes and migration guides, see the  
+👉 **[CHANGELOG](./CHANGELOG.md)** 👈
+
 ---
 
 ## Contributers
