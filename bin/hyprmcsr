@@ -9,7 +9,12 @@ usage() {
 Usage: hyprmcsr [-h HYPRMCSR_PROFILE] [-p PROFILE] <command> [args...]
 
 Commands:
-  init                        Initialize hyprmcsr (create config files, symlinks)
+  init [--base-profile <name>]
+                              Initialize hyprmcsr and create config files
+                              Profile name will be prompted or use -h flag
+                              Optional: --base-profile to use existing profile as template
+                              Interactively prompts for basic configuration
+  check-dependencies          Check if all required and optional dependencies are installed
   run                         Start a profile session (setup keybinds, launch tools)
   destroy                     End the current session (cleanup, unbind keys)
   delete-old-worlds           Delete old Minecraft worlds based on criteria
@@ -27,6 +32,11 @@ Options:
   --version                   Show version information
 
 Examples:
+  hyprmcsr check-dependencies # Check if all dependencies are installed
+  hyprmcsr init               # Create profile interactively
+  hyprmcsr -h ranked init     # Create 'ranked' profile interactively
+  hyprmcsr init --base-profile default
+                              # Create new profile based on 'default' profile
   hyprmcsr run                # Start default profile
   hyprmcsr -h ranked run      # Start 'ranked' profile
   hyprmcsr run-jar Ninjabrain-Bot
