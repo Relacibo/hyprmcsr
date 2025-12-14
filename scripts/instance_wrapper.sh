@@ -125,7 +125,7 @@ source "$SCRIPT_DIR/../util/export_env.sh"
   SPLIT_AUDIO_CONF="${XDG_CONFIG_HOME:-$HOME/.config}/pipewire/pipewire.conf.d/split-audio.conf"
   if [ -f "$SPLIT_AUDIO_CONF" ]; then
     for i in {1..20}; do
-      after_sinks=$(pactl -f json list sink-inputs | jq '.[].index' | sort)
+      after_sinks=$(pactl -f json list sink-inputs | jq '.[].index' | sort -n)
       new_sinks=$(comm -13 <(echo "$before_sinks") <(echo "$after_sinks"))
       for new_sink in $new_sinks; do
         sink_info=$(pactl -f json list sink-inputs | jq -r --arg idx "$new_sink" '
