@@ -6,10 +6,15 @@ source "$SCRIPT_DIR/../util/env_runtime.sh"
 # Get the monitor ID (numeric) of the window
 MONITOR_ID=$(hyprctl clients -j | jq -r ".[] | select(.address==\"$WINDOW_ADDRESS\") | .monitor")
 
-# Get the geometry of the monitor based on the ID
-read X Y WIDTH HEIGHT <<<$(hyprctl monitors -j | jq -r ".[] | select(.id==$MONITOR_ID) | \"\(.x) \(.y) \(.width) \(.height)\"")
+# Get the geometry and scale of the monitor based on the ID
+read X Y WIDTH HEIGHT SCALE <<<$(hyprctl monitors -j | jq -r ".[] | select(.id==$MONITOR_ID) | \"\(.x) \(.y) \(.width) \(.height) \(.scale)\"")
 
-CENTER_X=$((X + WIDTH / 2))
-CENTER_Y=$((Y + HEIGHT / 2))
+# Calculate effective dimensions (divided by scale)
+# Use awk for float division
+EFFECTIVE_WIDTH=$(awk "BEGIN {printf \"%.0f\", $WIDTH / $SCALE}")
+EFFECTIVE_HEIGHT=$(awk "BEGIN {printf \"%.0f\", $HEIGHT / $SCALE}")
 
-hyprctl dispatch movecursor "$CENTER_X" "$CENTER_Y"
+CENTER_X=$((X + EFFECTIVE_WIDTH / 2))
+CENTER_Y=$((Y + EFFECTIVE_HEIGHT / 2))
+
+hyprctl -q dispatch movecursor "$CENTER_X" "$CENTER_Y"
