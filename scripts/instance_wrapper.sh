@@ -71,7 +71,6 @@ source "$SCRIPT_DIR/../util/export_env.sh"
           MC_PID="$pid"
           echo "$window_address" > "$STATE_DIR/window_address"
           echo "[hyprmcsr] Minecraft window found - PID: $MC_PID, Address: $window_address"
-          found=1
           break 2
         fi
       done
@@ -98,7 +97,6 @@ source "$SCRIPT_DIR/../util/export_env.sh"
           MC_PID="$window_pid"
           echo "$window_address" > "$STATE_DIR/window_address"
           echo "[hyprmcsr] Minecraft window found (fallback) - PID: $MC_PID, Address: $window_address"
-          found=1
           break
         fi
       fi
