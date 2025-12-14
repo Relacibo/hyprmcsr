@@ -14,7 +14,9 @@ Commands:
   destroy                     End the current session (cleanup, unbind keys)
   delete-old-worlds           Delete old Minecraft worlds based on criteria
   run-jar <name> [args]       Download and run a JAR file from repositories.json
-  setup-audio-splitter        Configure PipeWire audio splitting
+  setup-audio-splitter <enable|disable> [device]
+                              Enable/disable PipeWire audio splitting
+                              Optional: specify audio device name
   update                      Update all configured JAR files
   version                     Show version information
 
@@ -28,6 +30,8 @@ Examples:
   hyprmcsr run                # Start default profile
   hyprmcsr -h ranked run      # Start 'ranked' profile
   hyprmcsr run-jar Ninjabrain-Bot
+  hyprmcsr setup-audio-splitter enable
+  hyprmcsr setup-audio-splitter enable "My Audio Device"
   hyprmcsr destroy            # End current session
 
 For more documentation, see: https://github.com/Relacibo/hyprmcsr
