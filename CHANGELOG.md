@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [0.7.4]
 
 ### Added
 - **Interactive profile creation**: `hyprmcsr init` now interactively prompts for basic configuration settings
