@@ -1,0 +1,48 @@
+{
+  "onStart": [],
+  "onDestroy": [],
+  "onToggleBinds": [],
+  "binds": {
+    "toggleBinds": ",HOME",
+    "modeSwitch": {
+      "tall": ",H",
+      "boat-eye": ",J",
+      "planar-abuse": ",Z"
+    },
+    "custom": {}
+  },
+  "modeSwitch": {
+    "default": {
+      "size": "fullscreen",
+      "sensitivity": "0.0",
+      "onExit": [],
+      "onEnter": []
+    },
+    "modes": {
+      "normal": {},
+      "tall": {
+        "size": "350x750"
+      },
+      "boat-eye": {
+        "size": "384x16384",
+        "sensitivity": "-0.9375"
+      },
+      "planar-abuse": {
+        "size": "1920x420"
+      }
+    }
+  },
+  "minecraft": {
+    "onStart": [],
+    "prismLauncher": {
+      "autoReplaceWrapperCommand": {
+        "enabled": true
+      },
+      "autoLaunch": true
+    },
+    "observeState": {
+      "enabled": true
+    }
+  },
+  "autoDestroyOnExit": true
+}

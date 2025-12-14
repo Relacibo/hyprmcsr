@@ -7,14 +7,42 @@ This section explains how to start, stop, and use hyprmcsr after installation.
 - `-h <hyprmcsr_profile>`: Sets the global config profile (e.g. for different global setups, instances)
 - `-p <profile>`: Sets the profile allowing some variants in how the profile behaves (e.g. coop, etc.)
 
+## Check dependencies
+
+```bash
+hyprmcsr check-dependencies
+```
+
+- Checks if all required dependencies are installed
+- Lists optional dependencies and their purpose
+- Required: `jq`, `hyprctl`, `inotifywait`, `prismlauncher`
+- Optional: `pactl` (for audio splitter)
+- Automatically run when using `hyprmcsr init`
+
 ## Initialize configuration files
 
 ```bash
-hyprmcsr init
+hyprmcsr init [profile] [--base-profile <name>]
 ```
 
-- Creates `repositories.json` and `default.profile.json` in `~/.config/hyprmcsr/`
+- Creates `repositories.json` if not exists
+- Interactively creates a new profile configuration (default: `default.profile.json`)
+- Optional: Use `--base-profile <name>` to create a new profile based on an existing one
+- Prompts for basic settings:
+  - State observation (wpstateout.txt)
+  - PrismLauncher instance ID
+  - Auto-launch and wrapper command settings
+  - PrismLauncher data directory (advanced)
+- Falls back to copying the example file if `jq` is not installed
 - Optional: Configuration files are also created automatically on first `hyprmcsr run`
+
+Examples:
+```bash
+hyprmcsr init                         # Create default.profile.json
+hyprmcsr init ranked                  # Create ranked.profile.json
+hyprmcsr init ranked --base-profile default
+                                      # Create ranked.profile.json based on default.profile.json
+```
 
 ## Start all tools and automation
 

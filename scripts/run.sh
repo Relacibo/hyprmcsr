@@ -9,15 +9,22 @@ export SCRIPT_DIR=$(dirname "${BASH_SOURCE[0]}")
 export HYPRMCSR_PROFILE="${HYPRMCSR_PROFILE:-default}"
 export PROFILE="${PROFILE:-default}"
 
-# Copy example configs if not present
+# Check if profile config exists, if not run init script
 CONFIG_ROOT="${XDG_CONFIG_HOME:-$HOME/.config}/hyprmcsr"
-PROFILE_CONFIG_FILE="$CONFIG_ROOT/default.profile.json"
-EXAMPLE_PROFILE="$SCRIPT_DIR/../example.default.profile.json"
+PROFILE_CONFIG_FILE="$CONFIG_ROOT/${HYPRMCSR_PROFILE}.profile.json"
 
 mkdir -p "$CONFIG_ROOT"
 if [ ! -f "$PROFILE_CONFIG_FILE" ]; then
-  cp "$EXAMPLE_PROFILE" "$PROFILE_CONFIG_FILE"
-  echo "Copied example.default.profile.json to $PROFILE_CONFIG_FILE."
+  echo "Profile '$HYPRMCSR_PROFILE' does not exist. Running interactive setup..."
+  echo ""
+  # Run init script - it will pick up HYPRMCSR_PROFILE from environment
+  "$SCRIPT_DIR/init.sh"
+  
+  # Check if init was successful
+  if [ ! -f "$PROFILE_CONFIG_FILE" ]; then
+    echo "Profile initialization failed or was cancelled."
+    exit 1
+  fi
 fi
 
 # Source env scripts from util
