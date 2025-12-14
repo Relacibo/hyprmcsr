@@ -15,17 +15,26 @@ if [ -f "$OLD_CONFIG_FILE" ] && [ ! -f "$REPOSITORIES_FILE" ]; then
     # Extract jar config from various possible locations
     jar_data=$(jq -r '
       if .download.jar then
-        # .download.jar exists - use it (object or string)
+        # .download.jar exists - use it (object, string, or array)
         if (.download.jar | type) == "string" then
           # String: wrap as single "default" entry
           { jar: { default: .download.jar } }
+        elif (.download.jar | type) == "array" then
+          # Array: convert to object using repo name after slash as key
+          { jar: (.download.jar | map(. as $url | {key: ($url | split("/") | .[-1]), value: $url}) | from_entries) }
         else
           # Object: use as-is
           { jar: .download.jar }
         end
       elif .jar then
-        # Direct .jar on root level
-        { jar: .jar }
+        # Direct .jar on root level (object, string, or array)
+        if (.jar | type) == "string" then
+          { jar: { default: .jar } }
+        elif (.jar | type) == "array" then
+          { jar: (.jar | map(. as $url | {key: ($url | split("/") | .[-1]), value: $url}) | from_entries) }
+        else
+          { jar: .jar }
+        end
       else
         # No jar config found
         { jar: {} }
