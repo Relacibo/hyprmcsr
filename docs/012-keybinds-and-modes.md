@@ -28,7 +28,7 @@ All binds are defined in your profile config under the `binds` section.
   ],
   "modeSwitch": {
     "default": {
-      "size": "1920x1080",
+      "size": "fullscreen",
       "onEnter": [
         "notify-send Entering $NEXT_MODE"
       ],
@@ -57,6 +57,7 @@ All binds are defined in your profile config under the `binds` section.
 - The values in `default` inside `modeSwitch` are the default values for every mode and are always used unless explicitly overridden in the respective mode.
 - There is also the `normal` mode, which is always switched to if you press the bind for another mode a second time.
 - The name of a mode can be chosen freely, but must match the respective bind key in `modeSwitch`.
+- `size`: Can be set to a specific resolution (e.g. `"1920x1080"` or `"350x750"`) or to `"fullscreen"` to automatically use the full monitor size (taking scale into account).
 - **The syntax for binds is the same as in Hyprland.** See the [Hyprland Wiki on binds](https://wiki.hyprland.org/Configuring/Binds/) for details.
 
 **Tip:**  
