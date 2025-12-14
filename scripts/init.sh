@@ -10,23 +10,22 @@ TEMPLATE_PROFILE="$SCRIPT_DIR/../templates/default.profile.json"
 # Show help
 show_help() {
   cat << 'EOF'
-Usage: hyprmcsr init [profile] [options]
+Usage: hyprmcsr init [options]
 
 Create a new hyprmcsr profile interactively.
 
 Arguments:
-  profile                     Name of the profile to create (default: 'default')
-                              Can also be set via HYPRMCSR_PROFILE environment variable
+  (none)                      Profile name will be prompted or taken from
+                              HYPRMCSR_PROFILE environment variable
 
 Options:
   --base-profile <name>       Use an existing profile as template
   --help                      Show this help message
 
 Examples:
-  hyprmcsr init                         # Create default.profile.json
-  hyprmcsr init ranked                  # Create ranked.profile.json
-  hyprmcsr init ranked --base-profile default
-                                        # Create ranked.profile.json based on default
+  hyprmcsr init                         # Create profile interactively
+  hyprmcsr -h ranked init               # Create 'ranked' profile
+  hyprmcsr init --base-profile default  # Create new profile based on default
 
 The script will interactively prompt for:
   - State Output File observation (wpstateout.txt)
@@ -377,6 +376,11 @@ if [ -n "$instance_id" ]; then
   if [ -n "$inner_command" ]; then
     jq --arg cmd "$inner_command" '.minecraft.prismLauncher.autoReplaceWrapperCommand.innerCommand = $cmd' "$PROFILE_CONFIG_FILE" > "$PROFILE_CONFIG_FILE.tmp" && mv "$PROFILE_CONFIG_FILE.tmp" "$PROFILE_CONFIG_FILE"
   fi
+fi
+
+# Update prismPrefix if provided
+if [ -n "$prism_prefix" ]; then
+  jq --arg prefix "$prism_prefix" '.minecraft.prismPrefix = $prefix' "$PROFILE_CONFIG_FILE" > "$PROFILE_CONFIG_FILE.tmp" && mv "$PROFILE_CONFIG_FILE.tmp" "$PROFILE_CONFIG_FILE"
 fi
 
 echo ""

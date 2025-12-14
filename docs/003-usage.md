@@ -22,11 +22,12 @@ hyprmcsr check-dependencies
 ## Initialize configuration files
 
 ```bash
-hyprmcsr init [profile] [--base-profile <name>]
+hyprmcsr init [--base-profile <name>]
 ```
 
 - Creates `repositories.json` if not exists
-- Interactively creates a new profile configuration (default: `default.profile.json`)
+- Interactively creates a new profile configuration
+- Profile name is prompted or taken from `-h <profile>` flag
 - Optional: Use `--base-profile <name>` to create a new profile based on an existing one
 - Prompts for basic settings:
   - State observation (wpstateout.txt)
@@ -38,10 +39,9 @@ hyprmcsr init [profile] [--base-profile <name>]
 
 Examples:
 ```bash
-hyprmcsr init                         # Create default.profile.json
-hyprmcsr init ranked                  # Create ranked.profile.json
-hyprmcsr init ranked --base-profile default
-                                      # Create ranked.profile.json based on default.profile.json
+hyprmcsr init                         # Create profile interactively (prompted for name)
+hyprmcsr -h ranked init               # Create ranked.profile.json
+hyprmcsr init --base-profile default  # Create new profile based on default.profile.json
 ```
 
 ## Start all tools and automation

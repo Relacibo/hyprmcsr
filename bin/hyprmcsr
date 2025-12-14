@@ -9,9 +9,9 @@ usage() {
 Usage: hyprmcsr [-h HYPRMCSR_PROFILE] [-p PROFILE] <command> [args...]
 
 Commands:
-  init [profile] [--base-profile <name>]
+  init [--base-profile <name>]
                               Initialize hyprmcsr and create config files
-                              Optional: specify profile name (default: 'default')
+                              Profile name will be prompted or use -h flag
                               Optional: --base-profile to use existing profile as template
                               Interactively prompts for basic configuration
   check-dependencies          Check if all required and optional dependencies are installed
@@ -33,10 +33,10 @@ Options:
 
 Examples:
   hyprmcsr check-dependencies # Check if all dependencies are installed
-  hyprmcsr init               # Create default profile interactively
-  hyprmcsr init ranked        # Create 'ranked' profile interactively
-  hyprmcsr init ranked --base-profile default
-                              # Create 'ranked' based on 'default' profile
+  hyprmcsr init               # Create profile interactively
+  hyprmcsr -h ranked init     # Create 'ranked' profile interactively
+  hyprmcsr init --base-profile default
+                              # Create new profile based on 'default' profile
   hyprmcsr run                # Start default profile
   hyprmcsr -h ranked run      # Start 'ranked' profile
   hyprmcsr run-jar Ninjabrain-Bot
