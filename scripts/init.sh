@@ -216,7 +216,7 @@ fi
 
 # Prompt for state observation
 read -p "Enable State Output File observation? ($DEFAULT_TEXT: $([ "$DEFAULT_OBSERVE_STATE" = "true" ] && echo "yes" || echo "no")) [y/n]: " observe_state
-observe_state="${observe_state:-y}"
+observe_state="${observe_state:-$([ "$DEFAULT_OBSERVE_STATE" = "true" ] && echo "y" || echo "n")}"
 if [[ "$observe_state" =~ ^[Yy] ]]; then
   observe_enabled="true"
 else
