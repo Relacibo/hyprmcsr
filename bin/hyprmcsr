@@ -5,10 +5,40 @@ HYPRMCSR_PROFILE="${HYPRMCSR_PROFILE:-}"
 PROFILE="${PROFILE:-}"
 
 usage() {
-  echo "Usage: $0 [-h HYPRMCSR_PROFILE] [-p PROFILE] <command> [args...]"
-  echo "Commands: init, run, destroy, delete-old-worlds, run-jar, setup-audio-splitter, update, version"
+  cat << 'EOF'
+Usage: hyprmcsr [-h HYPRMCSR_PROFILE] [-p PROFILE] <command> [args...]
+
+Commands:
+  init                        Initialize hyprmcsr (create config files, symlinks)
+  run                         Start a profile session (setup keybinds, launch tools)
+  destroy                     End the current session (cleanup, unbind keys)
+  delete-old-worlds           Delete old Minecraft worlds based on criteria
+  run-jar <name> [args]       Download and run a JAR file from repositories.json
+  setup-audio-splitter        Configure PipeWire audio splitting
+  update                      Update all configured JAR files
+  version                     Show version information
+
+Options:
+  -h HYPRMCSR_PROFILE         Set the hyprmcsr profile name
+  -p PROFILE                  Set the PROFILE environment variable
+  --help                      Show this help message
+  --version                   Show version information
+
+Examples:
+  hyprmcsr run                # Start default profile
+  hyprmcsr -h ranked run      # Start 'ranked' profile
+  hyprmcsr run-jar Ninjabrain-Bot
+  hyprmcsr destroy            # End current session
+
+For more documentation, see: https://github.com/Relacibo/hyprmcsr
+EOF
   exit 1
 }
+
+# Show help if --help
+if [[ "$1" == "--help" || "$1" == "help" ]]; then
+  usage
+fi
 
 # Print version if --version or version command
 if [[ "$1" == "--version" || "$1" == "version" ]]; then
