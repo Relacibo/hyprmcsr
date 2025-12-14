@@ -1,5 +1,35 @@
 # Changelog
 
+## [Unreleased]
+
+### Added
+- **Interactive profile creation**: `hyprmcsr init` now interactively prompts for basic configuration settings
+  - Profile name selection
+  - Sudo privileges requirement
+  - State output file observation
+  - PrismLauncher instance selection (with numbered list)
+  - Auto-launch and wrapper command configuration
+  - Inner wrapper command setup
+  - PrismLauncher data directory (optional)
+  - Audio splitter setup with monitor sink selection
+  - Profile editing support (edit existing profiles)
+  - `--base-profile` flag to create new profiles based on existing ones
+  - `--help` flag for init command
+- **Fullscreen mode size**: Set `"size": "fullscreen"` in `modeSwitch.default` or any mode to automatically use monitor resolution (accounting for Hyprland scale)
+- **Dependency checker**: `hyprmcsr check-dependencies` command to verify all required and optional dependencies
+- **Minimal profile template**: Clean template at `templates/default.profile.json` with essential configuration only
+
+### Changed
+- Default mode size is now `"fullscreen"` instead of `1920x1080`
+- `hyprmcsr run` now calls `hyprmcsr init` interactively if profile doesn't exist
+- Audio splitter setup now shows current status and suggests appropriate default action
+- Init script uses minimal template instead of example profile for cleaner new profiles
+
+### Documentation
+- Updated keybinds and modes documentation with fullscreen size option
+- Added comprehensive init command documentation
+- Updated configuration docs with fullscreen size explanation
+
 ## [0.7.3]
 
 ### Added
