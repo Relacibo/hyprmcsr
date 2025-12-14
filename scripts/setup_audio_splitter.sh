@@ -80,7 +80,7 @@ if [ $# -eq 0 ]; then
     elif [[ "$sink_input" =~ ^[0-9]+$ ]] && [ "$sink_input" -ge 1 ] && [ "$sink_input" -le ${#SINKS[@]} ]; then
       PW_TARGET="${SINKS[$((sink_input-1))]}"
     else
-      echo "Invalid selection!"
+      echo "Invalid selection! Please enter a number between 1 and ${#SINKS[@]}."
       exit 1
     fi
   fi
