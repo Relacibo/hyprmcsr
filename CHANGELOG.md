@@ -4,17 +4,15 @@
 
 ### Changes in `*.profile.json`
 
-#### PrismLauncher Configuration Rename
-The PrismLauncher wrapper command configuration structure has been renamed for clarity:
+#### PrismLauncher Configuration Restructure
 
-**Old configuration (deprecated):**
+**Old configuration (0.6.x):**
 ```json
 "minecraft": {
-  "prismLauncher": {
-    "wrapperCommand": {
-      "autoInsert": true,
-      "innerCommand": "obs-gamecapture"
-    }
+  "prismWrapperCommand": {
+    "autoReplace": true,
+    "innerCommand": "obs-gamecapture",
+    "prismMinecraftInstanceIds": ["1.16.1"]
   }
 }
 ```
@@ -27,14 +25,16 @@ The PrismLauncher wrapper command configuration structure has been renamed for c
       "enabled": true,
       "innerCommand": "obs-gamecapture"
     },
-    ...
+    "instanceId": "1.16.1"
   }
 }
 ```
 
 **Migration:**
-- Rename `minecraft.prismLauncher.wrapperCommand` → `minecraft.prismLauncher.autoReplaceWrapperCommand`
-- Rename `autoInsert` → `enabled`
+- Rename `minecraft.prismWrapperCommand` → `minecraft.prismLauncher`
+- Rename `autoReplace` → `autoReplaceWrapperCommand.enabled`
+- Move `innerCommand` into `autoReplaceWrapperCommand` object
+- Rename `prismMinecraftInstanceIds` (array) → `instanceId` (string, take first element if you had multiple)
 
 **Additional PrismLauncher Options:**
 
@@ -100,9 +100,8 @@ If you previously had PrismLauncher in your `onStart` commands:
 Remove the `prismlauncher -l <instance-id>` command from `onStart` and use `autoLaunch: true` with `instanceId` instead.
 
 #### ObserveState Configuration Rename
-The state observation configuration has been renamed:
 
-**Old configuration (deprecated):**
+**Old configuration (0.6.x):**
 ```json
 "minecraft": {
   "observeLog": {
