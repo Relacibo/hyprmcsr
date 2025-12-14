@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.7.1]
+
+### Fix
+- Center cursor: Take monitor scale into account
+
 ## [0.7.0]
 
 ### Changes in `*.profile.json`
