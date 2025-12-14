@@ -58,9 +58,9 @@ source "$SCRIPT_DIR/../util/export_env.sh"
             .pid == ($pid | tonumber)
             and (
               (
-                ($class_regex == null or (.class | test($class_regex)))
+                ($class_regex == "" or $class_regex == null or (.class | test($class_regex)))
                 and
-                ($title_regex == null or (.title | test($title_regex)))
+                ($title_regex == "" or $title_regex == null or (.title | test($title_regex)))
               )
             )
           ) | "\(.address) \(.pid)"
@@ -84,9 +84,9 @@ source "$SCRIPT_DIR/../util/export_env.sh"
         window_info=$(echo "$clients_json" | jq -r --arg class_regex "$WINDOW_CLASS_REGEX" --arg title_regex "$WINDOW_TITLE_REGEX" '
           .[] | select(
             (
-              ($class_regex == null or (.class | test($class_regex)))
+              ($class_regex == "" or $class_regex == null or (.class | test($class_regex)))
               and
-              ($title_regex == null or (.title | test($title_regex)))
+              ($title_regex == "" or $title_regex == null or (.title | test($title_regex)))
             )
           ) | "\(.address) \(.pid)"
         ' | head -n1)
