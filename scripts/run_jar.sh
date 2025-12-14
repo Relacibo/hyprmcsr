@@ -2,34 +2,197 @@
 
 export SCRIPT_DIR=$(dirname "${BASH_SOURCE[0]}")
 CONFIG_ROOT="${XDG_CONFIG_HOME:-$HOME/.config}/hyprmcsr"
-CONFIG_FILE="$CONFIG_ROOT/config.json"
+REPOSITORIES_FILE="$CONFIG_ROOT/repositories.json"
+EXAMPLE_REPOSITORIES="$SCRIPT_DIR/../example.repositories.json"
 
-# Download root, read from global config if present, else default
-DOWNLOAD_ROOT=$(jq -r '.download.root // empty' "$CONFIG_FILE")
+mkdir -p "$CONFIG_ROOT"
+
+# Migration: convert old config.json to repositories.json
+OLD_CONFIG_FILE="$CONFIG_ROOT/config.json"
+if [ -f "$OLD_CONFIG_FILE" ] && [ ! -f "$REPOSITORIES_FILE" ]; then
+  echo "Migrating config.json to repositories.json..."
+  if command -v jq &>/dev/null; then
+    # Extract jar config from various possible locations
+    jar_data=$(jq -r '
+      if .download.jar then
+        # .download.jar exists - use it (object, string, or array)
+        if (.download.jar | type) == "string" then
+          # String: wrap as single "default" entry
+          { jar: { default: .download.jar } }
+        elif (.download.jar | type) == "array" then
+          # Array: convert to object using repo name after slash as key
+          { jar: (.download.jar | map(. as $url | {key: ($url | split("/") | .[-1]), value: $url}) | from_entries) }
+        else
+          # Object: use as-is
+          { jar: .download.jar }
+        end
+      elif .jar then
+        # Direct .jar on root level (object, string, or array)
+        if (.jar | type) == "string" then
+          { jar: { default: .jar } }
+        elif (.jar | type) == "array" then
+          { jar: (.jar | map(. as $url | {key: ($url | split("/") | .[-1]), value: $url}) | from_entries) }
+        else
+          { jar: .jar }
+        end
+      else
+        # No jar config found
+        { jar: {} }
+      end
+    ' "$OLD_CONFIG_FILE")
+    
+    if echo "$jar_data" | jq . > "$REPOSITORIES_FILE" 2>/dev/null; then
+      echo "Migration complete. You can safely delete $OLD_CONFIG_FILE"
+    else
+      echo "Error: Migration failed. Please check $OLD_CONFIG_FILE format."
+      rm -f "$REPOSITORIES_FILE"
+    fi
+  else
+    echo "Warning: jq not found, cannot auto-migrate config.json"
+  fi
+fi
+
+# Copy example repositories if still no repositories.json exists
+if [ ! -f "$REPOSITORIES_FILE" ]; then
+  cp "$EXAMPLE_REPOSITORIES" "$REPOSITORIES_FILE"
+  echo "Copied example.repositories.json to $REPOSITORIES_FILE."
+fi
+
+if [ $# -lt 1 ]; then
+  echo "Usage: $0 <jar_name> [args...]"
+  echo "  jar_name: Name from repositories.json (e.g., 'ninjabrain-bot', 'modcheck')"
+  exit 1
+fi
+
+if ! command -v java &>/dev/null; then
+  echo "Error: java is not installed or not in PATH"
+  exit 1
+fi
+
+JAR_NAME="$1"
+shift
+
+# If JAR_NAME ends with .jar, try to extract the prefix (remove -version.jar)
+if [[ "$JAR_NAME" == *.jar ]]; then
+  # Remove .jar extension
+  JAR_NAME="${JAR_NAME%.jar}"
+  # Remove the last hyphen and everything after it (assume that's the version)
+  JAR_NAME=$(echo "$JAR_NAME" | awk -F'-' 'NF>1{NF--; print $0}' OFS='-' | sed 's/-$//')
+  # Validate that JAR_NAME is not empty and looks reasonable (alphanumeric, dashes, underscores)
+  # Disallow leading period, consecutive periods, and ".." anywhere
+  if [[ -z "$JAR_NAME" || "$JAR_NAME" == .* || "$JAR_NAME" == *..* || ! "$JAR_NAME" =~ ^[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)*$ ]]; then
+    echo "Error: Could not extract a valid JAR name from the filename. Please use the name as configured in repositories.json instead."
+    exit 1
+  fi
+fi
+
+# Download root, read from profile config if present, else default
+source "$SCRIPT_DIR/../util/env_core.sh"
+DOWNLOAD_ROOT=$(jq -r '.downloadRoot // empty' "$PROFILE_CONFIG_FILE")
 if [ -z "$DOWNLOAD_ROOT" ] || [ "$DOWNLOAD_ROOT" = "null" ]; then
   DOWNLOAD_ROOT=$(realpath "$SCRIPT_DIR/../download")
 fi
 JARS_DIR="$DOWNLOAD_ROOT/jar"
+mkdir -p "$JARS_DIR"
 
-if [ $# -lt 1 ]; then
-  echo "Usage: $0 <prefix> [args...]"
+# Try to find JAR repo - supports unique prefix matching
+JAR_REPO=""
+if [ -f "$REPOSITORIES_FILE" ]; then
+  # Try exact match first
+  JAR_REPO=$(jq -r --arg name "$JAR_NAME" '.jar[$name] // empty' "$REPOSITORIES_FILE")
+  
+  if [ -z "$JAR_REPO" ] || [ "$JAR_REPO" = "null" ]; then
+    # Try prefix match
+    matches=$(jq -r --arg prefix "$JAR_NAME" '.jar | to_entries[] | select(.key | startswith($prefix)) | .key' "$REPOSITORIES_FILE")
+    if [ -z "$matches" ]; then
+      match_count=0
+    else
+      match_count=$(echo "$matches" | wc -l | tr -d '[:space:]')
+    fi
+    
+    if [ "$match_count" -eq 1 ]; then
+      matched_key=$(echo "$matches" | head -n1)
+      JAR_REPO=$(jq -r --arg key "$matched_key" '.jar[$key]' "$REPOSITORIES_FILE")
+      echo "Using JAR: $matched_key"
+    elif [ "$match_count" -gt 1 ]; then
+      echo "Error: Ambiguous prefix '$JAR_NAME'. Matches:"
+      echo "$matches"
+      exit 1
+    fi
+  fi
+fi
+
+if [ -z "$JAR_REPO" ] || [ "$JAR_REPO" = "null" ]; then
+  echo "Error: JAR '$JAR_NAME' not found in repositories.json"
+  echo "Please add it to the 'jar' section in $REPOSITORIES_FILE"
+  echo "Example: \"$JAR_NAME\": \"owner/repo\""
   exit 1
 fi
 
-PREFIX="$1"
-shift
-
-# If a full filename with .jar is given and exists, use it directly
-if [[ "$PREFIX" == *.jar ]] && [ -f "$JARS_DIR/$PREFIX" ]; then
-  JAR_FILE="$JARS_DIR/$PREFIX"
+# Download/update JAR if it's a GitHub repo
+JAR_FILE=""
+if [[ "$JAR_REPO" == */* ]]; then
+  # GitHub repo (owner/repo)
+  api_url="https://api.github.com/repos/$JAR_REPO/releases/latest"
+  release_json=$(curl -s -f "$api_url")
+  curl_status=$?
+  if [ $curl_status -ne 0 ] || ! echo "$release_json" | jq empty >/dev/null 2>&1; then
+    echo "Warning: Failed to fetch or parse release information from GitHub API."
+    repo_prefix=$(basename "$JAR_REPO")
+    JAR_FILE=$(find "$JARS_DIR" -maxdepth 1 -type f -name "${repo_prefix}-*.jar" | head -n1)
+    if [ -z "$JAR_FILE" ]; then
+      echo "Error: No local version available and could not fetch remote information."
+      exit 2
+    fi
+    echo "Using existing version: $(basename "$JAR_FILE")"
+  else
+    jar_url=$(echo "$release_json" | jq -r '.assets[] | select(.name | endswith(".jar")) | .browser_download_url' | head -n1)
+  
+    if [ -n "$jar_url" ] && [ "$jar_url" != "null" ]; then
+      jar_name=$(basename "$jar_url")
+      repo_prefix=$(basename "$JAR_REPO")
+      
+      # Check if we already have this exact version
+      if [ -f "$JARS_DIR/$jar_name" ]; then
+        echo "$jar_name already up to date."
+        JAR_FILE="$JARS_DIR/$jar_name"
+      else
+        # Try to download new version
+        echo "New version available: $jar_name"
+        echo "Downloading $jar_url..."
+        if curl -L "$jar_url" -o "$JARS_DIR/$jar_name"; then
+          # Remove old versions after successful download
+          find "$JARS_DIR" -type f -name "${repo_prefix}-*.jar" ! -name "$jar_name" -exec rm {} \;
+          echo "Download successful."
+          JAR_FILE="$JARS_DIR/$jar_name"
+        else
+          echo "Warning: Download failed. Checking for existing version..."
+          # Try to find any existing version
+          JAR_FILE=$(find "$JARS_DIR" -maxdepth 1 -type f -name "${repo_prefix}-*.jar" | head -n1)
+          if [ -z "$JAR_FILE" ]; then
+            echo "Error: No local version available and download failed."
+            exit 2
+          fi
+          echo "Using existing version: $(basename "$JAR_FILE")"
+        fi
+      fi
+    else
+      # No JAR file found in latest release, try to use existing
+      echo "Warning: No JAR file found in latest release."
+      repo_prefix=$(basename "$JAR_REPO")
+      JAR_FILE=$(find "$JARS_DIR" -maxdepth 1 -type f -name "${repo_prefix}-*.jar" | head -n1)
+      if [ -z "$JAR_FILE" ]; then
+        echo "Error: No local version available and could not fetch remote information."
+        exit 2
+      fi
+      echo "Using existing version: $(basename "$JAR_FILE")"
+    fi
+  fi
 else
-  # Search for the first matching JAR with prefix
-  JAR_FILE=$(find "$JARS_DIR" -maxdepth 1 -type f -name "${PREFIX}*.jar" | head -n1)
-fi
-
-if [ -z "$JAR_FILE" ]; then
-  echo "No JAR file found with prefix '$PREFIX' in $JARS_DIR"
-  exit 2
+  echo "Error: Invalid repository format for '$JAR_NAME': $JAR_REPO"
+  echo "Expected format in repositories.json: \"$JAR_NAME\": \"owner/repo\""
+  echo "Example: \"ninjabrain-bot\": \"Ninjabrain1/Ninjabrain-Bot\""
+  exit 3
 fi
 
 # Determine working directory

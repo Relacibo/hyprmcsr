@@ -7,11 +7,22 @@ This section explains how to start, stop, and use hyprmcsr after installation.
 - `-h <hyprmcsr_profile>`: Sets the global config profile (e.g. for different global setups, instances)
 - `-p <profile>`: Sets the profile allowing some variants in how the profile behaves (e.g. coop, etc.)
 
+## Initialize configuration files
+
+```bash
+hyprmcsr init
+```
+
+- Creates `repositories.json` and `default.profile.json` in `~/.config/hyprmcsr/`
+- Optional: Configuration files are also created automatically on first `hyprmcsr run`
+
 ## Start all tools and automation
 
 ```bash
 hyprmcsr run
 ```
+
+- On first run, this will automatically create configuration files from the example templates in `~/.config/hyprmcsr/`
 - Sets up keybinds, input remapper, and environment.
 - Automatically sets the `instance_wrapper.sh` as the "WrapperCommand" in your PrismLauncher instance config.
 - You can restart Minecraft yourself, if it crashes via PrismLauncher (GUI or CLI).
@@ -52,6 +63,35 @@ hyprmcsr delete-old-worlds <regex> <keep_n>
   ```bash
   "onDestroy": ["$SCRIPT_DIR/delete_old_worlds.sh \"^Random Speedrun \" 50"]
   ```
+
+## Run JAR files
+
+```bash
+hyprmcsr run-jar <jar-name> [args...]
+```
+
+- Runs a configured JAR file defined in `repositories.json`
+- Automatically downloads the latest version from GitHub releases if not present
+- Automatically updates to the latest version when available
+- Supports unique prefix matching (e.g., `hyprmcsr run-jar ninja` will match `ninjabrain-bot` if it's the only match)
+- Example: `hyprmcsr run-jar modcheck` to launch ModCheck
+
+## Set up audio splitting
+
+```bash
+hyprmcsr setup-audio-splitter enable [playback_target]
+```
+
+- Sets up Pipewire audio loopback configuration for audio splitting
+- Automatically detects your default audio output device if not specified
+- Creates virtual audio devices (GameSound, DiscordSound) for separate audio routing
+- See [Audio Splitting](./011-audio-splitting.md) for more details
+
+To disable audio splitting:
+
+```bash
+hyprmcsr setup-audio-splitter disable
+```
 
 ## Update hyprmcsr to the latest release
 

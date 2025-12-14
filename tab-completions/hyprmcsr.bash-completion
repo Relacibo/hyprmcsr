@@ -4,7 +4,7 @@ _hyprmcsr_completions() {
   COMPREPLY=()
   cur="${COMP_WORDS[COMP_CWORD]}"
   prev="${COMP_WORDS[COMP_CWORD-1]}"
-  opts="start destroy delete-old-worlds install modcheck run-jar version"
+  opts="run destroy delete-old-worlds run-jar setup-audio-splitter update version"
 
   # config_root dynamisch am Anfang bestimmen
   if [[ -n "$XDG_CONFIG_HOME" ]]; then
@@ -54,23 +54,13 @@ _hyprmcsr_completions() {
   fi
 
   if [[ ${prev} == "run-jar" ]]; then
-    # Dynamisch config.json suchen
-    local config_file download_root jars_dir
-    config_file="$config_root/config.json"
-    if [[ -f "$config_file" ]]; then
-      download_root=$(jq -r '.download.root // empty' "$config_file" 2>/dev/null)
+    # Read JAR names from repositories.json
+    local repositories_file="$config_root/repositories.json"
+    local jar_names
+    if [[ -f "$repositories_file" ]]; then
+      jar_names=$(jq -r '.jar | keys[]' "$repositories_file" 2>/dev/null)
     fi
-    if [[ -z "$download_root" || "$download_root" == "null" ]]; then
-      # Fallback: relative zum Skript
-      local script_path
-      script_path=$(command -v hyprmcsr)
-      jars_dir="$(dirname "$(dirname "$script_path")")/download/jar"
-    else
-      jars_dir="$download_root/jar"
-    fi
-    local jars
-    jars=$(ls "$jars_dir"/*.jar 2>/dev/null | xargs -n1 basename)
-    COMPREPLY=( $(compgen -W "${jars}" -- ${cur}) )
+    COMPREPLY=( $(compgen -W "${jar_names}" -- ${cur}) )
     return 0
   fi
 }

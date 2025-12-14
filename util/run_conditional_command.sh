@@ -1,17 +1,24 @@
 #!/bin/bash
 # hyprmcsr: run_conditional_command.sh (moved to util)
-# Usage: run_conditional_command.sh '<json_or_string>'
+# Usage: run_conditional_command.sh '<json_or_string>' [log_file]
 # If JSON: { "exec": "...", "if": "..." }
 # If string: just execute
 
 set -e
 
 INPUT="$1"
+LOG_FILE="${2:-}"
 
 # Export all relevant environment variables for child processes
 UTIL_DIR=$(dirname "${BASH_SOURCE[0]}")
 SCRIPT_DIR="${SCRIPT_DIR:-$(realpath "$UTIL_DIR/../scripts")}"
 source "$UTIL_DIR/export_env.sh"
+
+# Setup logging redirection
+if [ -n "$LOG_FILE" ]; then
+  mkdir -p "$(dirname "$LOG_FILE")"
+  exec >> "$LOG_FILE" 2>&1
+fi
 
 # Check if input is a JSON object (idiomatic with jq)
 if echo "$INPUT" | jq -e 'type == "object"' >/dev/null 2>&1; then

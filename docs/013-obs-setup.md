@@ -35,7 +35,16 @@ For obs-vkcapture, follow the instructions in the [obs-vkcapture GitHub repo](ht
 Just use monitor capture with Pipewire on the monitor where Minecraft is running. This will capture the cursor without issues.
 
 ### With obs-vkcapture
-- Set `"prismWrapperCommand": { "autoReplace": true, "innerCommand": "obs-gamecapture" }` in your profile config under the `"minecraft"` section.
+- Set the following in your profile config under the `"minecraft"` section:
+  ```json
+  "prismLauncher": {
+    "autoReplaceWrapperCommand": {
+      "enabled": true,
+      "innerCommand": "obs-gamecapture"
+    },
+    "instanceId": "1.16.1"
+  }
+  ```
 - This will automatically wrap Minecraft with obs-gamecapture.
 
 **Limitations:**
