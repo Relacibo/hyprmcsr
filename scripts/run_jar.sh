@@ -177,8 +177,8 @@ if [[ "$JAR_REPO" == */* ]]; then
         fi
       fi
     else
-      # API call failed or no JAR in release, try to use existing
-      echo "Warning: Could not fetch latest release information."
+      # No JAR file found in latest release, try to use existing
+      echo "Warning: No JAR file found in latest release."
       repo_prefix=$(basename "$JAR_REPO")
       JAR_FILE=$(find "$JARS_DIR" -maxdepth 1 -type f -name "${repo_prefix}-*.jar" | head -n1)
       if [ -z "$JAR_FILE" ]; then
