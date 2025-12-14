@@ -140,7 +140,7 @@ Remove the `prismlauncher -l <instance-id>` command from `onStart` and use `auto
   - After 15 seconds: Fallback to regex-only window detection (supports xwayland windows)
   - Total timeout: 20 seconds
 - All `hyprctl keyword` commands now use `-q` flag to suppress "ok" output
-- State observer timeout reduced from 20s to 5s
+- State observer timeout reduced from 20s to 10s
 - Better null/empty string handling in jq window detection filters
 
 ### Fixed
