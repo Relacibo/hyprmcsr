@@ -1,5 +1,22 @@
 # Changelog
 
+## [Unreleased]
+
+### Added
+- **Flatpak PrismLauncher support**: Full support for PrismLauncher installed via Flatpak
+  - New `minecraft.prismLauncher.flatpak` boolean setting to indicate Flatpak installation
+  - Automatic data directory detection (`~/.var/app/org.prismlauncher.PrismLauncher/data/PrismLauncher`)
+  - Automatic launch command selection (`flatpak run org.prismlauncher.PrismLauncher`)
+  - `hyprmcsr setup` now asks if PrismLauncher is installed via Flatpak
+- **New prismPrefix priority system**: `minecraft.prismLauncher.prismPrefix` → Flatpak detection → deprecated `minecraft.prismPrefix` → default
+
+### Changed
+- **Renamed command**: `hyprmcsr init` → `hyprmcsr setup` (better describes interactive configuration)
+- All documentation updated to use `setup` instead of `init`
+
+### Deprecated
+- `minecraft.prismPrefix` is now deprecated in favor of `minecraft.prismLauncher.prismPrefix` and `minecraft.prismLauncher.flatpak`
+
 ## [0.7.4]
 
 ### Added

@@ -49,7 +49,7 @@ Configuration files are automatically created when you run `hyprmcsr run` for th
 Optionally, you can initialize the configuration files manually:
 
 ```bash
-hyprmcsr init
+hyprmcsr setup
 ```
 
 This creates:

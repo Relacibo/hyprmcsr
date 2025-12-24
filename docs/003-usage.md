@@ -17,12 +17,12 @@ hyprmcsr check-dependencies
 - Lists optional dependencies and their purpose
 - Required: `jq`, `hyprctl`, `inotifywait`, `prismlauncher`
 - Optional: `pactl` (for audio splitter)
-- Automatically run when using `hyprmcsr init`
+- Automatically run when using `hyprmcsr setup`
 
 ## Initialize configuration files
 
 ```bash
-hyprmcsr init [--base-profile <name>]
+hyprmcsr setup [--base-profile <name>]
 ```
 
 - Creates `repositories.json` if not exists
@@ -31,6 +31,7 @@ hyprmcsr init [--base-profile <name>]
 - Optional: Use `--base-profile <name>` to create a new profile based on an existing one
 - Prompts for basic settings:
   - State observation (wpstateout.txt)
+  - PrismLauncher Flatpak installation
   - PrismLauncher instance ID
   - Auto-launch and wrapper command settings
   - PrismLauncher data directory (advanced)
@@ -39,9 +40,9 @@ hyprmcsr init [--base-profile <name>]
 
 Examples:
 ```bash
-hyprmcsr init                         # Create profile interactively (prompted for name)
-hyprmcsr -h ranked init               # Create ranked.profile.json
-hyprmcsr init --base-profile default  # Create new profile based on default.profile.json
+hyprmcsr setup                         # Create profile interactively (prompted for name)
+hyprmcsr -h ranked setup               # Create ranked.profile.json
+hyprmcsr setup --base-profile default  # Create new profile based on default.profile.json
 ```
 
 ## Start all tools and automation

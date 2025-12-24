@@ -9,7 +9,7 @@ usage() {
 Usage: hyprmcsr [-h HYPRMCSR_PROFILE] [-p PROFILE] <command> [args...]
 
 Commands:
-  init [--base-profile <name>]
+  setup [--base-profile <name>]
                               Initialize hyprmcsr and create config files
                               Profile name will be prompted or use -h flag
                               Optional: --base-profile to use existing profile as template
@@ -33,9 +33,9 @@ Options:
 
 Examples:
   hyprmcsr check-dependencies # Check if all dependencies are installed
-  hyprmcsr init               # Create profile interactively
-  hyprmcsr -h ranked init     # Create 'ranked' profile interactively
-  hyprmcsr init --base-profile default
+  hyprmcsr setup              # Create profile interactively
+  hyprmcsr -h ranked setup    # Create 'ranked' profile interactively
+  hyprmcsr setup --base-profile default
                               # Create new profile based on 'default' profile
   hyprmcsr run                # Start default profile
   hyprmcsr -h ranked run      # Start 'ranked' profile

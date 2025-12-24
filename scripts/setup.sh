@@ -143,6 +143,7 @@ fi
 
 # Extract default values always from example file for consistent defaults
 DEFAULT_PRISM_PREFIX=$(jq -r '.minecraft.prismPrefix // ""' "$EXAMPLE_PROFILE")
+DEFAULT_FLATPAK=$(jq -r '.minecraft.prismLauncher.flatpak // false' "$EXAMPLE_PROFILE")
 DEFAULT_OBSERVE_STATE=$(jq -r '.minecraft.observeState.enabled // true' "$EXAMPLE_PROFILE")
 DEFAULT_INSTANCE_ID=""  # No default from template
 DEFAULT_AUTO_LAUNCH=$(jq -r '.minecraft.prismLauncher.autoLaunch // false' "$EXAMPLE_PROFILE")
@@ -153,6 +154,7 @@ DEFAULT_REQUIRE_SUDO=$(jq -r '.requireSudo // false' "$EXAMPLE_PROFILE")
 # When editing an existing profile, load current values from it
 if [ "$EDITING_EXISTING" = true ]; then
   CURRENT_PRISM_PREFIX=$(jq -r '.minecraft.prismPrefix // ""' "$PROFILE_CONFIG_FILE")
+  CURRENT_FLATPAK=$(jq -r '.minecraft.prismLauncher.flatpak // false' "$PROFILE_CONFIG_FILE")
   CURRENT_OBSERVE_STATE=$(jq -r '.minecraft.observeState.enabled // true' "$PROFILE_CONFIG_FILE")
   CURRENT_INSTANCE_ID=$(jq -r '.minecraft.prismLauncher.instanceId // ""' "$PROFILE_CONFIG_FILE")
   CURRENT_AUTO_LAUNCH=$(jq -r '.minecraft.prismLauncher.autoLaunch // false' "$PROFILE_CONFIG_FILE")
@@ -162,6 +164,7 @@ if [ "$EDITING_EXISTING" = true ]; then
   
   # Use current values as defaults when editing
   [ -n "$CURRENT_PRISM_PREFIX" ] && DEFAULT_PRISM_PREFIX="$CURRENT_PRISM_PREFIX"
+  DEFAULT_FLATPAK="$CURRENT_FLATPAK"
   DEFAULT_OBSERVE_STATE="$CURRENT_OBSERVE_STATE"
   [ -n "$CURRENT_INSTANCE_ID" ] && DEFAULT_INSTANCE_ID="$CURRENT_INSTANCE_ID"
   DEFAULT_AUTO_LAUNCH="$CURRENT_AUTO_LAUNCH"
@@ -175,6 +178,12 @@ if [ "$DEFAULT_OBSERVE_STATE" = "true" ]; then
   observe_default="Y/n"
 else
   observe_default="y/N"
+fi
+
+if [ "$DEFAULT_FLATPAK" = "true" ]; then
+  flatpak_default="Y/n"
+else
+  flatpak_default="y/N"
 fi
 
 if [ "$DEFAULT_AUTO_LAUNCH" = "true" ]; then
@@ -225,8 +234,24 @@ fi
 # Prompt for PrismLauncher instance
 echo ""
 
+# Ask if flatpak installation
+if [ "$DEFAULT_FLATPAK" = "true" ]; then
+  read -p "Is PrismLauncher installed via Flatpak? ($DEFAULT_TEXT: yes) [y/n]: " flatpak_input
+  flatpak_input="${flatpak_input:-y}"
+else
+  read -p "Is PrismLauncher installed via Flatpak? ($DEFAULT_TEXT: no) [y/n]: " flatpak_input
+  flatpak_input="${flatpak_input:-n}"
+fi
+
+if [[ "$flatpak_input" =~ ^[Yy] ]]; then
+  is_flatpak="true"
+  PRISM_INSTANCES_DIR="$HOME/.var/app/org.prismlauncher.PrismLauncher/data/PrismLauncher/instances"
+else
+  is_flatpak="false"
+  PRISM_INSTANCES_DIR="$HOME/.local/share/PrismLauncher/instances"
+fi
+
 # List available instances
-PRISM_INSTANCES_DIR="$HOME/.local/share/PrismLauncher/instances"
 if [ -d "$PRISM_INSTANCES_DIR" ]; then
   # Get list of instances (directories only, exclude instgroups.json)
   mapfile -t INSTANCES < <(find "$PRISM_INSTANCES_DIR" -mindepth 1 -maxdepth 1 -type d -exec basename {} \; | sort)
@@ -377,6 +402,9 @@ if [ -n "$instance_id" ]; then
     jq --arg cmd "$inner_command" '.minecraft.prismLauncher.autoReplaceWrapperCommand.innerCommand = $cmd' "$PROFILE_CONFIG_FILE" > "$PROFILE_CONFIG_FILE.tmp" && mv "$PROFILE_CONFIG_FILE.tmp" "$PROFILE_CONFIG_FILE"
   fi
 fi
+
+# Update flatpak setting
+jq --argjson flatpak "$is_flatpak" '.minecraft.prismLauncher.flatpak = $flatpak' "$PROFILE_CONFIG_FILE" > "$PROFILE_CONFIG_FILE.tmp" && mv "$PROFILE_CONFIG_FILE.tmp" "$PROFILE_CONFIG_FILE"
 
 # Update prismPrefix if provided
 if [ -n "$prism_prefix" ]; then

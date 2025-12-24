@@ -1,7 +1,20 @@
 #!/bin/bash
 source "$(dirname "${BASH_SOURCE[0]}")/env_core.sh"
 
-PRISM_PREFIX=$(jq -r '.minecraft.prismPrefix // "~/.local/share/PrismLauncher"' "$PROFILE_CONFIG_FILE")
+# Determine PRISM_PREFIX with priority: prismLauncher.prismPrefix > flatpak detection > deprecated prismPrefix > default
+PRISM_PREFIX=$(jq -r '.minecraft.prismLauncher.prismPrefix // empty' "$PROFILE_CONFIG_FILE")
+
+if [ -z "$PRISM_PREFIX" ] || [ "$PRISM_PREFIX" = "null" ]; then
+  # Check if flatpak installation is configured
+  IS_FLATPAK=$(jq -r '.minecraft.prismLauncher.flatpak // false' "$PROFILE_CONFIG_FILE")
+  if [ "$IS_FLATPAK" = "true" ]; then
+    PRISM_PREFIX="$HOME/.var/app/org.prismlauncher.PrismLauncher/data/PrismLauncher"
+  else
+    # Fallback to deprecated prismPrefix, then default
+    PRISM_PREFIX=$(jq -r '.minecraft.prismPrefix // "~/.local/share/PrismLauncher"' "$PROFILE_CONFIG_FILE")
+  fi
+fi
+
 PRISM_PREFIX="${PRISM_PREFIX/#\~/$HOME}"
 export PRISM_PREFIX
 

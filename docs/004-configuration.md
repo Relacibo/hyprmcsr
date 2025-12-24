@@ -45,7 +45,9 @@ See [example.default.profile.json](../example.default.profile.json) for a full e
     - `"fullscreen"` to automatically use the full monitor size (taking Hyprland scale into account)
   - **sensitivity**: Mouse sensitivity value (e.g., `-0.9`)
 - **modeSwitch.modes**: Per-mode overrides for size, sensitivity, and `onEnter`/`onExit` commands. See [Command Syntax](#command-syntax-string-or-object)
-- **minecraft.prismPrefix**: (Optional) Path to your PrismLauncher data directory. Default: `~/.local/share/PrismLauncher`
+- **minecraft.prismLauncher.prismPrefix**: (Optional) Path to your PrismLauncher data directory. Takes precedence over `minecraft.prismPrefix` and `minecraft.prismLauncher.flatpak` auto-detection.
+- **minecraft.prismLauncher.flatpak**: (Optional, boolean, default: `false`) Set to `true` if PrismLauncher is installed via Flatpak. Automatically sets the correct data directory and launch command.
+- **minecraft.prismPrefix**: (Deprecated, use `minecraft.prismLauncher.prismPrefix` instead) Path to your PrismLauncher data directory. Default: `~/.local/share/PrismLauncher`
 - **minecraft.windowClassRegex**:  
   (Optional) Regular expression to detect the Minecraft window by its window class.
 - **minecraft.windowTitleRegex**:  
@@ -70,10 +72,23 @@ See [example.default.profile.json](../example.default.profile.json) for a full e
   "minecraft": {
     ...
     "prismLauncher": {
+      "flatpak": false,
       "autoReplaceWrapperCommand": {
         "enabled": true,
         "innerCommand": "obs-gamecapture"
       },
+      "instanceId": "1.16.1",
+      "autoLaunch": true
+    }
+  }
+  ```
+  
+  **Example (Flatpak installation):**
+  ```json
+  "minecraft": {
+    ...
+    "prismLauncher": {
+      "flatpak": true,
       "instanceId": "1.16.1",
       "autoLaunch": true
     }
@@ -120,6 +135,10 @@ See [example.default.profile.json](../example.default.profile.json) for a full e
   ```
   
   **Fields:**
+  - **prismLauncher.flatpak**: (Optional, boolean, default: `false`) Set to `true` if PrismLauncher is installed via Flatpak. This automatically:
+    - Sets the data directory to `~/.var/app/org.prismlauncher.PrismLauncher/data/PrismLauncher`
+    - Uses `flatpak run org.prismlauncher.PrismLauncher` for launching
+  - **prismLauncher.prismPrefix**: (Optional, string) Custom path to PrismLauncher data directory. Takes precedence over `flatpak` auto-detection and deprecated `minecraft.prismPrefix`.
   - **prismLauncher.autoReplaceWrapperCommand**: (Optional) Object to configure automatic wrapper command replacement.
     - **autoReplaceWrapperCommand.enabled**: (boolean) When `true`, automatically configures the wrapper command in the PrismLauncher instance configuration file, replacing any existing wrapper command.
     - **autoReplaceWrapperCommand.innerCommand**: (Optional, string) The inner wrapper command to use (e.g., `"obs-gamecapture"`). If omitted, only the hyprmcsr instance wrapper (`instance_wrapper.sh`) is used without an inner command.
@@ -165,9 +184,25 @@ All command fields (e.g. `onStart`, `onDestroy`, `onToggleBinds`, `modeSwitch.*.
 
 ## PrismLauncher command and data directory
 
-- **Native PrismLauncher:**
+hyprmcsr supports both native and Flatpak installations of PrismLauncher. The configuration is automatically detected based on the `minecraft.prismLauncher.flatpak` setting:
+
+- **Native PrismLauncher** (default):
   - Command: `prismlauncher -l "<instance id>"`
-  - Data directory (`prismPrefix`): `~/.local/share/PrismLauncher`
+  - Data directory: `~/.local/share/PrismLauncher`
+  - Set `"flatpak": false` or omit the field
+
+- **Flatpak PrismLauncher:**
+  - Command: `flatpak run org.prismlauncher.PrismLauncher -l "<instance id>"`
+  - Data directory: `~/.var/app/org.prismlauncher.PrismLauncher/data/PrismLauncher`
+  - Set `"flatpak": true` in your profile configuration
+
+**Priority for determining data directory:**
+1. `minecraft.prismLauncher.prismPrefix` (highest priority, custom path)
+2. `minecraft.prismLauncher.flatpak` (auto-detection based on installation type)
+3. `minecraft.prismPrefix` (deprecated fallback)
+4. Default: `~/.local/share/PrismLauncher`
 
 > **Note:**
-> Flatpak is not recommended due to file access and integration issues. For Flatpak-specific instructions and limitations, see [Flatpak Setup](./030-flatpak.md).
+> When using `hyprmcsr setup`, you will be asked whether PrismLauncher is installed via Flatpak, and the configuration will be set automatically.
+>
+> **Flatpak is not recommended** due to potential file access and integration issues. Native installation is preferred for best compatibility. For Flatpak-specific instructions and limitations, see [Flatpak Setup](./030-flatpak.md).

@@ -18,7 +18,7 @@ if [ ! -f "$PROFILE_CONFIG_FILE" ]; then
   echo "Profile '$HYPRMCSR_PROFILE' does not exist. Running interactive setup..."
   echo ""
   # Run init script - it will pick up HYPRMCSR_PROFILE from environment
-  "$SCRIPT_DIR/init.sh"
+  "$SCRIPT_DIR/setup.sh"
   
   # Check if init was successful
   if [ ! -f "$PROFILE_CONFIG_FILE" ]; then
@@ -76,6 +76,14 @@ WRAPPER_CMD=""
 PRISM_INSTANCE_IDS=""
 AUTO_REPLACE="false"
 AUTOLAUNCH="false"
+
+# Determine PrismLauncher command (flatpak or native)
+IS_FLATPAK=$(jq -r '.minecraft.prismLauncher.flatpak // false' "$PROFILE_CONFIG_FILE")
+if [ "$IS_FLATPAK" = "true" ]; then
+  PRISMLAUNCHER="flatpak run org.prismlauncher.PrismLauncher"
+else
+  PRISMLAUNCHER="prismlauncher"
+fi
 
 # Try new prismLauncher format first
 AUTO_INSERT=$(jq -r '.minecraft.prismLauncher.autoReplaceWrapperCommand.enabled // false' "$PROFILE_CONFIG_FILE")
@@ -205,7 +213,7 @@ if [ "$AUTOLAUNCH" = "true" ] && [ -n "$PRISM_INSTANCE_IDS" ]; then
     # Small delay to ensure onStart commands have started
     sleep 2
     echo "Autolaunching Minecraft instance: $LAUNCH_INSTANCE_ID"
-    prismlauncher -l "$LAUNCH_INSTANCE_ID" >> "$LOG_DIR/prismlauncher.log" 2>&1 &
+    $PRISMLAUNCHER -l "$LAUNCH_INSTANCE_ID" >> "$LOG_DIR/prismlauncher.log" 2>&1 &
   fi
 fi
 
