@@ -175,7 +175,10 @@ if [[ "$JAR_REPO" == */* ]]; then
           # Remove old versions after successful download
           old_jars=$(find "$JARS_DIR" -type f -iname "${repo_prefix}-*.jar" ! -iname "$jar_name")
           if [ -n "$old_jars" ]; then
-            echo "$old_jars"
+            echo "Removing old versions:"
+            echo "$old_jars" | while IFS= read -r jar; do
+              echo " - $(basename "$jar")"
+            done
             echo "$old_jars" | xargs rm -f
           fi
           echo "Download successful."
