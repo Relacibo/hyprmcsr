@@ -136,10 +136,10 @@ if [[ "$JAR_REPO" == */* ]]; then
   api_url="https://api.github.com/repos/$JAR_REPO/releases/latest"
   release_json=$(curl -s -f "$api_url")
   curl_status=$?
+  repo_prefix=$(basename "$JAR_REPO")
   if [ $curl_status -ne 0 ] || ! echo "$release_json" | jq empty >/dev/null 2>&1; then
     echo "Warning: Failed to fetch or parse release information from GitHub API."
-    repo_prefix=$(basename "$JAR_REPO")
-    JAR_FILE=$(find "$JARS_DIR" -maxdepth 1 -type f -name "${repo_prefix}-*.jar" | head -n1)
+    JAR_FILE=$(find "$JARS_DIR" -maxdepth 1 -type f -iname "${repo_prefix}-*.jar" | head -n1)
     if [ -z "$JAR_FILE" ]; then
       echo "Error: No local version available and could not fetch remote information."
       exit 2
@@ -150,25 +150,29 @@ if [[ "$JAR_REPO" == */* ]]; then
   
     if [ -n "$jar_url" ] && [ "$jar_url" != "null" ]; then
       jar_name=$(basename "$jar_url")
-      repo_prefix=$(basename "$JAR_REPO")
-      
+      existing_jar=$(find "$JARS_DIR" -maxdepth 1 -type f -iname "$jar_name" | head -n1)
+
       # Check if we already have this exact version
-      if [ -f "$JARS_DIR/$jar_name" ]; then
+      if [ -n "$existing_jar" ]; then
         echo "$jar_name already up to date."
-        JAR_FILE="$JARS_DIR/$jar_name"
+        JAR_FILE="$existing_jar"
       else
         # Try to download new version
         echo "New version available: $jar_name"
         echo "Downloading $jar_url..."
         if curl -L "$jar_url" -o "$JARS_DIR/$jar_name"; then
           # Remove old versions after successful download
-          find "$JARS_DIR" -type f -name "${repo_prefix}-*.jar" ! -name "$jar_name" -exec rm {} \;
+          old_jars=$(find "$JARS_DIR" -type f -iname "${repo_prefix}-*.jar" ! -iname "$jar_name")
+          if [ -n "$old_jars" ]; then
+            echo "$old_jars"
+            echo "$old_jars" | xargs rm -f
+          fi
           echo "Download successful."
           JAR_FILE="$JARS_DIR/$jar_name"
         else
           echo "Warning: Download failed. Checking for existing version..."
           # Try to find any existing version
-          JAR_FILE=$(find "$JARS_DIR" -maxdepth 1 -type f -name "${repo_prefix}-*.jar" | head -n1)
+          JAR_FILE=$(find "$JARS_DIR" -maxdepth 1 -type f -iname "${repo_prefix}-*.jar" | head -n1)
           if [ -z "$JAR_FILE" ]; then
             echo "Error: No local version available and download failed."
             exit 2
@@ -179,8 +183,7 @@ if [[ "$JAR_REPO" == */* ]]; then
     else
       # No JAR file found in latest release, try to use existing
       echo "Warning: No JAR file found in latest release."
-      repo_prefix=$(basename "$JAR_REPO")
-      JAR_FILE=$(find "$JARS_DIR" -maxdepth 1 -type f -name "${repo_prefix}-*.jar" | head -n1)
+      JAR_FILE=$(find "$JARS_DIR" -maxdepth 1 -type f -iname "${repo_prefix}-*.jar" | head -n1)
       if [ -z "$JAR_FILE" ]; then
         echo "Error: No local version available and could not fetch remote information."
         exit 2
