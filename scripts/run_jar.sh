@@ -99,11 +99,22 @@ mkdir -p "$JARS_DIR"
 JAR_REPO=""
 if [ -f "$REPOSITORIES_FILE" ]; then
   # Try exact match first
-  JAR_REPO=$(jq -r --arg name "$JAR_NAME" '.jar[$name] // empty' "$REPOSITORIES_FILE")
-  
+  JAR_REPO=$(jq -r --arg name "$JAR_NAME" '
+    .jar
+    | to_entries[]
+    | select(.key | ascii_downcase == ($name | ascii_downcase))
+    | .value
+  ' "$REPOSITORIES_FILE")
+
   if [ -z "$JAR_REPO" ] || [ "$JAR_REPO" = "null" ]; then
     # Try prefix match
-    matches=$(jq -r --arg prefix "$JAR_NAME" '.jar | to_entries[] | select(.key | startswith($prefix)) | .key' "$REPOSITORIES_FILE")
+    matches=$(jq -r --arg prefix "$JAR_NAME" '
+      .jar
+      | to_entries[]
+      | select(.key | ascii_downcase | startswith($prefix | ascii_downcase))
+      | .key
+    ' "$REPOSITORIES_FILE")
+    
     if [ -z "$matches" ]; then
       match_count=0
     else
