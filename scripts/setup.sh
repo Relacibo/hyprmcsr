@@ -10,7 +10,7 @@ TEMPLATE_PROFILE="$SCRIPT_DIR/../templates/default.profile.json"
 # Show help
 show_help() {
   cat << 'EOF'
-Usage: hyprmcsr init [options]
+Usage: hyprmcsr setup [options]
 
 Create a new hyprmcsr profile interactively.
 
