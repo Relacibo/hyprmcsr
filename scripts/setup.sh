@@ -23,9 +23,9 @@ Options:
   --help                      Show this help message
 
 Examples:
-  hyprmcsr init                         # Create profile interactively
-  hyprmcsr -h ranked init               # Create 'ranked' profile
-  hyprmcsr init --base-profile default  # Create new profile based on default
+  hyprmcsr setup                         # Create profile interactively
+  hyprmcsr -h ranked setup               # Create 'ranked' profile
+  hyprmcsr setup --base-profile default  # Create new profile based on default
 
 The script will interactively prompt for:
   - State Output File observation (wpstateout.txt)
