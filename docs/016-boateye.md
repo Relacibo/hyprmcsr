@@ -2,6 +2,9 @@
 
 For "Boat Eye", the Minecraft window needs to be stretched vertically, and you also need a separate zoomed-in OBS projection window. You can optionally change your "Cursor Speed" as well.
 
+## Obtain the overlay
+You might create an overlay with your favorite image editor or generate one with a tool e.g. [overlayGen](https://priffin.github.io/Pixel-Perfect-Tools/overlayGen.html) created by priffin.
+
 ## OBS Configuration
 
 See [OBS Setup](./013-obs-setup.md) for general instructions.  
