@@ -10,13 +10,21 @@ You might create an overlay with your favorite image editor or generate one with
 See [OBS Setup](./013-obs-setup.md) for general instructions.  
 Creating the Boat Eye OBS scene:
 
-1. **Create a new scene** in OBS, e.g., "BoatEyeScene".
-2. **Add a dedicated Game Capture source** that captures Minecraft to that scene.
-3. **Adjust the source:**
-   - **Position:** Centered
-   - **Size:** Set the bounding box to **half the width and half the height** of your monitor resolution (e.g., 960x540 for 1920x1080).
-   - **Alignment:** Centered
-4. **Project** this scene to a separate monitor if you like. Alternatively, press `mainMod + V` while hovering over the magnifier scene projection window to set it to floating. Then move or resize the window with `mainMod + LMB/RMB` and dragging.  
+1. Create a new scene in OBS (e.g. BoatEyeScene).
+2. Add a Game Capture source for Minecraft.
+3. Right click the source → **Scale Filtering** → select **Area**.
+4. Increase the width by 32× so it matches the overlay scale (each overlay line = 32 pixels).
+
+> **Example**:  
+> Tall Macro window: 384 × 16384  
+> Right click source → **Transform → Edit Transform**  
+> - **Width:** 12288
+> - **Height:** 10000  
+> (384 × 32 = 12288; the height is reduced to 10000 so the image is vertically squashed, making pixel offsets easier to read.)
+
+5. Press **Ctrl+D** to center the window.
+6. Add your overlay as an **Image Source** on top of the capture.
+7. **Project** this scene to a separate monitor if you like. Alternatively, press `mainMod + V` while hovering over the magnifier scene projection window to set it to floating. Then move or resize the window with `mainMod + LMB/RMB` and dragging.  
 Note: this only works if you’ve set it up that way in your `hyprland.conf`. If you are using "V" as a hotkey while playing, change this to something different.
 
 To ensure Boat Eye works correctly, the entire Minecraft window must be captured. The recommended way to achieve this on Linux is by using [obs-vkcapture](https://github.com/nowrep/obs-vkcapture), as it reliably records the full game window, even while it is stretched vertically.
@@ -49,7 +57,7 @@ Example configuration in your [profile](004-configuration.md#profile-config-prof
 ## Mouse Sensitivity for Boat Eye
 
 A video explaining the settings:  
-[Boat Eye Setup Guide (YouTube) by osh](https://youtu.be/HcrrfsHrR_c?si=cBb7WcvToLk3ukHg)
+[Boat Eye Setup Guide (YouTube) by Montage](https://youtu.be/l1Z2t9e6Qko?si=M0Wj0HwR8vvN87H1)
 
 **To calculate the optimal pointer speed:**  
 Use this tool: [Pixel-Perfect-Tools/calc](https://priffin.github.io/Pixel-Perfect-Tools/calc.html)  
@@ -57,7 +65,7 @@ Note: The tool uses Windows cursor speed.
 
 ### Conversion Table: Windows → Linux
 
-This conversion table isn’t perfectly accurate. The libinput sensitivity values are only approximations, so you’ll likely need to fine-tune them yourself. `-0.96875` feels faster than Cursor Speed `1` on Windows, so you can try `sensitivity = -1` for Boat Eye. The accuracy of Boat Eye itself won’t be affected by sensitivity changes, but it’s still a good idea to get it as close as possible to your usual Windows cursor speed so your muscle memory carries over.
+This conversion table isn’t perfectly accurate. The libinput sensitivity values are only approximations, so you’ll likely need to fine-tune them yourself. The accuracy of Boat Eye itself won’t be affected by sensitivity changes, but it’s still a good idea to get it as close as possible to your usual Windows cursor speed so your muscle memory carries over.
 
 | Windows | xinput   | libinput        |
 |---------|----------|-----------------|
