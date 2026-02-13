@@ -68,6 +68,13 @@ hyprctl --batch "
   keyword input:sensitivity $TARGET_SENSITIVITY;
   dispatch focuswindow address:$WINDOW_ADDRESS
 "
+LAST_MONITOR_FILE="$STATE_DIR/last_monitor"
+
+if [ -n "$MONITOR_ID" ]; then
+  read -r LAST_MONITOR 2>/dev/null < "$LAST_MONITOR_FILE" || LAST_MONITOR=""
+  [ "$LAST_MONITOR" != "$MONITOR_ID" ] && echo "$MONITOR_ID" > "$LAST_MONITOR_FILE"
+fi
+
 
 # Run onEnter: run all commands in array
 export WINDOW_ADDRESS HYPRMCSR_PROFILE PRISM_INSTANCE_ID MINECRAFT_ROOT PREVIOUS_MODE NEXT_MODE

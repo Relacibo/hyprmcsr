@@ -1,20 +1,21 @@
 #!/bin/bash
-# Centers the cursor on the monitor where the Minecraft window is located
+# Cursor centering for Minecraft window
+
 export SCRIPT_DIR=$(dirname "${BASH_SOURCE[0]}")
 source "$SCRIPT_DIR/../util/env_runtime.sh"
 
-# Get the monitor ID (numeric) of the window
-MONITOR_ID=$(hyprctl clients -j | jq -r ".[] | select(.address==\"$WINDOW_ADDRESS\") | .monitor")
+LAST_MONITOR_FILE="$STATE_DIR/last_monitor"
 
-# Get the geometry and scale of the monitor based on the ID
-read X Y WIDTH HEIGHT SCALE <<<$(hyprctl monitors -j | jq -r ".[] | select(.id==$MONITOR_ID) | \"\(.x) \(.y) \(.width) \(.height) \(.scale)\"")
+# Try cached monitor first
+if [ -f "$LAST_MONITOR_FILE" ]; then
+  MONITOR_ID=$(cat "$LAST_MONITOR_FILE")
+else
+  MONITOR_ID=$(hyprctl clients -j | jq -r ".[] | select(.address==\"$WINDOW_ADDRESS\") | .monitor")
+  [ -n "$MONITOR_ID" ] && echo "$MONITOR_ID" > "$LAST_MONITOR_FILE"
+fi
 
-# Calculate effective dimensions (divided by scale)
-# Use awk for float division
-EFFECTIVE_WIDTH=$(awk "BEGIN {printf \"%.0f\", $WIDTH / $SCALE}")
-EFFECTIVE_HEIGHT=$(awk "BEGIN {printf \"%.0f\", $HEIGHT / $SCALE}")
+CACHE="$STATE_DIR/monitor_center_$MONITOR_ID"
+[ ! -f "$CACHE" ] && exit 0
 
-CENTER_X=$((X + EFFECTIVE_WIDTH / 2))
-CENTER_Y=$((Y + EFFECTIVE_HEIGHT / 2))
-
+read CENTER_X CENTER_Y < "$CACHE"
 hyprctl -q dispatch movecursor "$CENTER_X" "$CENTER_Y"
