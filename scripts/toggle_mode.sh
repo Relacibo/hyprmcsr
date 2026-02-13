@@ -49,9 +49,9 @@ fi
 # Update state
 echo "$NEXT_MODE" > "$STATE_FILE"
 
+MONITOR_ID=$(hyprctl clients -j | jq -r ".[] | select(.address==\"$WINDOW_ADDRESS\") | .monitor")
 # Handle fullscreen size
 if [ "$TARGET_SIZE" = "fullscreen" ]; then
-  MONITOR_ID=$(hyprctl clients -j | jq -r ".[] | select(.address==\"$WINDOW_ADDRESS\") | .monitor")
   read WIDTH HEIGHT SCALE <<<$(hyprctl monitors -j | jq -r ".[] | select(.id==$MONITOR_ID) | \"\(.width) \(.height) \(.scale)\"")
   TARGET_WIDTH=$(awk "BEGIN {printf \"%.0f\", $WIDTH / $SCALE}")
   TARGET_HEIGHT=$(awk "BEGIN {printf \"%.0f\", $HEIGHT / $SCALE}")
