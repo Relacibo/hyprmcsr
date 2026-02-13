@@ -51,5 +51,7 @@ if [ -f "$STATE_DIR/observe_state.pid" ]; then
 fi
 
 
-# Only remove state files, but keep prism_instance_id and minecraft_root for session persistence
-find "$STATE_DIR" -mindepth 1 -maxdepth 1 ! -name 'prism_instance_id' ! -name 'minecraft_root' -exec rm -rf {} +
+# Remove state directory if it's not empty
+if [ -n "$STATE_DIR" ]; then
+  rm -rf "$STATE_DIR"
+fi

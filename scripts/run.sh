@@ -212,7 +212,7 @@ if [ "$AUTOLAUNCH" = "true" ] && [ -n "$PRISM_INSTANCE_IDS" ]; then
   if [ -n "$LAUNCH_INSTANCE_ID" ]; then
     # Small delay to ensure onStart commands have started
     sleep 2
-    echo "Autolaunching Minecraft instance: $LAUNCH_INSTANCE_ID"
+    echo "[hyprmcsr] Autolaunching Minecraft instance: $LAUNCH_INSTANCE_ID"
     $PRISMLAUNCHER -l "$LAUNCH_INSTANCE_ID" >> "$LOG_DIR/prismlauncher.log" 2>&1 &
   fi
 fi
