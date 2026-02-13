@@ -229,6 +229,15 @@ if [ "$OBSERVE_STATE" = "true" ]; then
   )
 fi
 
+hyprctl monitors -j |
+jq -r '
+  .[] |
+  "\(.id) \(.x + (.width/.scale/2)) \(.y + (.height/.scale/2))"
+' | while read id cx cy; do
+  echo "$cx $cy" > "$STATE_DIR/monitor_center_$id"
+done
+
+
 # Sudo handling depending on requireSudo
 # (leave only the refresh/trap logic here)
 auto_destroy=$(jq -r '.autoDestroyOnExit // true' "$PROFILE_CONFIG_FILE")

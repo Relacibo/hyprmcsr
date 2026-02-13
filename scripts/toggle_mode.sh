@@ -49,9 +49,9 @@ fi
 # Update state
 echo "$NEXT_MODE" > "$STATE_FILE"
 
+MONITOR_ID=$(hyprctl clients -j | jq -r ".[] | select(.address==\"$WINDOW_ADDRESS\") | .monitor")
 # Handle fullscreen size
 if [ "$TARGET_SIZE" = "fullscreen" ]; then
-  MONITOR_ID=$(hyprctl clients -j | jq -r ".[] | select(.address==\"$WINDOW_ADDRESS\") | .monitor")
   read WIDTH HEIGHT SCALE <<<$(hyprctl monitors -j | jq -r ".[] | select(.id==$MONITOR_ID) | \"\(.width) \(.height) \(.scale)\"")
   TARGET_WIDTH=$(awk "BEGIN {printf \"%.0f\", $WIDTH / $SCALE}")
   TARGET_HEIGHT=$(awk "BEGIN {printf \"%.0f\", $HEIGHT / $SCALE}")
@@ -68,6 +68,13 @@ hyprctl --batch "
   keyword input:sensitivity $TARGET_SENSITIVITY;
   dispatch focuswindow address:$WINDOW_ADDRESS
 "
+LAST_MONITOR_FILE="$STATE_DIR/last_monitor"
+
+if [ -n "$MONITOR_ID" ]; then
+  read -r LAST_MONITOR 2>/dev/null < "$LAST_MONITOR_FILE" || LAST_MONITOR=""
+  [ "$LAST_MONITOR" != "$MONITOR_ID" ] && echo "$MONITOR_ID" > "$LAST_MONITOR_FILE"
+fi
+
 
 # Run onEnter: run all commands in array
 export WINDOW_ADDRESS HYPRMCSR_PROFILE PRISM_INSTANCE_ID MINECRAFT_ROOT PREVIOUS_MODE NEXT_MODE
