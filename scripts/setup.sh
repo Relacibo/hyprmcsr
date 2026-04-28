@@ -419,7 +419,14 @@ else
 fi
 
 # Call audio splitter setup script in interactive mode
-"$SCRIPT_DIR/setup_audio_splitter.sh"
+echo ""
+read -p "Setup audio splitter? [y/N]: " setup_audio
+setup_audio="${setup_audio:-n}"
+if [[ "$setup_audio" =~ ^[Yy] ]]; then
+  "$SCRIPT_DIR/setup_audio_splitter.sh"
+else
+  echo "Skipping audio splitter setup."
+fi
 
 echo ""
 echo "Initialization complete. Configuration files are in $CONFIG_ROOT"

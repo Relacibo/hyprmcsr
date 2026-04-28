@@ -12,15 +12,6 @@ SPLIT_AUDIO_CONF="$PIPEWIRE_CONFIG_FOLDER/split-audio.conf"
 
 # Interactive mode if no arguments provided
 if [ $# -eq 0 ]; then
-  echo ""
-  read -p "Setup audio splitter? [y/N]: " setup_audio
-  setup_audio="${setup_audio:-n}"
-  
-  if [[ ! "$setup_audio" =~ ^[Yy] ]]; then
-    echo "Skipping audio splitter setup."
-    exit 0
-  fi
-  
   # Check current status
   if [ -f "$SPLIT_AUDIO_CONF" ]; then
     CURRENT_STATUS="enabled"
@@ -117,4 +108,12 @@ elif [ "$ACTION" = "disable" ]; then
     rm "$SPLIT_AUDIO_CONF"
     echo "split-audio.conf removed (audio splitter disabled)."
   fi
+fi
+
+echo ""
+read -p "Restart PipeWire now? [y/N]: " restart_pw
+restart_pw="${restart_pw:-n}"
+if [[ "$restart_pw" =~ ^[Yy] ]]; then
+  systemctl --user restart pipewire pipewire-pulse
+  echo "PipeWire restarted."
 fi
