@@ -57,6 +57,16 @@ if [ "$REQUIRE_SUDO" = "true" ]; then
   sudo -v
 fi
 
+# Clear stale persistent instance data if the stored window no longer exists
+WINDOW_ADDRESS_FILE="$STATE_DIR/window_address"
+if [ -f "$WINDOW_ADDRESS_FILE" ]; then
+  STORED_ADDRESS=$(cat "$WINDOW_ADDRESS_FILE")
+  if [ -n "$STORED_ADDRESS" ] && ! hyprctl clients -j | jq -e --arg addr "$STORED_ADDRESS" '.[] | select(.address == $addr)' >/dev/null 2>&1; then
+    echo "[hyprmcsr] Stored window address $STORED_ADDRESS no longer exists, clearing stale instance state"
+    rm -f "$WINDOW_ADDRESS_FILE" "$STATE_DIR/prism_instance_id" "$STATE_DIR/minecraft_root"
+  fi
+fi
+
 echo "default" > "$STATE_DIR/window_switcher_state"
 echo "$HYPRMCSR_PROFILE" > "$STATE_DIR/profile"
 

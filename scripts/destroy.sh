@@ -51,7 +51,13 @@ if [ -f "$STATE_DIR/observe_state.pid" ]; then
 fi
 
 
-# Remove state directory if it's not empty
+# Remove transient state files but preserve persistent instance data
+# (window_address, prism_instance_id, minecraft_root) so hyprmcsr can
+# reconnect to a still-running Minecraft window on next start.
 if [ -n "$STATE_DIR" ]; then
-  rm -rf "$STATE_DIR"
+  find "$STATE_DIR" -maxdepth 1 -type f \
+    ! -name "window_address" \
+    ! -name "prism_instance_id" \
+    ! -name "minecraft_root" \
+    -delete
 fi
