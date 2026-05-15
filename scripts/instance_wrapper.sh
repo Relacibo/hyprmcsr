@@ -112,11 +112,11 @@ source "$SCRIPT_DIR/../util/export_env.sh"
 
   if [ -n "$window_address" ]; then
     hyprctl -q --batch "
-      dispatch setprop address:$window_address noanim 1;
-      dispatch setprop address:$window_address norounding 1;
+      dispatch setprop address:$window_address no_anim true;
+      dispatch setprop address:$window_address rounding 0;
       dispatch focuswindow address:$window_address;
       dispatch setfloating address:$window_address;
-      dispatch centerwindow address:$window_address;
+      dispatch centerwindow;
     "
   fi
 

@@ -13,6 +13,7 @@
 ### Changed
 - **Renamed command**: `hyprmcsr init` → `hyprmcsr setup` (better describes interactive configuration)
 - All documentation updated to use `setup` instead of `init`
+- **Hyprland 0.55 compatibility**: Updated `setprop` calls in `instance_wrapper.sh` to use new property names (`no_anim` instead of `noanim`, `rounding 0` instead of `norounding 1`). Also removed obsolete `address:` argument from `centerwindow` dispatch.
 
 ### Deprecated
 - `minecraft.prismPrefix` is now deprecated in favor of `minecraft.prismLauncher.prismPrefix` and `minecraft.prismLauncher.flatpak`
