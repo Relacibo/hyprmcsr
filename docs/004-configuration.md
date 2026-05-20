@@ -30,8 +30,8 @@ See [example.default.profile.json](../example.default.profile.json) for a full e
 
 ### Key fields
 
-- **onStart**: Array of shell commands/scripts to run in the background when starting (e.g. starting helper tools, OBS, input-remapper, etc.). See [Command Syntax](#command-syntax-string-or-object)
-- **onDestroy**: Array of shell commands/scripts to run in the background when stopping (e.g. cleanup, notifications, killing helper tools, stopping input-remapper). See [Command Syntax](#command-syntax-string-or-object)
+- **onStart**: Array of shell commands/scripts to run in the background when starting (e.g. starting helper tools, OBS, Kanata, etc.). See [Command Syntax](#command-syntax-string-or-object)
+- **onDestroy**: Array of shell commands/scripts to run in the background when stopping (e.g. cleanup, notifications, killing helper tools, stopping Kanata). See [Command Syntax](#command-syntax-string-or-object)
 - **onToggleBinds**: Array of shell commands/scripts to run whenever binds are toggled (e.g. notifications, custom actions).  
   The environment variable `$BINDS_ENABLED` is set to `1` (enabled) or `0` (disabled). See [Command Syntax](#command-syntax-string-or-object)
 - **binds.toggleBinds**: Key combination to toggle binds.
@@ -63,7 +63,7 @@ See [example.default.profile.json](../example.default.profile.json) for a full e
 - **minecraft.onStart**: Array of shell commands/scripts to run after Minecraft has started (executed by `instance_wrapper.sh`). See [Command Syntax](#command-syntax-string-or-object)
 - **downloadRoot**: (Optional) Custom download root for JARs. If not set, defaults to `<repo>/download`.
 - **autoDestroyOnExit**: If true, runs cleanup automatically when the main script exits.
-- **requireSudo**: If true, you will be prompted for sudo at start and it will be kept alive for all commands in `onStart`/`onDestroy` (useful for input-remapper or other tools needing root).
+-- **requireSudo**: If true, you will be prompted for sudo at start and it will be kept alive for all commands in `onStart`/`onDestroy` (useful for Kanata or other tools needing root).
 - **minecraft.prismLauncher**:  
   Configure PrismLauncher wrapper command, instance ID, and automatic launching.  
   
@@ -164,6 +164,30 @@ See [example.default.profile.json](../example.default.profile.json) for a full e
 
 **Tip:**  
 You can use variables like `$HYPRMCSR`, `$SCRIPT_DIR`, `$PROFILE`, `$HYPRMCSR_PROFILE`, `$PREVIOUS_MODE`, `$NEXT_MODE`, `$WINDOW_ADDRESS`, `$PRISM_INSTANCE_ID`, `$MINECRAFT_ROOT`, and `$BINDS_ENABLED` in your shell commands in `onStart`, `onDestroy`, `onEnter`, `onExit`, `onToggleBinds`, `minecraft.onStart`, and custom binds.
+
+### Example `onStart` / `onDestroy`
+The following example is taken from the bundled `example.default.profile.json`. It shows how to start helper tools and Kanata-style input remapping when the session launches, and stop it when the session ends.
+
+```json
+"requireSudo": true,
+"onStart": [
+  {
+    "if": "[ \"$PROFILE\" = \"coop\" ]",
+    "exec": "JAR_WORKDIR=\"$HOME/.config/NinjaLink\" $HYPRMCSR run-jar NinjaLink"
+  },
+  "$HYPRMCSR run-jar Ninjabrain-Bot",
+  {
+    "exec": "obs --startreplaybuffer",
+    "if": "! pgrep -x obs >/dev/null"
+  },
+  "kanata --cfg ~/.config/kanata/kanata.kbd & echo $! > \"$STATE_DIR/kanata_mcsr.pid\""
+],
+"onDestroy": [
+  "kill $(cat \"$STATE_DIR/kanata_mcsr.pid\") >/dev/null 2>&1 || true"
+],
+```
+
+`requireSudo` is useful when your input remapping tool or other startup commands need root access. hyprmcsr will prompt once at startup and keep the sudo session alive for `onStart` and `onDestroy`.
 
 ## Command Syntax: String or Object
 
