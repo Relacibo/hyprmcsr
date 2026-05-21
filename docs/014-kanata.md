@@ -71,7 +71,7 @@ pkill -f '^kanata ' || true
 
 ## Example Kanata keyboard configuration
 
-A practical non-US layout example is the user's own `~/.config/kanata/kanata.kbd` configuration. It defines `deflocalkeys-linux` for the German physical keys and a matching `defsrc`/`deflayer` setup for both default and MCSR modes.
+For an excample how to setup a "QWERTZ"-keyboard see following `~/.config/kanata/kanata.kbd` configuration. It defines `deflocalkeys-linux` for the German physical keys and a matching `defsrc`/`deflayer` setup for both default and MCSR modes.
 
 To discover Linux input codes for custom keys, use `evtest` and press the physical key while monitoring the event output.
 
