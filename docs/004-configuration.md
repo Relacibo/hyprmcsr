@@ -63,7 +63,7 @@ See [example.default.profile.json](../example.default.profile.json) for a full e
 - **minecraft.onStart**: Array of shell commands/scripts to run after Minecraft has started (executed by `instance_wrapper.sh`). See [Command Syntax](#command-syntax-string-or-object)
 - **downloadRoot**: (Optional) Custom download root for JARs. If not set, defaults to `<repo>/download`.
 - **autoDestroyOnExit**: If true, runs cleanup automatically when the main script exits.
--- **requireSudo**: If true, you will be prompted for sudo at start and it will be kept alive for all commands in `onStart`/`onDestroy` (useful for Kanata or other tools needing root).
+   **requireSudo**: If true, you will be prompted for sudo at start and it will be kept alive for all commands in `onStart`/`onDestroy` (useful for Kanata or other tools needing root).
 - **minecraft.prismLauncher**:  
   Configure PrismLauncher wrapper command, instance ID, and automatic launching.  
   
