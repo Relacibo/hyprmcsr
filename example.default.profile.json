@@ -7,12 +7,14 @@
       "exec": "JAR_WORKDIR=\"$HOME/.config/NinjaLink\" $HYPRMCSR run-jar NinjaLink"
     },
     "$HYPRMCSR run-jar Ninjabrain-Bot",
-    "obs --startreplaybuffer",
-    "sudo input-remapper-control --command start --device \"Ducky Ducky One 3 TKL \" --preset \"MCSR\"",
-    "input-remapper-control --command start --device \"Razer Razer Viper V3 Pro\" --preset \"MCSR\""
+    {
+      "exec": "obs --startreplaybuffer",
+      "if": "! pgrep -x obs >/dev/null"
+    },
+    "kanata --cfg ~/.config/kanata/kanata.kbd & echo $! > \"$STATE_DIR/kanata_mcsr.pid\""
   ],
   "onDestroy": [
-    "sudo input-remapper-control --command stop-all"
+    "kill $(cat \"$STATE_DIR/kanata_mcsr.pid\") >/dev/null 2>&1 || true"
   ],
   "onToggleBinds": [
     "# notify-send \"Binds toggled: $BINDS_ENABLED\""

@@ -61,14 +61,19 @@ awk -v nfields="$nfields" \
   in_section {
     match($0, /^([^=]+)=/, m)
     curr = m[1]
+    if ((curr in seen_fields) && seen_fields[curr]) {
+      next
+    }
     while (i <= nfields && fields[i] < curr) {
       if (modes[i]=="override") print fields[i]"="values[i];
       else if (modes[i]=="ensure-init") print fields[i]"=";
+      seen_fields[fields[i]] = 1
       i++;
     }
     if (i <= nfields && fields[i] == curr) {
       if (modes[i]=="override") print fields[i]"="values[i];
       else if (modes[i]=="ensure-init") print $0;
+      seen_fields[curr] = 1
       i++;
       next;
     }

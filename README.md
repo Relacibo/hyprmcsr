@@ -22,7 +22,7 @@ The toolkit leverages [Hyprland](https://hyprland.org/) (Wayland compositor), Pi
 - Configurable keybinds and window sizes
 - Multiple profiles support
 - Audio splitting (game / Discord)
-- Automated start of all necessary tools when you begin a speedrunning session, including Minecraft, input remapper, OBS, and your speedrun helper tools
+- Automated start of all necessary tools when you begin a speedrunning session, including Minecraft, Kanata / input remapping, OBS, and your speedrun helper tools
 - Automated closing and cleanup after ending your session
 
 All core functionality is controlled via the `hyprmcsr` CLI, which manages setup, teardown, and automation for your speedrun sessions.

@@ -54,7 +54,10 @@ fi
 # Check for sudo requirement early
 REQUIRE_SUDO=$(jq -r '.requireSudo // false' "$PROFILE_CONFIG_FILE")
 if [ "$REQUIRE_SUDO" = "true" ]; then
-  sudo -v
+  if ! sudo -v; then
+    echo "sudo is required and authentication failed."
+    exit 1
+  fi
 fi
 
 # Clear stale persistent instance data if the stored window no longer exists
@@ -148,7 +151,7 @@ if [ "$AUTO_REPLACE" = "true" ] && [ -n "$WRAPPER_CMD" ]; then
       [ -z "$INSTANCE_ID" ] && continue
       INSTANCE_CONFIG="$PRISM_PREFIX/instances/$INSTANCE_ID/instance.cfg"
       if [ -f "$INSTANCE_CONFIG" ]; then
-        CURRENT_WRAPPER=$(grep "^WrapperCommand=" "$INSTANCE_CONFIG" | cut -d'=' -f2-)
+        CURRENT_WRAPPER=$(grep "^WrapperCommand=" "$INSTANCE_CONFIG" | head -n1 | cut -d'=' -f2-)
         if [ "$CURRENT_WRAPPER" != "$WRAPPER_CMD" ]; then
           NEEDS_UPDATE=true
           break
@@ -254,16 +257,22 @@ auto_destroy=$(jq -r '.autoDestroyOnExit // true' "$PROFILE_CONFIG_FILE")
 
 if [ "$REQUIRE_SUDO" = "true" ]; then
   if [ "$auto_destroy" = "true" ]; then
-    while true; do sudo -v; sleep 60; done &
+    while true; do
+      sleep 60
+      if ! sudo -v; then
+        echo "sudo authentication expired; exiting."
+        kill "$$" 2>/dev/null || true
+        break
+      fi
+    done &
     SUDO_REFRESH_PID=$!
     trap 'kill $SUDO_REFRESH_PID 2>/dev/null; sudo -v; $SCRIPT_DIR/destroy.sh; exit' SIGINT SIGTERM
+    trap 'kill $SUDO_REFRESH_PID 2>/dev/null' EXIT
     echo "Press Ctrl+C to exit. On exit, destroy.sh will be executed automatically."
     sleep infinity
   fi
-else
-  if [ "$auto_destroy" = "true" ]; then
-    trap '$SCRIPT_DIR/destroy.sh; exit' SIGINT SIGTERM
-    echo "Press Ctrl+C to exit. On exit, destroy.sh will be executed automatically."
-    sleep infinity
-  fi
+elif [ "$auto_destroy" = "true" ]; then
+  trap '$SCRIPT_DIR/destroy.sh; exit' SIGINT SIGTERM
+  echo "Press Ctrl+C to exit. On exit, destroy.sh will be executed automatically."
+  sleep infinity
 fi

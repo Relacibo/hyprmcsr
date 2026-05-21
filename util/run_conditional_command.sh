@@ -27,20 +27,20 @@ if echo "$INPUT" | jq -e 'type == "object"' >/dev/null 2>&1; then
   if [ -n "$exec_cmd" ]; then
     if [ -n "$if_cond" ]; then
       if bash -c "$if_cond"; then
-        eval "$exec_cmd" || echo "[hyprmcsr] Command failed: $exec_cmd" >&2 &
+        setsid bash -lc "$exec_cmd" >/dev/null 2>&1 &
       fi
     else
-      eval "$exec_cmd" || echo "[hyprmcsr] Command failed: $exec_cmd" >&2 &
+      setsid bash -lc "$exec_cmd" >/dev/null 2>&1 &
     fi
   fi
 else
   # Check if the input is a valid JSON string and extract the value if possible
   plain_cmd=$(echo "$INPUT" | jq -r 'if type=="string" then . else empty end' 2>/dev/null)
   if [ -n "$plain_cmd" ]; then
-    eval "$plain_cmd" || echo "[hyprmcsr] Command failed: $plain_cmd" >&2 &
+    setsid bash -lc "$plain_cmd" >/dev/null 2>&1 &
   else
     # Fallback: execute the input directly if it is not a valid JSON string
     [ -z "$INPUT" ] && exit 0
-    eval $INPUT || echo "[hyprmcsr] Command failed: $INPUT" >&2 &
+    setsid bash -lc "$INPUT" >/dev/null 2>&1 &
   fi
 fi

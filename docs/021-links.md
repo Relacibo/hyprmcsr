@@ -5,7 +5,7 @@
 - [PrismLauncher](https://prismlauncher.org/)
 - [OBS Studio](https://obsproject.com/)
 - [obs-vkcapture](https://github.com/nowrep/obs-vkcapture)
-- [input-remapper](https://github.com/sezanzeb/input-remapper)
+- [Kanata](https://github.com/jtroo/kanata)
 - [obs-cli](https://github.com/pschmitt/obs-cli)
 - [PipeWire](https://pipewire.org/)
 - [Ninjabrain-Bot](https://github.com/Ninjabrain1/Ninjabrain-Bot)
