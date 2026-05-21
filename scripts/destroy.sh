@@ -26,7 +26,7 @@ jq -r '.binds.modeSwitch | to_entries[] | "\(.key) \(.value)"' "$PROFILE_CONFIG_
   hyprctl -q keyword unbind $key
 done
 
-# Run onDestroy commands from profile config (all in background, with all relevant environment variables)
+# Run onDestroy commands from profile config and wait for them before cleanup
 LOG_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/hyprmcsr/logs"
 mkdir -p "$LOG_DIR"
 on_destroy_cmds=$(jq -c '.onDestroy[]?' "$PROFILE_CONFIG_FILE")
@@ -35,7 +35,7 @@ if [ -n "$on_destroy_cmds" ]; then
     export PROFILE HYPRMCSR_PROFILE HYPRMCSR STATE_DIR PRISM_PREFIX MINECRAFT_ROOT PRISM_INSTANCE_ID WINDOW_ADDRESS
     index=0
     while IFS= read -r cmd; do
-      "$SCRIPT_DIR/../util/run_conditional_command.sh" "$cmd" "$LOG_DIR/onDestroy${index}.log"
+      HYPRMCSR_RUN_CONDITIONAL_IN_BACKGROUND=0 "$SCRIPT_DIR/../util/run_conditional_command.sh" "$cmd" "$LOG_DIR/onDestroy${index}.log"
       index=$((index + 1))
     done <<< "$on_destroy_cmds"
   )

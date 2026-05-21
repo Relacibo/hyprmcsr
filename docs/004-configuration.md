@@ -31,7 +31,7 @@ See [example.default.profile.json](../example.default.profile.json) for a full e
 ### Key fields
 
 - **onStart**: Array of shell commands/scripts to run in the background when starting (e.g. starting helper tools, OBS, input-remapper, etc.). See [Command Syntax](#command-syntax-string-or-object)
-- **onDestroy**: Array of shell commands/scripts to run in the background when stopping (e.g. cleanup, notifications, killing helper tools, stopping input-remapper). See [Command Syntax](#command-syntax-string-or-object)
+- **onDestroy**: Array of shell commands/scripts to run when stopping (e.g. cleanup, notifications, killing helper tools, stopping input-remapper). They run in order and finish before transient state cleanup. See [Command Syntax](#command-syntax-string-or-object)
 - **onToggleBinds**: Array of shell commands/scripts to run whenever binds are toggled (e.g. notifications, custom actions).  
   The environment variable `$BINDS_ENABLED` is set to `1` (enabled) or `0` (disabled). See [Command Syntax](#command-syntax-string-or-object)
 - **binds.toggleBinds**: Key combination to toggle binds.
