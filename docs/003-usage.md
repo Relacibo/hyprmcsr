@@ -52,7 +52,7 @@ hyprmcsr run
 ```
 
 - On first run, this will automatically create configuration files from the example templates in `~/.config/hyprmcsr/`
-- Sets up keybinds, input remapper, and environment.
+- Sets up keybinds, Kanata / input remapping, and environment.
 - Automatically sets the `instance_wrapper.sh` as the "WrapperCommand" in your PrismLauncher instance config.
 - You can restart Minecraft yourself, if it crashes via PrismLauncher (GUI or CLI).
 - All post-launch actions (window handling, audio, etc.) are now handled by `instance_wrapper.sh` after Minecraft starts.
@@ -64,15 +64,15 @@ hyprmcsr -p coop run
 ```
 
 > **Important:**  
-> Do **not** press any keys or mouse buttons while input-remapper is applying or removing remaps!  
+> Do **not** press any keys or mouse buttons while Kanata or your input remapping tool is applying or removing remaps!  
 > Otherwise, unexpected errors or malfunctions with your input devices may occur.
 
-## Remove keybinds and stop input remapper
+## Remove keybinds and stop Kanata / input remapping
 
 ```bash
 hyprmcsr destroy
 ```
-- Removes all keybinds and stops input-remapper.
+- Removes all keybinds and stops Kanata or your configured input remapping tool.
 - Calls the scripts in `onDestroy` in your profile config.
 - Will be automatically called on default, but also can be turned off.
 

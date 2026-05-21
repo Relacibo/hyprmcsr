@@ -10,7 +10,7 @@
 | **Window Manager Integration** | Hyprland (Wayland) | N/A (Windows)         | N/A, i3 recommended (X11)    | N/A (Wayland) |
 | **Automated Window Management** | Yes              | Yes                  | Yes               | Yes               |
 | **Audio Splitting**             | Pipewire, auto    | Yes (Windows)        | Manual            | Pipewire, manual  |
-| **Input Remapping**             | Input Remapper (user config) | Built-in (Jingle) | Manual            | Manual            |
+| **Input Remapping**             | Kanata (user config)         | Built-in (Jingle) | Manual            | Manual            |
 | **OBS Integration**             | With third party tools | Yes (auto scene)  | No                | No                |
 | **Mod/Tool Auto-Download**      | Yes              | No                   | No                | No                |
 | **Profile System**              | Yes (JSON)        | Yes (YAML)           | No                | No                |
@@ -33,5 +33,5 @@
 **Note:**  
 - Jingle is a Windows-only tool.  
 - Resetti and Jingle are launcher agnostic (work with any Minecraft launcher), while hyprmcsr and Waywall require PrismLauncher.
-- hyprmcsr automates more setup steps (audio, window, mods) but expects you to configure input-remapper yourself.
+- hyprmcsr automates more setup steps (audio, window, mods) but expects you to configure Kanata (input remapping) yourself.
 - Both hyprmcsr and Waywall must be set as wrapper commands in PrismLauncher. Waywall requires a patched GLFW (not Minecraft itself); you can set this as a custom GLFW in PrismLauncher.

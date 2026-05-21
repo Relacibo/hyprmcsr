@@ -24,33 +24,33 @@ fi
 run_exec_command() {
   local cmd="$1"
   if [ "$RUN_IN_BACKGROUND" = "0" ]; then
-    eval "$cmd" || echo "[hyprmcsr] Command failed: $cmd" >&2
+    bash -lc "$cmd" || echo "[hyprmcsr] Command failed: $cmd" >&2
   else
-    ( eval "$cmd" || echo "[hyprmcsr] Command failed: $cmd" >&2 ) &
+    # run in background: Use setsid for decoupling, errors go to stderr if LOG_FILE is not defined
+    if [ -n "$LOG_FILE" ]; then
+      setsid bash -lc "$cmd" &
+    else
+      setsid bash -lc "$cmd" >/dev/null 2>&1 &
+    fi
   fi
 }
 
-# Check if input is a JSON object (idiomatic with jq)
-if echo "$INPUT" | jq -e 'type == "object"' >/dev/null 2>&1; then
-  exec_cmd=$(echo "$INPUT" | jq -r '.exec // empty')
-  if_cond=$(echo "$INPUT" | jq -r '.if // empty')
-  if [ -n "$exec_cmd" ]; then
-    if [ -n "$if_cond" ]; then
-      if bash -c "$if_cond"; then
-        run_exec_command "$exec_cmd"
-      fi
-    else
-      run_exec_command "$exec_cmd"
-    fi
-  fi
-else
-  # Check if the input is a valid JSON string and extract the value if possible
-  plain_cmd=$(echo "$INPUT" | jq -r 'if type=="string" then . else empty end' 2>/dev/null)
-  if [ -n "$plain_cmd" ]; then
-    run_exec_command "$plain_cmd"
-  else
-    # Fallback: execute the input directly if it is not a valid JSON string
-    [ -z "$INPUT" ] && exit 0
-    run_exec_command "$INPUT"
-  fi
+# 1. extract command (object -> string -> raw fallback)
+EXEC_CMD=$(echo "$INPUT" | jq -e -r '
+  if type == "object" then .exec 
+  elif type == "string" then . 
+  else empty end' 2>/dev/null) || EXEC_CMD="$INPUT"
+
+# Falls Input {} war oder komplett leer ist
+[ -z "$EXEC_CMD" ] || [ "$EXEC_CMD" = "null" ] && exit 0
+
+# 2. Extract condition script (Ohne -e, damit leere Werte nicht crashen)
+IF_COND=$(echo "$INPUT" | jq -r 'if type == "object" then .if // "true" else "true" end' 2>/dev/null || echo "true")
+
+# Falls im JSON ein leeres "if": "" stand, ebenfalls auf "true" setzen
+[ -z "$IF_COND" ] || [ "$IF_COND" = "null" ] && IF_COND="true"
+
+# 3. Execute
+if bash -c "$IF_COND"; then
+  run_exec_command "$EXEC_CMD"
 fi
