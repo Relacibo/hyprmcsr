@@ -93,7 +93,7 @@ To discover Linux input codes for custom keys, use `evtest` and press the physic
   -    53
 )
 
-defsrc
+(defsrc
   esc  f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11  f12
   ^    1    2    3    4    5    6    7    8    9    0    ß    ´    bspc
   tab  q    w    e    r    t    z    u    i    o    p    ü    +    ret
@@ -104,7 +104,7 @@ defsrc
   up   left down rght
 )
 
-deflayer default
+(deflayer default
   esc  f1   f2   f3   f4   f5   f6   f7   @tog_on f9 f10 f11  f12
   ^    1    2    3    4    5    6    7    8    9    0    ß    ´    bspc
   tab  q    w    e    r    t    z    u    i    o    p    ü    +    ret
@@ -115,7 +115,7 @@ deflayer default
   up   left down rght
 )
 
-deflayer mcsr
+(deflayer mcsr
   esc  ret  ret  f3   ret  f5   f6   f7   @tog_off f9 f4 f11  f12
   ^    1    2    3    4    5    6    7    8    9    0    ß    ´    bspc
   tab  q    w    e    r    f16  z    u    i    o    p    ü    +    ret
@@ -126,12 +126,12 @@ deflayer mcsr
   up   f19  f14  f23
 )
 
-defalias
+(defalias
   tog_on     (layer-switch mcsr)
   tog_off    (layer-switch default)
   b_fork     (fork b ret (lsft))
 )
 ```
-This is a concrete German-layout example you can use as a model for your own Kanata config.
+This is a concrete "QWERTZ" layout example you can use as a model for your own Kanata config.
 
 The `@tog_on` / `@tog_off` aliases can be mapped to a key like `F8` if you want to toggle the MCSR layout on and off.
