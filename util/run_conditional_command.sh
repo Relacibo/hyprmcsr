@@ -26,7 +26,7 @@ run_exec_command() {
   if [ "$RUN_IN_BACKGROUND" = "0" ]; then
     eval "$cmd" || echo "[hyprmcsr] Command failed: $cmd" >&2
   else
-    eval "$cmd" || echo "[hyprmcsr] Command failed: $cmd" >&2 &
+    ( eval "$cmd" || echo "[hyprmcsr] Command failed: $cmd" >&2 ) &
   fi
 }
 
