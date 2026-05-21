@@ -33,9 +33,10 @@ on_destroy_cmds=$(jq -c '.onDestroy[]?' "$PROFILE_CONFIG_FILE")
 if [ -n "$on_destroy_cmds" ]; then
   (
     export PROFILE HYPRMCSR_PROFILE HYPRMCSR STATE_DIR PRISM_PREFIX MINECRAFT_ROOT PRISM_INSTANCE_ID WINDOW_ADDRESS
+    export HYPRMCSR_RUN_CONDITIONAL_IN_BACKGROUND=0
     index=0
     while IFS= read -r cmd; do
-      HYPRMCSR_RUN_CONDITIONAL_IN_BACKGROUND=0 "$SCRIPT_DIR/../util/run_conditional_command.sh" "$cmd" "$LOG_DIR/onDestroy${index}.log"
+      "$SCRIPT_DIR/../util/run_conditional_command.sh" "$cmd" "$LOG_DIR/onDestroy${index}.log"
       index=$((index + 1))
     done <<< "$on_destroy_cmds"
   )
