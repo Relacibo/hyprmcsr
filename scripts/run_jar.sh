@@ -89,9 +89,21 @@ fi
 # Download root, read from profile config if present, else default
 source "$SCRIPT_DIR/../util/env_core.sh"
 DOWNLOAD_ROOT=$(jq -r '.downloadRoot // empty' "$PROFILE_CONFIG_FILE")
+
 if [ -z "$DOWNLOAD_ROOT" ] || [ "$DOWNLOAD_ROOT" = "null" ]; then
-  DOWNLOAD_ROOT=$(realpath "$SCRIPT_DIR/../download")
+  # Default path is active
+  DOWNLOAD_ROOT="${XDG_DATA_HOME:-$HOME/.local/share}/hyprmcsr/downloads"
+  
+  # Only migrate from legacy repo root if we are actually using the default path
+  LEGACY_REPO_JARS_DIR=$(realpath "$SCRIPT_DIR/../download/jar" 2>/dev/null)
+  if [ -d "$LEGACY_REPO_JARS_DIR" ]; then
+    echo "Migrating downloaded JARs from legacy repository root to $DOWNLOAD_ROOT/jar..."
+    mkdir -p "$DOWNLOAD_ROOT/jar"
+    mv "$LEGACY_REPO_JARS_DIR"/* "$DOWNLOAD_ROOT/jar/" 2>/dev/null
+    rmdir "$LEGACY_REPO_JARS_DIR" 2>/dev/null
+  fi
 fi
+
 JARS_DIR="$DOWNLOAD_ROOT/jar"
 mkdir -p "$JARS_DIR"
 
@@ -215,6 +227,6 @@ fi
 # Determine working directory
 WORKDIR="${JAR_WORKDIR:-/tmp/hyprmcsr-jar}"
 mkdir -p "$WORKDIR"
-cd "$WORKDIR"
+cd "$WORKDIR" || exit 1
 
 java -jar "$JAR_FILE" "$@"
