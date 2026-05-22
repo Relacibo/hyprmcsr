@@ -11,7 +11,13 @@ REPOSITORIES_FILE="$CONFIG_ROOT/repositories.json"
 STATE_DIR=$(jq -r '.stateDir // empty' "$PROFILE_CONFIG_FILE")
 
 if [ -z "$STATE_DIR" ]; then
-    STATE_DIR="/tmp/hyprmcsr-$USER/$HYPRMCSR_PROFILE"
+    BASE_DIR="${XDG_RUNTIME_DIR:-/run/user/$UID}"
+    
+    if [ -d "$BASE_DIR" ] && [ -w "$BASE_DIR" ]; then
+        STATE_DIR="$BASE_DIR/hyprmcsr/profile/$HYPRMCSR_PROFILE"
+    else
+        STATE_DIR="/tmp/hyprmcsr-$UID/profile/$HYPRMCSR_PROFILE"
+    fi
 fi
 
 mkdir -p "$STATE_DIR"
