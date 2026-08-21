@@ -46,10 +46,10 @@ This example shows a real profile pattern from `example.default.profile.json`. I
 
 ## Common Kanata commands
 
-- Start Kanata with a config file:
+- Start Kanata with a config file (no root needed):
 
 ```bash
-sudo kanata -c ~/.config/kanata/kanata.kbd
+kanata --cfg ~/.config/kanata/kanata.kbd
 ```
 
 - List available devices / config information:
@@ -67,6 +67,7 @@ pkill -f '^kanata ' || true
 ## Troubleshooting
 
 - If your remaps do not apply, make sure the Kanata process is actually running and that the config file path is correct.
+- If Kanata is not stopped when the session ends: the `onStart` PID file path and the `onDestroy` path must match exactly. Always use `$STATE_DIR/kanata_mcsr.pid` instead of hardcoded paths like `/tmp/hyprmcsr/...`.
 - If you use root access, make sure your user can run `sudo` without interactive issues during startup.
 
 ## Example Kanata keyboard configuration

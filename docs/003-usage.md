@@ -30,7 +30,7 @@ hyprmcsr setup [--base-profile <name>]
 - Profile name is prompted or taken from `-h <profile>` flag
 - Optional: Use `--base-profile <name>` to create a new profile based on an existing one
 - Prompts for basic settings:
-  - State observation (wpstateout.txt)
+  - State observation (Hermes state.json preferred, wpstateout.txt fallback)
   - PrismLauncher installed via flatpak?
   - PrismLauncher instance ID
   - Auto-launch and wrapper command settings
