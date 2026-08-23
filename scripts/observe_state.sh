@@ -72,7 +72,9 @@ handle_hermes_state() {
     fi
 
     # World generating/loading (LevelLoadingScreen / DownloadingTerrainScreen)
-    if [ "$screen_title" = "menu.generatingTerrain" ] || [ "$screen_title" = "multiplayer.downloadingTerrain" ]; then
+    # DownloadingTerrainScreen has an empty title component, so it can only be
+    # matched by its intermediary class name (1.16.1: class_434).
+    if [ "$screen_title" = "menu.generatingTerrain" ] || [ "$screen_class" = "net.minecraft.class_434" ]; then
         "$SCRIPT_DIR/toggle_mode.sh" normal
         "$SCRIPT_DIR/toggle_binds.sh" 1
         return
