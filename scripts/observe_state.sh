@@ -71,8 +71,8 @@ handle_hermes_state() {
         return
     fi
 
-    # World generating/loading (LevelLoadingScreen)
-    if [ "$screen_title" = "menu.generatingTerrain" ]; then
+    # World generating/loading (LevelLoadingScreen / DownloadingTerrainScreen)
+    if [ "$screen_title" = "menu.generatingTerrain" ] || [ "$screen_title" = "multiplayer.downloadingTerrain" ]; then
         "$SCRIPT_DIR/toggle_mode.sh" normal
         "$SCRIPT_DIR/toggle_binds.sh" 1
         return
