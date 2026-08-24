@@ -29,7 +29,7 @@ if [ -n "$MONITOR_ID" ] && [ ! -s "$CACHE" ]; then
     '
   )"
   [ -n "$CENTER_X" ] && echo "$CENTER_X $CENTER_Y" > "$STATE_DIR/monitor_center_$MONITOR_ID"
-else
+elif [ -s "$CACHE" ]; then
   read CENTER_X CENTER_Y < "$CACHE"
 fi
 

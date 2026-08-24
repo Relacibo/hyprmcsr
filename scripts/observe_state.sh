@@ -20,20 +20,38 @@ HERMES_STATE_FILE="$MINECRAFT_ROOT/hermes/state.json"
 LEGACY_STATE_FILE="$MINECRAFT_ROOT/wpstateout.txt"
 LAST_STATE=""
 
-# Prefer Hermes state.json, fall back to the legacy State Output file (wpstateout.txt)
+# Detect the state source via the mods folder instead of racing the two
+# persistent files: if a hermes*.jar (excluding hermes-core) is installed,
+# Hermes will write state.json once the game starts, so wait for it. On the
+# first start after installing Hermes state.json does not exist yet while the
+# legacy wpstateout.txt persists from a previous session - falling back to it
+# would permanently pin the script to legacy mode for the whole session.
+HERMES_JAR=$(ls "$MINECRAFT_ROOT/mods/"hermes-*.jar 2>/dev/null | grep -v "hermes-core" | head -n1)
+
 STATE_FILE=""
 MODE=""
-while [ -z "$STATE_FILE" ]; do
-    if [ -f "$HERMES_STATE_FILE" ]; then
-        STATE_FILE="$HERMES_STATE_FILE"
-        MODE="hermes"
-    elif [ -f "$LEGACY_STATE_FILE" ]; then
-        STATE_FILE="$LEGACY_STATE_FILE"
-        MODE="legacy"
-    else
+if [ -n "$HERMES_JAR" ]; then
+    echo "[hyprmcsr] Hermes detected ($(basename "$HERMES_JAR")), waiting for state.json"
+    while [ ! -f "$HERMES_STATE_FILE" ]; do
         sleep 1
-    fi
-done
+    done
+    STATE_FILE="$HERMES_STATE_FILE"
+    MODE="hermes"
+else
+    # No Hermes mod found: prefer state.json if it ever appears (installed
+    # elsewhere), otherwise fall back to the legacy State Output file.
+    while [ -z "$STATE_FILE" ]; do
+        if [ -f "$HERMES_STATE_FILE" ]; then
+            STATE_FILE="$HERMES_STATE_FILE"
+            MODE="hermes"
+        elif [ -f "$LEGACY_STATE_FILE" ]; then
+            STATE_FILE="$LEGACY_STATE_FILE"
+            MODE="legacy"
+        else
+            sleep 1
+        fi
+    done
+fi
 
 echo "[hyprmcsr] Observing state file ($MODE): $STATE_FILE"
 
@@ -52,13 +70,14 @@ handle_state() {
 
 # Hermes state.json contains raw data without interpretation. Derive the
 # states the session automation cares about with jq.
-# Mod screen class names (e.g. SeedQueue) are stable, vanilla screens use
-# intermediary class names and are matched by their title key instead.
+# State machine mirrors Jingle's default "Extra Keys" script:
+#   - world != null and screen is one of the loading screens -> world is loading
+#   - world != null and screen == null                       -> in world
+#   - screen.is_pause == true while in world                 -> pause screen
 handle_hermes_state() {
     parsed=$(printf '%s' "$1" | jq -e '.' 2>/dev/null) || return
     world=$(printf '%s' "$parsed" | jq -r '.world.path // empty' 2>/dev/null)
     screen_class=$(printf '%s' "$parsed" | jq -r '.screen.class // empty' 2>/dev/null)
-    screen_title=$(printf '%s' "$parsed" | jq -r '.screen.title | if type == "object" then (.translate // empty) else empty end' 2>/dev/null)
     is_pause=$(printf '%s' "$parsed" | jq -r '.screen.is_pause // empty' 2>/dev/null)
 
     echo "[hyprmcsr] State changed: world=${world:-none} screen=${screen_class:-none} pause=${is_pause:-false}"
@@ -71,17 +90,32 @@ handle_hermes_state() {
         return
     fi
 
-    # World generating/loading (LevelLoadingScreen / DownloadingTerrainScreen)
-    # DownloadingTerrainScreen has an empty title component, so it can only be
-    # matched by its intermediary class name (1.16.1: class_434).
-    if [ "$screen_title" = "menu.generatingTerrain" ] || [ "$screen_class" = "net.minecraft.class_434" ]; then
-        "$SCRIPT_DIR/toggle_mode.sh" normal
+    # World loading screens, matched by class and not by title (Jingle
+    # approach): titles are unreliable, LevelLoadingScreen uses
+    # menu.generatingTerrain or menu.loadingLevel depending on context and
+    # DownloadingTerrainScreen has an empty title component.
+    # 1.16.1 intermediary classes plus the official (unobfuscated) names.
+    if [ -n "$world" ]; then
+        case "$screen_class" in
+            *.class_435 | *.class_3928 | *.class_434 | *.ProgressScreen | *.LevelLoadingScreen | *.ReceivingLevelScreen)
+                "$SCRIPT_DIR/toggle_mode.sh" normal
+                "$SCRIPT_DIR/toggle_binds.sh" 1
+                return
+            ;;
+        esac
+    fi
+
+    # In world with no screen open. Also acts as a safety net when rapid
+    # state updates collapse and the loading screens are never observed.
+    if [ -n "$world" ] && [ -z "$screen_class" ]; then
         "$SCRIPT_DIR/toggle_binds.sh" 1
         return
     fi
 
-    # Pause screen or any other game screen open while in world
-    if [ -n "$world" ] && { [ "$is_pause" = "true" ] || [ -n "$screen_class" ]; }; then
+    # Pause screen while in world: center the cursor (needed due to a
+    # Hyprland/Wayland cursor bug). Other screens (e.g. options) are not
+    # pause screens and must not trigger this.
+    if [ -n "$world" ] && [ "$is_pause" = "true" ]; then
         "$SCRIPT_DIR/../util/center_cursor.sh"
     fi
 }
