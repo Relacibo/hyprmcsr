@@ -19,6 +19,7 @@ fi
 HERMES_STATE_FILE="$MINECRAFT_ROOT/hermes/state.json"
 LEGACY_STATE_FILE="$MINECRAFT_ROOT/wpstateout.txt"
 LAST_STATE=""
+LAST_SCREEN_CLASS=""
 
 # Detect the state source via the mods folder instead of racing the two
 # persistent files: if a hermes*.jar (excluding hermes-core) is installed,
@@ -73,7 +74,9 @@ handle_state() {
 # State machine mirrors Jingle's default "Extra Keys" script:
 #   - world != null and screen is one of the loading screens -> world is loading
 #   - world != null and screen == null                       -> in world
-#   - screen.is_pause == true while in world                 -> pause screen
+# Cursor centering follows vanilla behavior: the cursor is centered when a
+# screen opens from gameplay (screen == null -> screen != null), not on
+# screen to screen transitions (e.g. pause menu -> options).
 handle_hermes_state() {
     parsed=$(printf '%s' "$1" | jq -e '.' 2>/dev/null) || return
     world=$(printf '%s' "$parsed" | jq -r '.world.path // empty' 2>/dev/null)
@@ -82,12 +85,14 @@ handle_hermes_state() {
 
     echo "[hyprmcsr] State changed: world=${world:-none} screen=${screen_class:-none} pause=${is_pause:-false}"
 
-    # SeedQueue wall screen
+    # SeedQueue wall screen: normal mode, binds off. Centered explicitly -
+    # the wall usually follows another screen, so the transition rule below
+    # would not catch it.
     if [ "$screen_class" = "me.contaria.seedqueue.gui.wall.SeedQueueWallScreen" ]; then
         "$SCRIPT_DIR/toggle_mode.sh" normal
         "$SCRIPT_DIR/toggle_binds.sh" 0
         "$SCRIPT_DIR/../util/center_cursor.sh"
-        return
+        LAST_SCREEN_CLASS="$screen_class"
     fi
 
     # World loading screens, matched by class and not by title (Jingle
@@ -100,7 +105,6 @@ handle_hermes_state() {
             *.class_435 | *.class_3928 | *.class_434 | *.ProgressScreen | *.LevelLoadingScreen | *.ReceivingLevelScreen)
                 "$SCRIPT_DIR/toggle_mode.sh" normal
                 "$SCRIPT_DIR/toggle_binds.sh" 1
-                return
             ;;
         esac
     fi
@@ -109,15 +113,16 @@ handle_hermes_state() {
     # state updates collapse and the loading screens are never observed.
     if [ -n "$world" ] && [ -z "$screen_class" ]; then
         "$SCRIPT_DIR/toggle_binds.sh" 1
-        return
     fi
 
-    # Pause screen while in world: center the cursor (needed due to a
-    # Hyprland/Wayland cursor bug). Other screens (e.g. options) are not
-    # pause screens and must not trigger this.
-    if [ -n "$world" ] && [ "$is_pause" = "true" ]; then
+    # Center the cursor when a screen opens from gameplay. Vanilla keeps the
+    # cursor at the window center by warping it every frame while playing;
+    # this does not happen on Hyprland/Wayland, so center manually. Screen
+    # to screen transitions must not center.
+    if [ -n "$screen_class" ] && [ -z "$LAST_SCREEN_CLASS" ]; then
         "$SCRIPT_DIR/../util/center_cursor.sh"
     fi
+    LAST_SCREEN_CLASS="$screen_class"
 }
 
 handle_legacy_state() {
