@@ -15,12 +15,12 @@ else
 fi
 
 CACHE="$STATE_DIR/monitor_center_$MONITOR_ID"
-if [ ! -s "$CACHE" ]; then
+if [ -n "$MONITOR_ID" ] && [ ! -s "$CACHE" ]; then
   read CENTER_X CENTER_Y <<<"$(
   hyprctl monitors -j |
-  jq -r --argjson mid "$MONITOR_ID" '
+  jq -r --arg mid "$MONITOR_ID" '
       .[] |
-      select(.id == $mid) |
+      select((.id | tostring) == $mid or .name == $mid) |
       [
         (.x + (.width / .scale / 2)),
         (.y + (.height / .scale / 2))
@@ -28,9 +28,9 @@ if [ ! -s "$CACHE" ]; then
       @sh
     '
   )"
-  echo "$CENTER_X $CENTER_Y" > "$STATE_DIR/monitor_center_$MONITOR_ID"
-else
+  [ -n "$CENTER_X" ] && echo "$CENTER_X $CENTER_Y" > "$STATE_DIR/monitor_center_$MONITOR_ID"
+elif [ -s "$CACHE" ]; then
   read CENTER_X CENTER_Y < "$CACHE"
 fi
 
-hyprctl -q dispatch movecursor "$CENTER_X" "$CENTER_Y"
+[ -n "$CENTER_X" ] && [ -n "$CENTER_Y" ] && hyprctl -q dispatch movecursor "$CENTER_X" "$CENTER_Y"
