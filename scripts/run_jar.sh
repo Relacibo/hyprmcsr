@@ -152,12 +152,18 @@ if [ -z "$JAR_REPO" ] || [ "$JAR_REPO" = "null" ]; then
   exit 1
 fi
 
+# Serialize concurrent downloads for the same download directory.
+if command -v flock >/dev/null 2>&1; then
+  exec 9>"$JARS_DIR/.download.lock"
+  flock 9
+fi
+
 # Download/update JAR if it's a GitHub repo
 JAR_FILE=""
 if [[ "$JAR_REPO" == */* ]]; then
   # GitHub repo (owner/repo)
   api_url="https://api.github.com/repos/$JAR_REPO/releases/latest"
-  release_json=$(curl -s -f "$api_url")
+  release_json=$(curl -s -f --connect-timeout 10 --max-time 30 --retry 2 "$api_url")
   curl_status=$?
   repo_prefix=$(basename "$JAR_REPO")
   if [ $curl_status -ne 0 ] || ! echo "$release_json" | jq empty >/dev/null 2>&1; then
@@ -180,22 +186,29 @@ if [[ "$JAR_REPO" == */* ]]; then
         echo "$jar_name already up to date."
         JAR_FILE="$existing_jar"
       else
-        # Try to download new version
+        # Download to a temporary file first. `curl -f` makes HTTP errors fail,
+        # and the size/signature check catches error pages that still return 200.
         echo "New version available: $jar_name"
         echo "Downloading $jar_url..."
-        if curl -L "$jar_url" -o "$JARS_DIR/$jar_name"; then
-          # Remove old versions after successful download
-          old_jars=$(find "$JARS_DIR" -type f -iname "${repo_prefix}-*.jar" ! -iname "$jar_name")
-          if [ -n "$old_jars" ]; then
+        tmp_jar="$JARS_DIR/.$jar_name.tmp"
+        if curl -fL --connect-timeout 10 --max-time 300 --retry 3 "$jar_url" -o "$tmp_jar" \
+          && [ -s "$tmp_jar" ] \
+          && [ "$(head -c 2 "$tmp_jar")" = "PK" ]; then
+          mv "$tmp_jar" "$JARS_DIR/$jar_name"
+
+          # Remove old versions only after the new one is verified in place.
+          mapfile -d '' old_jars < <(find "$JARS_DIR" -maxdepth 1 -type f -iname "${repo_prefix}-*.jar" ! -iname "$jar_name" -print0)
+          if [ ${#old_jars[@]} -gt 0 ]; then
             echo "Removing old versions:"
-            echo "$old_jars" | while IFS= read -r jar; do
+            for jar in "${old_jars[@]}"; do
               echo " - $(basename "$jar")"
             done
-            echo "$old_jars" | xargs rm -f
+            rm -f -- "${old_jars[@]}"
           fi
           echo "Download successful."
           JAR_FILE="$JARS_DIR/$jar_name"
         else
+          rm -f "$tmp_jar"
           echo "Warning: Download failed. Checking for existing version..."
           # Try to find any existing version
           JAR_FILE=$(find "$JARS_DIR" -maxdepth 1 -type f -iname "${repo_prefix}-*.jar" | head -n1)
@@ -224,8 +237,11 @@ else
   exit 3
 fi
 
-# Determine working directory
-WORKDIR="${JAR_WORKDIR:-/tmp/hyprmcsr-jar}"
+# Release the download lock before the game starts.
+exec 9>&- 2>/dev/null || true
+
+# Determine working directory (per-user: /tmp is shared between users).
+WORKDIR="${JAR_WORKDIR:-${XDG_RUNTIME_DIR:-/tmp}/hyprmcsr-jar-$UID}"
 mkdir -p "$WORKDIR"
 cd "$WORKDIR" || exit 1
 

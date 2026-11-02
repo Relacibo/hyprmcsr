@@ -89,14 +89,23 @@ This conversion table isn’t perfectly accurate. The libinput sensitivity value
 **Important:**  
 You also need to set mouse acceleration to `flat`.
 
-- **Permanent:** In your `hyprland.conf`, set:  
+- **Permanent:** In your Hyprland config:
+  - `hyprland.lua` (Hyprland 0.55+):
+    ```lua
+    hl.config({ input = { accel_profile = "flat" } })
+    ```
+  - `hyprland.conf` (legacy, Hyprland 0.56 and older):
+    ```
+    input {
+      accel_profile = flat
+    }
+    ```
+- **Dynamically:** You can also set it at runtime with
   ```
-  input {
-    accel_profile = flat
-  }
-  ```
-- **Dynamically:** You can also set it at runtime with  
-  ```
+  # Hyprland 0.55+ with a Lua config
+  hyprctl eval 'hl.config({ input = { accel_profile = "flat" } })'
+
+  # Legacy Hyprland
   hyprctl keyword input:accel_profile flat
   ```
 

@@ -4,7 +4,7 @@ This section explains how to start, stop, and use hyprmcsr after installation.
 
 ## CLI options
 
-- `-h <hyprmcsr_profile>`: Sets the global config profile (e.g. for different global setups, instances)
+- `-h, --profile <hyprmcsr_profile>`: Sets the global config profile (e.g. for different global setups, instances)
 - `-p <profile>`: Sets the profile allowing some variants in how the profile behaves (e.g. coop, etc.)
 
 ## Check dependencies
@@ -15,8 +15,8 @@ hyprmcsr check-dependencies
 
 - Checks if all required dependencies are installed
 - Lists optional dependencies and their purpose
-- Required: `jq`, `hyprctl`, `inotifywait`, `prismlauncher`
-- Optional: `pactl` (for audio splitter)
+- Required: `jq`, `hyprctl`, `curl`, `realpath`, `setsid`; `inotifywait` when state observation is enabled; `prismlauncher` (or `flatpak` for a Flatpak installation)
+- Optional: `pactl` (audio splitter), `java` (run-jar), `git` (updating via git)
 - Automatically run when using `hyprmcsr setup`
 
 ## Initialize configuration files

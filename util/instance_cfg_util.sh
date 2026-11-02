@@ -39,7 +39,8 @@ field_values="${field_values%,}"
 # Use mktemp for the temporary file for safety and atomicity
 
 tmpfile=$(mktemp)
-awk -v nfields="$nfields" \
+trap 'rm -f "$tmpfile"' EXIT
+if awk -v nfields="$nfields" \
     -v field_names="$field_names" -v field_modes="$field_modes" -v field_values="$field_values" '
   BEGIN {
     in_section=0; i=1;
@@ -59,8 +60,12 @@ awk -v nfields="$nfields" \
     in_section=0; print; next
   }
   in_section {
-    match($0, /^([^=]+)=/, m)
-    curr = m[1]
+    # Split at the first '=' without gawk's third match() argument.
+    if (index($0, "=") == 0) {
+      print; next
+    }
+    curr = $0
+    sub(/=.*/, "", curr)
     if ((curr in seen_fields) && seen_fields[curr]) {
       next
     }
@@ -89,6 +94,17 @@ awk -v nfields="$nfields" \
       }
     }
   }
-' "$instance_config" > "$tmpfile" && mv "$tmpfile" "$instance_config"
+' "$instance_config" > "$tmpfile"
+then
+  :
+else
+  echo "Failed to update $instance_config" >&2
+  exit 1
+fi
+
+if ! mv "$tmpfile" "$instance_config"; then
+  echo "Failed to replace $instance_config" >&2
+  exit 1
+fi
 
 # For [UI] section, add similar logic if needed.

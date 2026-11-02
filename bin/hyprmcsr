@@ -5,6 +5,7 @@ HYPRMCSR_PROFILE="${HYPRMCSR_PROFILE:-}"
 PROFILE="${PROFILE:-}"
 
 usage() {
+  local exit_code="${1:-0}"
   cat << 'EOF'
 Usage: hyprmcsr [-h HYPRMCSR_PROFILE] [-p PROFILE] <command> [args...]
 
@@ -22,11 +23,12 @@ Commands:
   setup-audio-splitter <enable|disable> [device]
                               Enable/disable PipeWire audio splitting
                               Optional: specify audio device name
-  update                      Update all configured JAR files
+  update                      Update hyprmcsr to the latest release
   version                     Show version information
 
 Options:
-  -h HYPRMCSR_PROFILE         Set the hyprmcsr profile name
+  -h, --profile HYPRMCSR_PROFILE
+                              Set the hyprmcsr profile name
   -p PROFILE                  Set the PROFILE environment variable
   --help                      Show this help message
   --version                   Show version information
@@ -46,12 +48,12 @@ Examples:
 
 For more documentation, see: https://github.com/Relacibo/hyprmcsr
 EOF
-  exit 1
+  exit "$exit_code"
 }
 
 # Show help if --help
 if [[ "$1" == "--help" || "$1" == "help" ]]; then
-  usage
+  usage 0
 fi
 
 # Print version if --version or version command
@@ -64,59 +66,47 @@ if [[ "$1" == "--version" || "$1" == "version" ]]; then
     version_str="unknown version"
   fi
 
-  # Show git commit if possible (full hash appended to version)
-  GIT_DIR="$(dirname "$(realpath "$0")")/.."
-  if [ -d "$GIT_DIR/.git" ]; then
-    head_file="$GIT_DIR/.git/HEAD"
-    if [ -f "$head_file" ]; then
-      ref=$(cat "$head_file")
-      if [[ "$ref" == ref:\ * ]]; then
-        ref_file="$GIT_DIR/.git/$(echo "$ref" | cut -d' ' -f2)"
-        if [ -f "$ref_file" ]; then
-          commit=$(cat "$ref_file" | head -c 40)
-          echo "$version_str"
-          echo "git commit: $commit"
-        else
-          echo "$version_str"
-        fi
-      else
-        # detached HEAD
-        commit=$(echo "$ref" | head -c 40)
-        echo "$version_str"
-        echo "git commit: $commit"
-      fi
-    else
-      echo "$version_str"
-    fi
-  else
-    echo "$version_str"
+  REPO_DIR="$(dirname "$(realpath "$0")")/.."
+  commit=""
+  if command -v git >/dev/null 2>&1; then
+    commit="$(git -C "$REPO_DIR" rev-parse HEAD 2>/dev/null)"
   fi
+
+  echo "$version_str"
+  [ -n "$commit" ] && echo "git commit: $commit"
   exit 0
 fi
 
 # Parse arguments
 while [[ "$1" =~ ^- ]]; do
   case "$1" in
-    -h)
-      shift
-      HYPRMCSR_PROFILE="$1"
+    -h|--profile)
+      if [ -z "$2" ]; then
+        echo "Missing value for $1" >&2
+        usage 1
+      fi
+      HYPRMCSR_PROFILE="$2"
+      shift 2
       ;;
     -p)
-      shift
-      PROFILE="$1"
+      if [ -z "$2" ]; then
+        echo "Missing value for $1" >&2
+        usage 1
+      fi
+      PROFILE="$2"
+      shift 2
       ;;
     *)
-      usage
+      usage 1
       ;;
   esac
-  shift
 done
 
 CMD="$1"
 shift
 
 if [ -z "$CMD" ]; then
-  usage
+  usage 1
 fi
 
 # Map kebab-case to script name
@@ -127,15 +117,15 @@ SCRIPT_DIR=$(realpath "$(dirname "$(realpath "$0")")/../scripts")
 
 SCRIPT_PATH="$SCRIPT_DIR/$SCRIPT_NAME"
 
+if [ ! -f "$SCRIPT_PATH" ]; then
+  echo "Unknown command: $CMD"
+  usage 1
+fi
+
 # Security: Only allow execution of scripts in the scripts directory
 if [[ ! "$SCRIPT_PATH" -ef "$SCRIPT_DIR/$(basename "$SCRIPT_PATH")" ]]; then
   echo "Refusing to execute script outside of scripts directory: $SCRIPT_PATH"
   exit 1
-fi
-
-if [ ! -f "$SCRIPT_PATH" ]; then
-  echo "Unknown command: $CMD"
-  usage
 fi
 
 # Set environment variables if specified

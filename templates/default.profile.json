@@ -34,6 +34,8 @@
   },
   "minecraft": {
     "onStart": [],
+    "windowClassRegex": "Minecraft",
+    "windowTitleRegex": "Minecraft",
     "prismLauncher": {
       "autoReplaceWrapperCommand": {
         "enabled": true

@@ -61,7 +61,7 @@ See [example.default.profile.json](../example.default.profile.json) for a full e
   >   You can check the values with `hyprctl clients -j`.
 - **minecraft.observeState.enabled**: Enable or disable state observation. Prefers Hermes `hermes/state.json` when available, falls back to State Outputs `wpstateout.txt`.
 - **minecraft.onStart**: Array of shell commands/scripts to run after Minecraft has started (executed by `instance_wrapper.sh`). See [Command Syntax](#command-syntax-string-or-object)
-- **downloadRoot**: (Optional) Custom download root for JARs. If not set, defaults to `<repo>/download`.
+- **downloadRoot**: (Optional) Custom download root for JARs. If not set, defaults to `$XDG_DATA_HOME/hyprmcsr/downloads` (usually `~/.local/share/hyprmcsr/downloads`).
 - **autoDestroyOnExit**: If true, runs cleanup automatically when the main script exits.
 - **requireSudo**: If true, you will be prompted for sudo at start and it will be kept alive for all commands in `onStart`/`onDestroy`.
 - **minecraft.prismLauncher**:  

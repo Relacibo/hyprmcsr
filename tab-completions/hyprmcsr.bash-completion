@@ -4,7 +4,7 @@ _hyprmcsr_completions() {
   COMPREPLY=()
   cur="${COMP_WORDS[COMP_CWORD]}"
   prev="${COMP_WORDS[COMP_CWORD-1]}"
-  opts="run destroy delete-old-worlds run-jar setup-audio-splitter update version"
+  opts="setup check-dependencies run destroy delete-old-worlds run-jar setup-audio-splitter update version"
 
   # config_root dynamisch am Anfang bestimmen
   if [[ -n "$XDG_CONFIG_HOME" ]]; then
@@ -14,7 +14,7 @@ _hyprmcsr_completions() {
   fi
 
   if [[ ${cur} == -* ]] ; then
-    COMPREPLY=( $(compgen -W "-h -p" -- ${cur}) )
+    COMPREPLY=( $(compgen -W "-h -p --profile --help --version" -- ${cur}) )
     return 0
   fi
 
@@ -23,7 +23,7 @@ _hyprmcsr_completions() {
     return 0
   fi
 
-  if [[ ${prev} == "-h" ]]; then
+  if [[ ${prev} == "-h" || ${prev} == "--profile" ]]; then
     local profiles
     profiles=$(ls "$config_root"/*.profile.json 2>/dev/null | xargs -n1 basename | sed 's/\.profile\.json$//')
     COMPREPLY=( $(compgen -W "${profiles}" -- ${cur}) )

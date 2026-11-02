@@ -3,20 +3,105 @@
 ## [Unreleased]
 
 ### Added
+- Hermes support: observe `hermes/state.json` when a Hermes jar is installed, with automatic fallback to the legacy State Output file (`wpstateout.txt`). The state source is selected from the mods folder instead of racing the two persistent files.
+- Center the cursor when a screen opens from gameplay (pause menu, inventory) and for the SeedQueue wall.
+
+### Changed
+- The state machine now matches loading screens by class (including `DownloadingTerrainScreen`/`class_434`), re-enables binds in-world as a safety net, and only centers the cursor on real gameplay-to-screen transitions.
+
+### Fixed
+- Hyprland 0.57 compatibility: use the Lua IPC (`hl.bind`, `hl.unbind`, `hl.config`, `hl.dsp.*`) when the compositor reports `configProvider: lua`, while keeping the legacy `hyprctl keyword`/string-dispatcher path for older versions
+- Custom binds: fixed `realname` typo, accept a single command or an array, and stop quoting command JSON into the Hyprland bind
+- State observer: use Bash (the script used Bash-only syntax), wait indefinitely for the instance, and re-arm the file watch after atomic replacements
+- `hyprmcsr --help` now exits successfully; unknown commands report a proper error
+- `hyprmcsr setup` writes `minecraft.prismLauncher.prismPrefix` instead of the deprecated field
+- JAR downloads: fail on HTTP errors, verify the ZIP header, download atomically, and serialize concurrent downloads
+- Restore the original mouse sensitivity on `hyprmcsr destroy`
+- Wait for PrismLauncher to exit before rewriting its wrapper command
+- Fix lexical sorting for PID/sink-input diffing in `instance_wrapper.sh`
+- `check-dependencies` no longer requires `inotifywait`/native PrismLauncher when the profile disables or does not use them
+- Validate profile names to prevent path traversal
+- Documentation fixes (custom bind format, JAR download root, dependency list, missing doc links)
+
+## [0.9.1]
+
+### Changed
+- Session state now honors `$XDG_RUNTIME_DIR` (with `/tmp` fallback) instead of using a fixed path.
+
+## [0.9.0]
+
+### Added
+- JARs are stored in the XDG data directory (`$XDG_DATA_HOME/hyprmcsr/downloads`), with automatic migration from the legacy `download/jar` directory.
+- Kanata documentation replaces the old Input Remapper guide; the example profile was updated accordingly.
+
+### Changed
+- `hyprmcsr destroy` runs `onDestroy` hooks to completion before clearing transient state.
+- `onStart`/`onDestroy` commands run detached via `setsid` with `bash -l`; failures are logged.
+- `requireSudo` fails early when authentication fails and stops the session when the sudo ticket expires.
+- Wrapper detection only reads the first `WrapperCommand=` line of an instance config.
+
+### Fixed
+- Race between `onDestroy` hooks and state cleanup in `destroy.sh`.
+- Duplicate and inconsistent `requireSudo` documentation.
+- `instance_cfg_util.sh` no longer duplicates fields when updating an instance config.
+
+## [0.8.6]
+
+### Changed
+- **Hyprland 0.55 compatibility**: `setprop` calls use the new property names (`no_anim`, `rounding`) and `centerwindow` no longer takes an `address:` argument.
+
+## [0.8.5]
+
+### Fixed
+- Preserve `window_address` across `hyprmcsr destroy` so a still-running Minecraft window can be reattached on the next start.
+
+## [0.8.4]
+
+- Maintenance release (version bump only).
+
+## [0.8.3]
+
+### Changed
+- `hyprmcsr setup` asks whether to set up audio splitting instead of always starting it.
+- `setup-audio-splitter` offers to restart PipeWire after applying changes.
+
+## [0.8.2]
+
+### Changed
+- Cursor centering caches monitor centers and computes the center on demand when the cache is missing.
+- `toggle_mode` resolves the monitor ID for every mode and tracks the last monitor.
+
+### Fixed
+- `destroy.sh` clears the state directory instead of leaving stale files behind.
+- Assorted logging and cleanup fixes.
+
+## [0.8.1]
+
+### Added
+- Boat Eye OBS overlay and scene creation instructions.
+
+### Changed
+- Documentation examples use `hyprmcsr setup` instead of the old `init` command.
+- `run-jar` accepts case-insensitive JAR names and lists removed old versions.
+
+### Fixed
+- Case-sensitive JAR lookup.
+
+## [0.8.0]
+
+### Added
 - **Flatpak PrismLauncher support**: Full support for PrismLauncher installed via Flatpak
-  - New `minecraft.prismLauncher.flatpak` boolean setting to indicate Flatpak installation
+  - New `minecraft.prismLauncher.flatpak` boolean setting to indicate a Flatpak installation
   - Automatic data directory detection (`~/.var/app/org.prismlauncher.PrismLauncher/data/PrismLauncher`)
   - Automatic launch command selection (`flatpak run org.prismlauncher.PrismLauncher`)
-  - `hyprmcsr setup` now asks if PrismLauncher is installed via Flatpak
+  - `hyprmcsr setup` asks whether PrismLauncher is installed via Flatpak
 - **New prismPrefix priority system**: `minecraft.prismLauncher.prismPrefix` → Flatpak detection → deprecated `minecraft.prismPrefix` → default
 
 ### Changed
 - **Renamed command**: `hyprmcsr init` → `hyprmcsr setup` (better describes interactive configuration)
-- All documentation updated to use `setup` instead of `init`
-- **Hyprland 0.55 compatibility**: Updated `setprop` calls in `instance_wrapper.sh` to use new property names (`no_anim` instead of `noanim`, `rounding 0` instead of `norounding 1`). Also removed obsolete `address:` argument from `centerwindow` dispatch.
 
 ### Deprecated
-- `minecraft.prismPrefix` is now deprecated in favor of `minecraft.prismLauncher.prismPrefix` and `minecraft.prismLauncher.flatpak`
+- `minecraft.prismPrefix` is deprecated in favor of `minecraft.prismLauncher.prismPrefix` and `minecraft.prismLauncher.flatpak`
 
 ## [0.7.4]
 
@@ -50,8 +135,13 @@
 
 ## [0.7.3]
 
+### Fixed
+- Expanded the `hyprmcsr --help` examples for `setup-audio-splitter`.
+
+## [0.7.2]
+
 ### Added
-`hyprmcsr --help` menu
+- `hyprmcsr --help` menu.
 
 ## [0.7.1]
 

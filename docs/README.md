@@ -20,6 +20,8 @@ This documentation will guide you through the setup and usage of hyprmcsr on a m
 - [Boat Eye](./016-boateye.md)
 - [Troubleshooting](./020-troubleshooting.md)
 - [Further Reading & Links](./021-links.md)
+- [Comparison with other setups](./022-comparison.md)
+- [Flatpak Setup](./030-flatpak.md)
 
 ---
 

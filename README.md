@@ -39,7 +39,7 @@ For recent changes and migration guides, see the
 
 ---
 
-## Contributers
+## Contributors
 
 - Me ([youtube](https://www.youtube.com/@relacibo), [speedrun.com](https://www.speedrun.com/de-DE/users/Relacibo))
 - [Igelway](https://github.com/Igelway) ([youtube](https://www.youtube.com/@MisterKenway), [speedrun.com](https://www.speedrun.com/de-DE/users/Igelway))

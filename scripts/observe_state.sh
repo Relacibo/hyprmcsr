@@ -1,20 +1,20 @@
-#!/bin/sh
+#!/bin/bash
 
 export SCRIPT_DIR=$(dirname "${BASH_SOURCE[0]}")
 source "$SCRIPT_DIR/../util/env_prism.sh"
 
-# Wait for MINECRAFT_ROOT being set (max. 10 seconds)
+# Wait for MINECRAFT_ROOT being set. Do not give up: PrismLauncher may take
+# arbitrarily long to start, and a timed-out observer silently disables all
+# state automation for the whole session.
 tries=0
-while [ -z "$MINECRAFT_ROOT" ] && [ "$tries" -lt 10 ]; do
+while [ -z "$MINECRAFT_ROOT" ]; do
+    if [ "$tries" -eq 10 ]; then
+        echo "[hyprmcsr] Waiting for Minecraft instance data (start the instance in PrismLauncher)..."
+    fi
     sleep 1
     source "$SCRIPT_DIR/../util/env_prism.sh"
     tries=$((tries + 1))
 done
-
-if [ -z "$MINECRAFT_ROOT" ]; then
-    echo "[hyprmcsr] Warning: MINECRAFT_ROOT could not be set after ${tries}s timeout"
-    exit 1
-fi
 
 HERMES_STATE_FILE="$MINECRAFT_ROOT/hermes/state.json"
 LEGACY_STATE_FILE="$MINECRAFT_ROOT/wpstateout.txt"
@@ -27,7 +27,7 @@ LAST_SCREEN_CLASS=""
 # first start after installing Hermes state.json does not exist yet while the
 # legacy wpstateout.txt persists from a previous session - falling back to it
 # would permanently pin the script to legacy mode for the whole session.
-HERMES_JAR=$(ls "$MINECRAFT_ROOT/mods/"hermes-*.jar 2>/dev/null | grep -v "hermes-core" | head -n1)
+HERMES_JAR=$(find "$MINECRAFT_ROOT/mods" -maxdepth 1 -type f -iname 'hermes-*.jar' ! -iname 'hermes-core*' 2>/dev/null | head -n1)
 
 STATE_FILE=""
 MODE=""
@@ -58,15 +58,17 @@ echo "[hyprmcsr] Observing state file ($MODE): $STATE_FILE"
 
 handle_state() {
     current_state=$(cat "$STATE_FILE" 2>/dev/null)
-    if [ "$current_state" != "$LAST_STATE" ]; then
-        LAST_STATE="$current_state"
+    [ "$current_state" = "$LAST_STATE" ] && return 0
 
-        if [ "$MODE" = "hermes" ]; then
-            handle_hermes_state "$current_state"
-        else
-            handle_legacy_state "$current_state"
-        fi
+    if [ "$MODE" = "hermes" ]; then
+        # Only remember the state once it parsed successfully. A half-written
+        # state.json must not make us skip the complete value that follows.
+        handle_hermes_state "$current_state" || return 0
+    else
+        handle_legacy_state "$current_state"
     fi
+
+    LAST_STATE="$current_state"
 }
 
 # Hermes state.json contains raw data without interpretation. Derive the
@@ -78,7 +80,7 @@ handle_state() {
 # screen opens from gameplay (screen == null -> screen != null), not on
 # screen to screen transitions (e.g. pause menu -> options).
 handle_hermes_state() {
-    parsed=$(printf '%s' "$1" | jq -e '.' 2>/dev/null) || return
+    parsed=$(printf '%s' "$1" | jq -e '.' 2>/dev/null) || return 1
     world=$(printf '%s' "$parsed" | jq -r '.world.path // empty' 2>/dev/null)
     screen_class=$(printf '%s' "$parsed" | jq -r '.screen.class // empty' 2>/dev/null)
     is_pause=$(printf '%s' "$parsed" | jq -r '.screen.is_pause // empty' 2>/dev/null)
@@ -143,9 +145,24 @@ handle_legacy_state() {
     esac
 }
 
-# React to the current state once before watching for changes
-handle_state
+# Watch for changes. Re-arm the watch whenever the file is replaced or
+# removed (atomic writes, world switches) instead of silently going blind.
+while true; do
+    if [ ! -e "$STATE_FILE" ]; then
+        sleep 1
+        continue
+    fi
 
-inotifywait -m -q -e modify "$STATE_FILE" 2>/dev/null | while read path action file; do
+    # React to the current state before arming the watch so no update between
+    # the last event and the new watch is missed.
     handle_state
+
+    # Process substitution keeps the loop in this shell so LAST_STATE and
+    # LAST_SCREEN_CLASS survive across events and re-arms.
+    while read -r _ _ _; do
+        handle_state
+    done < <(inotifywait -m -q -e modify,close_write,move_self,delete_self "$STATE_FILE" 2>/dev/null)
+
+    # Avoid a busy loop when inotifywait is unavailable or fails immediately.
+    sleep 1
 done

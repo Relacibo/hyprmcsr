@@ -27,18 +27,19 @@ if [ ! -f "$PROFILE_CONFIG_FILE" ]; then
   fi
 fi
 
-# Source env scripts from util
-source "$SCRIPT_DIR/../util/env_core.sh"
-source "$SCRIPT_DIR/../util/env_prism.sh"
-
-# Export all relevant environment variables for child processes
-SCRIPT_DIR="${SCRIPT_DIR:-$(dirname "$0")}"
-source "$SCRIPT_DIR/../util/export_env.sh"
-
 if ! command -v jq >/dev/null; then
   echo "jq is required!"
   exit 1
 fi
+
+# Source env scripts from util
+source "$SCRIPT_DIR/../util/env_core.sh"
+source "$SCRIPT_DIR/../util/env_prism.sh"
+source "$SCRIPT_DIR/../util/hypr_compat.sh"
+
+# Export all relevant environment variables for child processes
+SCRIPT_DIR="${SCRIPT_DIR:-$(dirname "$0")}"
+source "$SCRIPT_DIR/../util/export_env.sh"
 
 # Check for inotifywait if observeState is enabled
 # Support deprecated observeLog for backward compatibility
@@ -70,17 +71,24 @@ if [ -f "$WINDOW_ADDRESS_FILE" ]; then
   fi
 fi
 
-echo "default" > "$STATE_DIR/window_switcher_state"
 echo "$HYPRMCSR_PROFILE" > "$STATE_DIR/profile"
+
+# Remember the sensitivity from before the session so destroy can restore it.
+# If a previous session crashed, its saved value is still the correct original.
+SENSITIVITY_STATE_FILE="$STATE_DIR/original_sensitivity"
+if [ ! -f "$SENSITIVITY_STATE_FILE" ]; then
+  original_sensitivity=$(hyprctl getoption input:sensitivity -j 2>/dev/null | jq -r '.float // .int // empty')
+  [ -n "$original_sensitivity" ] && echo "$original_sensitivity" > "$SENSITIVITY_STATE_FILE"
+fi
 
 # Set keybinds for mode switches
 jq -r '.binds.modeSwitch | to_entries[] | "\(.key) \(.value)"' "$PROFILE_CONFIG_FILE" | while read -r mode key; do
-    hyprctl -q keyword bindni $key,exec,"$HYPRMCSR -h $HYPRMCSR_PROFILE toggle_mode $mode"
+    hypr_bind "$key" "$HYPRMCSR -h $HYPRMCSR_PROFILE toggle_mode $mode" ni
 done
 
 toggle_binds_key=$(jq -r '.binds.toggleBinds' "$PROFILE_CONFIG_FILE")
 if [ -n "$toggle_binds_key" ] && [ "$toggle_binds_key" != "null" ]; then
-  hyprctl -q keyword bind $toggle_binds_key,exec,"$HYPRMCSR -h $HYPRMCSR_PROFILE toggle-binds"
+  hypr_bind "$toggle_binds_key" "$HYPRMCSR -h $HYPRMCSR_PROFILE toggle-binds"
 fi
 
 # Evaluate prismLauncher config (new) or prismWrapperCommand (deprecated)
@@ -166,13 +174,28 @@ if [ "$AUTO_REPLACE" = "true" ] && [ -n "$WRAPPER_CMD" ]; then
     if hyprctl clients -j | jq -e '.[] | select(.class == "org.prismlauncher.PrismLauncher" or (.title // "" | startswith("Prism Launcher")))' >/dev/null 2>&1; then
       echo "PrismLauncher is currently running."
       echo "It needs to be closed to update the wrapper command configuration."
-      read -p "Close PrismLauncher now? (y/n): " -n 1 -r
+      read -r -n 1 -p "Close PrismLauncher now? (y/n): " REPLY
       echo
       if [[ $REPLY =~ ^[Yy]$ ]]; then
-        PRISM_PID=$(pgrep -f "prismlauncher" | head -n1)
-        if [ -n "$PRISM_PID" ]; then
-          kill "$PRISM_PID"
-          sleep 1
+        if [ "$IS_FLATPAK" = "true" ]; then
+          flatpak kill org.prismlauncher.PrismLauncher 2>/dev/null || true
+        fi
+        PRISM_PIDS=$(pgrep -x prismlauncher || true)
+        if [ -n "$PRISM_PIDS" ]; then
+          kill $PRISM_PIDS 2>/dev/null || true
+          # Wait for PrismLauncher to write its files on shutdown, otherwise it
+          # can overwrite the wrapper change we are about to make.
+          for _ in {1..40}; do
+            still_running=""
+            for pid in $PRISM_PIDS; do
+              kill -0 "$pid" 2>/dev/null && still_running=1
+            done
+            [ -z "$still_running" ] && break
+            sleep 0.25
+          done
+          for pid in $PRISM_PIDS; do
+            kill -0 "$pid" 2>/dev/null && kill -KILL "$pid" 2>/dev/null
+          done
         fi
       else
         echo "Skipping wrapper command configuration. PrismLauncher will not be restarted."
@@ -197,13 +220,13 @@ if [ "$AUTO_REPLACE" = "true" ] && [ -n "$WRAPPER_CMD" ]; then
   fi
 fi
 
-# Create custom binds from profile config (with all relevant environment variables)
-custom_binds=$(jq -r '.binds.custom // {} | to_entries[] | "\(.key) \(.value|@json)"' "$PROFILE_CONFIG_FILE")
+# Create custom binds from profile config. The wrapper looks the command up in
+# the profile itself, so no JSON has to be quoted into the Hyprland bind.
+custom_binds=$(jq -r '.binds.custom // {} | keys[]' "$PROFILE_CONFIG_FILE")
 if [ -n "$custom_binds" ]; then
-  while IFS= read -r entry; do
-    bind=$(echo "$entry" | awk '{print $1}')
-    cmds=$(echo "$entry" | cut -d' ' -f2-)
-    hyprctl -q keyword bind "$bind,exec,HYPRMCSR_PROFILE=\"$HYPRMCSR_PROFILE\" $SCRIPT_DIR/../util/custom_bind_wrapper.sh '$cmds'"
+  while IFS= read -r bind; do
+    [ -z "$bind" ] && continue
+    hypr_bind "$bind" "HYPRMCSR_PROFILE=\"$HYPRMCSR_PROFILE\" \"$SCRIPT_DIR/../util/custom_bind_wrapper.sh\" \"$bind\""
   done <<< "$custom_binds"
 fi
 

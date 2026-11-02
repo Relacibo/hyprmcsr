@@ -3,6 +3,7 @@
 
 export SCRIPT_DIR=$(dirname "${BASH_SOURCE[0]}")
 source "$SCRIPT_DIR/../util/env_runtime.sh"
+source "$SCRIPT_DIR/hypr_compat.sh"
 
 LAST_MONITOR_FILE="$STATE_DIR/last_monitor"
 
@@ -33,4 +34,4 @@ elif [ -s "$CACHE" ]; then
   read CENTER_X CENTER_Y < "$CACHE"
 fi
 
-[ -n "$CENTER_X" ] && [ -n "$CENTER_Y" ] && hyprctl -q dispatch movecursor "$CENTER_X" "$CENTER_Y"
+[ -n "$CENTER_X" ] && [ -n "$CENTER_Y" ] && hypr_move_cursor "$CENTER_X" "$CENTER_Y"

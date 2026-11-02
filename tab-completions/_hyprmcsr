@@ -2,12 +2,11 @@
 
 _hyprmcsr() {
   local -a commands profiles
-  local config_root config_file download_root repo_dir jars_dir
-  commands=(run destroy delete-old-worlds run-jar setup-audio-splitter update version)
+  local config_root
+  commands=(setup check-dependencies run destroy delete-old-worlds run-jar setup-audio-splitter update version)
 
   # config_root dynamisch bestimmen
   config_root="${XDG_CONFIG_HOME:-$HOME/.config}/hyprmcsr"
-  config_file="$config_root/config.json"
 
   # Profile dynamisch ermitteln
   if [[ -d $config_root ]]; then
@@ -19,8 +18,9 @@ _hyprmcsr() {
   local context state state_descr line
   _arguments -C \
     '-h[Set global config profile]:profile:(${profiles})' \
+    '--profile[Set global config profile]:profile:(${profiles})' \
     '-p[Set profile]: :_nothing' \
-    '1:command:((run destroy delete-old-worlds run-jar setup-audio-splitter update version))' \
+    '1:command:((setup check-dependencies run destroy delete-old-worlds run-jar setup-audio-splitter update version))' \
     '*::args:->args'
 
   case $state in

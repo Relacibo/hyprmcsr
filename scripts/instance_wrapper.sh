@@ -5,14 +5,16 @@ export SCRIPT_DIR=$(dirname "${BASH_SOURCE[0]}")
 source "$SCRIPT_DIR/../util/env_core.sh"
 source "$SCRIPT_DIR/../util/env_prism.sh"
 source "$SCRIPT_DIR/../util/env_runtime.sh"
+source "$SCRIPT_DIR/../util/hypr_compat.sh"
 # Source env scripts from util
 WINDOW_CLASS_REGEX=$(jq -r '.minecraft.windowClassRegex // empty' "$PROFILE_CONFIG_FILE")
 WINDOW_TITLE_REGEX=$(jq -r '.minecraft.windowTitleRegex // empty' "$PROFILE_CONFIG_FILE")
 
-# Before start: remember all Java PIDs
-before_pids=$(pgrep -u "$USER" java | sort -n)
+# Before start: remember all Java PIDs. `comm` below requires lexical order,
+# so do not use `sort -n` here.
+before_pids=$(pgrep -u "$USER" java | sort)
 # Before start: remember all sink-input-IDs
-before_sinks=$(pactl -f json list sink-inputs | jq '.[].index' | sort -n)
+before_sinks=$(pactl -f json list sink-inputs | jq '.[].index' | sort)
 
 # Set and persist PRISM_INSTANCE_ID and MINECRAFT_ROOT from PrismLauncher environment variables
 if [ -n "$INST_ID" ]; then
@@ -45,7 +47,7 @@ source "$SCRIPT_DIR/../util/export_env.sh"
     
     # First 15 seconds: Try to match by new Java PIDs
     if [ $elapsed -lt 15 ]; then
-      after_pids=$(pgrep -u "$USER" java | sort -n)
+      after_pids=$(pgrep -u "$USER" java | sort)
       new_pids=$(comm -13 <(echo "$before_pids") <(echo "$after_pids"))
       
       if [ -n "$new_pids" ]; then
@@ -111,13 +113,11 @@ source "$SCRIPT_DIR/../util/export_env.sh"
   fi
 
   if [ -n "$window_address" ]; then
-    hyprctl -q --batch "
-      dispatch setprop address:$window_address no_anim true;
-      dispatch setprop address:$window_address rounding 0;
-      dispatch focuswindow address:$window_address;
-      dispatch setfloating address:$window_address;
-      dispatch centerwindow;
-    "
+    hypr_set_window_prop "$window_address" no_anim true
+    hypr_set_window_prop "$window_address" rounding 0
+    hypr_focus_window "$window_address"
+    hypr_set_floating "$window_address"
+    hypr_center_window "$window_address"
   fi
 
   # Sound splitting: search for new sink-input with node.name == "java" AND media.role == "game"
@@ -125,7 +125,7 @@ source "$SCRIPT_DIR/../util/export_env.sh"
   SPLIT_AUDIO_CONF="${XDG_CONFIG_HOME:-$HOME/.config}/pipewire/pipewire.conf.d/split-audio.conf"
   if [ -f "$SPLIT_AUDIO_CONF" ]; then
     for i in {1..20}; do
-      after_sinks=$(pactl -f json list sink-inputs | jq '.[].index' | sort -n)
+      after_sinks=$(pactl -f json list sink-inputs | jq '.[].index' | sort)
       new_sinks=$(comm -13 <(echo "$before_sinks") <(echo "$after_sinks"))
       for new_sink in $new_sinks; do
         sink_info=$(pactl -f json list sink-inputs | jq -r --arg idx "$new_sink" '

@@ -16,11 +16,14 @@ All binds are defined in your profile config under the `binds` section.
     "toggleBinds": ",HOME",
     "modeSwitch": {
       "normal": ",N",
-      "tall": ",H",
+      "tall": ",H"
     },
     "custom": {
-      "obs-hide": ",F1",
-      "obs-show": ",F2"
+      ",F1": "notify-send \"Hello from hyprmcsr\"",
+      ",F2": [
+        "notify-send \"First command\"",
+        "notify-send \"Second command\""
+      ]
     }
   },
   "onToggleBinds": [
@@ -51,7 +54,7 @@ All binds are defined in your profile config under the `binds` section.
 
 - `toggleBinds`: Key to enable/disable all custom binds.
 - `modeSwitch`: Keys to switch between window modes (e.g. tall, boat-eye).
-- `custom`: Your own keybinds mapped to commands or scripts.
+- `custom`: Your own keybinds. The key is the Hyprland bind (e.g. `",F1"`), the value is either a single command/script or an array of commands that are run in parallel.
 - `onToggleBinds`: Commands/scripts that run whenever binds are toggled (the variable `$BINDS_ENABLED` is set to `1` or `0`).
 - `onEnter`/`onExit`: Commands/scripts that run when entering or leaving a mode (can be set per mode or as default).
 - The values in `default` inside `modeSwitch` are the default values for every mode and are always used unless explicitly overridden in the respective mode.

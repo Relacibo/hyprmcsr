@@ -79,7 +79,7 @@ if "$SCRIPT_DIR/check_dependencies.sh"; then
   echo ""
 else
   echo ""
-  read -p "Some dependencies are missing. Continue anyway? [y/N]: " continue_anyway
+  read -r -p "Some dependencies are missing. Continue anyway? [y/N]: " continue_anyway
   if [[ ! "$continue_anyway" =~ ^[Yy] ]]; then
     echo "Aborting profile creation."
     exit 1
@@ -92,15 +92,22 @@ if [ -n "$HYPRMCSR_PROFILE" ]; then
   PROFILE_NAME="$HYPRMCSR_PROFILE"
   echo "Creating profile: $PROFILE_NAME"
 else
-  read -p "Name of the hyprmcsr profile? (default: default): " PROFILE_NAME
+  read -r -p "Name of the hyprmcsr profile? (default: default): " PROFILE_NAME
   PROFILE_NAME="${PROFILE_NAME:-default}"
 fi
+
+# Profile names end up in file paths: never allow path separators or dot names.
+if [[ ! "$PROFILE_NAME" =~ ^[A-Za-z0-9._-]+$ || "$PROFILE_NAME" == "." || "$PROFILE_NAME" == ".." ]]; then
+  echo "Invalid profile name '$PROFILE_NAME'. Use only letters, digits, '.', '_' and '-'." >&2
+  exit 1
+fi
+
 PROFILE_CONFIG_FILE="$CONFIG_ROOT/${PROFILE_NAME}.profile.json"
 
 # Check if profile already exists
 if [ -f "$PROFILE_CONFIG_FILE" ]; then
   echo "Profile '$PROFILE_NAME' already exists."
-  read -p "Do you want to edit it? [y/N]: " edit_existing
+  read -r -p "Do you want to edit it? [y/N]: " edit_existing
   
   if [[ ! "$edit_existing" =~ ^[Yy] ]]; then
     echo "Aborting. Use a different profile name or edit manually."
@@ -142,7 +149,7 @@ else
 fi
 
 # Extract default values always from example file for consistent defaults
-DEFAULT_PRISM_PREFIX=$(jq -r '.minecraft.prismPrefix // ""' "$EXAMPLE_PROFILE")
+DEFAULT_PRISM_PREFIX=$(jq -r '.minecraft.prismLauncher.prismPrefix // .minecraft.prismPrefix // ""' "$EXAMPLE_PROFILE")
 DEFAULT_FLATPAK=$(jq -r '.minecraft.prismLauncher.flatpak // false' "$EXAMPLE_PROFILE")
 DEFAULT_OBSERVE_STATE=$(jq -r '.minecraft.observeState.enabled // true' "$EXAMPLE_PROFILE")
 DEFAULT_INSTANCE_ID=""  # No default from template
@@ -153,7 +160,7 @@ DEFAULT_REQUIRE_SUDO=$(jq -r '.requireSudo // false' "$EXAMPLE_PROFILE")
 
 # When editing an existing profile, load current values from it
 if [ "$EDITING_EXISTING" = true ]; then
-  CURRENT_PRISM_PREFIX=$(jq -r '.minecraft.prismPrefix // ""' "$PROFILE_CONFIG_FILE")
+  CURRENT_PRISM_PREFIX=$(jq -r '.minecraft.prismLauncher.prismPrefix // .minecraft.prismPrefix // ""' "$PROFILE_CONFIG_FILE")
   CURRENT_FLATPAK=$(jq -r '.minecraft.prismLauncher.flatpak // false' "$PROFILE_CONFIG_FILE")
   CURRENT_OBSERVE_STATE=$(jq -r '.minecraft.observeState.enabled // true' "$PROFILE_CONFIG_FILE")
   CURRENT_INSTANCE_ID=$(jq -r '.minecraft.prismLauncher.instanceId // ""' "$PROFILE_CONFIG_FILE")
@@ -214,7 +221,7 @@ fi
 echo ""
 
 # Prompt for require sudo
-read -p "Require sudo privileges on start? ($DEFAULT_TEXT: $([ "$DEFAULT_REQUIRE_SUDO" = "true" ] && echo "yes" || echo "no")) [y/n]: " require_sudo_input
+read -r -p "Require sudo privileges on start? ($DEFAULT_TEXT: $([ "$DEFAULT_REQUIRE_SUDO" = "true" ] && echo "yes" || echo "no")) [y/n]: " require_sudo_input
 require_sudo_input="${require_sudo_input:-$([ "$DEFAULT_REQUIRE_SUDO" = "true" ] && echo "y" || echo "n")}"
 if [[ "$require_sudo_input" =~ ^[Yy] ]]; then
   require_sudo="true"
@@ -223,7 +230,7 @@ else
 fi
 
 # Prompt for state observation
-read -p "Enable state observation (Hermes/State Output)? ($DEFAULT_TEXT: $([ "$DEFAULT_OBSERVE_STATE" = "true" ] && echo "yes" || echo "no")) [y/n]: " observe_state
+read -r -p "Enable state observation (Hermes/State Output)? ($DEFAULT_TEXT: $([ "$DEFAULT_OBSERVE_STATE" = "true" ] && echo "yes" || echo "no")) [y/n]: " observe_state
 observe_state="${observe_state:-$([ "$DEFAULT_OBSERVE_STATE" = "true" ] && echo "y" || echo "n")}"
 if [[ "$observe_state" =~ ^[Yy] ]]; then
   observe_enabled="true"
@@ -236,10 +243,10 @@ echo ""
 
 # Ask if flatpak installation
 if [ "$DEFAULT_FLATPAK" = "true" ]; then
-  read -p "Is PrismLauncher installed via Flatpak? ($DEFAULT_TEXT: yes) [y/n]: " flatpak_input
+  read -r -p "Is PrismLauncher installed via Flatpak? ($DEFAULT_TEXT: yes) [y/n]: " flatpak_input
   flatpak_input="${flatpak_input:-y}"
 else
-  read -p "Is PrismLauncher installed via Flatpak? ($DEFAULT_TEXT: no) [y/n]: " flatpak_input
+  read -r -p "Is PrismLauncher installed via Flatpak? ($DEFAULT_TEXT: no) [y/n]: " flatpak_input
   flatpak_input="${flatpak_input:-n}"
 fi
 
@@ -274,12 +281,12 @@ if [ -d "$PRISM_INSTANCES_DIR" ]; then
       done
       
       if [ -n "$DEFAULT_INDEX" ]; then
-        read -p "Select instance by number [1-${#INSTANCES[@]}] or enter custom ID ($DEFAULT_TEXT: $DEFAULT_INDEX - $DEFAULT_INSTANCE_ID): " instance_input
+        read -r -p "Select instance by number [1-${#INSTANCES[@]}] or enter custom ID ($DEFAULT_TEXT: $DEFAULT_INDEX - $DEFAULT_INSTANCE_ID): " instance_input
       else
-        read -p "Select instance by number [1-${#INSTANCES[@]}] or enter custom ID ($DEFAULT_TEXT: $DEFAULT_INSTANCE_ID): " instance_input
+        read -r -p "Select instance by number [1-${#INSTANCES[@]}] or enter custom ID ($DEFAULT_TEXT: $DEFAULT_INSTANCE_ID): " instance_input
       fi
     else
-      read -p "Select instance by number [1-${#INSTANCES[@]}] or enter custom ID (leave empty to skip): " instance_input
+      read -r -p "Select instance by number [1-${#INSTANCES[@]}] or enter custom ID (leave empty to skip): " instance_input
     fi
     
     # Check if input is a number and within range
@@ -293,29 +300,29 @@ if [ -d "$PRISM_INSTANCES_DIR" ]; then
   else
     # No instances found, ask for manual input
     if [ -n "$DEFAULT_INSTANCE_ID" ]; then
-      read -p "PrismLauncher instance ID ($DEFAULT_TEXT: $DEFAULT_INSTANCE_ID): " instance_id
+      read -r -p "PrismLauncher instance ID ($DEFAULT_TEXT: $DEFAULT_INSTANCE_ID): " instance_id
       instance_id="${instance_id:-$DEFAULT_INSTANCE_ID}"
     else
-      read -p "PrismLauncher instance ID (leave empty to skip): " instance_id
+      read -r -p "PrismLauncher instance ID (leave empty to skip): " instance_id
     fi
   fi
 else
   # Directory doesn't exist, ask for manual input
   if [ -n "$DEFAULT_INSTANCE_ID" ]; then
-    read -p "PrismLauncher instance ID ($DEFAULT_TEXT: $DEFAULT_INSTANCE_ID): " instance_id
+    read -r -p "PrismLauncher instance ID ($DEFAULT_TEXT: $DEFAULT_INSTANCE_ID): " instance_id
     instance_id="${instance_id:-$DEFAULT_INSTANCE_ID}"
   else
-    read -p "PrismLauncher instance ID (leave empty to skip): " instance_id
+    read -r -p "PrismLauncher instance ID (leave empty to skip): " instance_id
   fi
 fi
 
 # Prompt for auto-launch
 if [ -n "$instance_id" ]; then
   if [ "$DEFAULT_AUTO_LAUNCH" = "true" ]; then
-    read -p "Auto-launch Minecraft on start? ($DEFAULT_TEXT: yes) [y/n]: " auto_launch_input
+    read -r -p "Auto-launch Minecraft on start? ($DEFAULT_TEXT: yes) [y/n]: " auto_launch_input
     auto_launch_input="${auto_launch_input:-y}"
   else
-    read -p "Auto-launch Minecraft on start? ($DEFAULT_TEXT: no) [y/n]: " auto_launch_input
+    read -r -p "Auto-launch Minecraft on start? ($DEFAULT_TEXT: no) [y/n]: " auto_launch_input
     auto_launch_input="${auto_launch_input:-n}"
   fi
   
@@ -332,10 +339,10 @@ fi
 if [ -n "$instance_id" ]; then
   echo ""
   if [ "$DEFAULT_WRAPPER_ENABLED" = "true" ]; then
-    read -p "Enable injecting wrapper command into prism config on start? ($DEFAULT_TEXT: yes) [y/n]: " wrapper_input
+    read -r -p "Enable injecting wrapper command into prism config on start? ($DEFAULT_TEXT: yes) [y/n]: " wrapper_input
     wrapper_input="${wrapper_input:-y}"
   else
-    read -p "Enable injecting wrapper command into prism config on start? ($DEFAULT_TEXT: no) [y/n]: " wrapper_input
+    read -r -p "Enable injecting wrapper command into prism config on start? ($DEFAULT_TEXT: no) [y/n]: " wrapper_input
     wrapper_input="${wrapper_input:-n}"
   fi
   
@@ -344,20 +351,20 @@ if [ -n "$instance_id" ]; then
     
     # Ask if inner command should be used
     if [ -n "$DEFAULT_INNER_COMMAND" ]; then
-      read -p "Use an inner wrapper command? ($DEFAULT_TEXT: yes) [y/n]: " use_inner_input
+      read -r -p "Use an inner wrapper command? ($DEFAULT_TEXT: yes) [y/n]: " use_inner_input
       use_inner_input="${use_inner_input:-y}"
     else
-      read -p "Use an inner wrapper command? ($DEFAULT_TEXT: no) [y/n]: " use_inner_input
+      read -r -p "Use an inner wrapper command? ($DEFAULT_TEXT: no) [y/n]: " use_inner_input
       use_inner_input="${use_inner_input:-n}"
     fi
     
     if [[ "$use_inner_input" =~ ^[Yy] ]]; then
       # Ask for the actual command
       if [ -n "$DEFAULT_INNER_COMMAND" ]; then
-        read -p "Inner wrapper command ($DEFAULT_TEXT: $DEFAULT_INNER_COMMAND): " inner_command
+        read -r -p "Inner wrapper command ($DEFAULT_TEXT: $DEFAULT_INNER_COMMAND): " inner_command
         inner_command="${inner_command:-$DEFAULT_INNER_COMMAND}"
       else
-        read -p "Inner wrapper command: " inner_command
+        read -r -p "Inner wrapper command: " inner_command
       fi
     else
       inner_command=""
@@ -374,10 +381,10 @@ fi
 # Prompt for PrismLauncher prefix (advanced, optional)
 echo ""
 if [ -n "$DEFAULT_PRISM_PREFIX" ]; then
-  read -p "PrismLauncher data directory ($DEFAULT_TEXT: $DEFAULT_PRISM_PREFIX, leave empty for auto-detection): " prism_prefix
+  read -r -p "PrismLauncher data directory ($DEFAULT_TEXT: $DEFAULT_PRISM_PREFIX, leave empty for auto-detection): " prism_prefix
   prism_prefix="${prism_prefix:-$DEFAULT_PRISM_PREFIX}"
 else
-  read -p "PrismLauncher data directory ($DEFAULT_TEXT: auto-detection): " prism_prefix
+  read -r -p "PrismLauncher data directory ($DEFAULT_TEXT: auto-detection): " prism_prefix
 fi
 
 # Create profile from template
@@ -408,7 +415,7 @@ jq --argjson flatpak "$is_flatpak" '.minecraft.prismLauncher.flatpak = $flatpak'
 
 # Update prismPrefix if provided
 if [ -n "$prism_prefix" ]; then
-  jq --arg prefix "$prism_prefix" '.minecraft.prismPrefix = $prefix' "$PROFILE_CONFIG_FILE" > "$PROFILE_CONFIG_FILE.tmp" && mv "$PROFILE_CONFIG_FILE.tmp" "$PROFILE_CONFIG_FILE"
+  jq --arg prefix "$prism_prefix" '.minecraft.prismLauncher.prismPrefix = $prefix' "$PROFILE_CONFIG_FILE" > "$PROFILE_CONFIG_FILE.tmp" && mv "$PROFILE_CONFIG_FILE.tmp" "$PROFILE_CONFIG_FILE"
 fi
 
 echo ""
@@ -420,7 +427,7 @@ fi
 
 # Call audio splitter setup script in interactive mode
 echo ""
-read -p "Setup audio splitter? [y/N]: " setup_audio
+read -r -p "Setup audio splitter? [y/N]: " setup_audio
 setup_audio="${setup_audio:-n}"
 if [[ "$setup_audio" =~ ^[Yy] ]]; then
   "$SCRIPT_DIR/setup_audio_splitter.sh"

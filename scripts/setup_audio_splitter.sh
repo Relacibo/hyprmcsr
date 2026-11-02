@@ -10,6 +10,12 @@ TEMPLATE_FILE="$SCRIPT_DIR/../templates/split-audio.conf.template"
 PIPEWIRE_CONFIG_FOLDER="${XDG_CONFIG_HOME:-$HOME/.config}/pipewire/pipewire.conf.d"
 SPLIT_AUDIO_CONF="$PIPEWIRE_CONFIG_FOLDER/split-audio.conf"
 
+# pactl is only needed for listing/selecting the playback target.
+if { [ $# -eq 0 ] || [ "$1" = "enable" ]; } && ! command -v pactl >/dev/null 2>&1; then
+  echo "pactl is required for the audio splitter (install pipewire-pulse or pulseaudio-utils)." >&2
+  exit 1
+fi
+
 # Interactive mode if no arguments provided
 if [ $# -eq 0 ]; then
   # Check current status
@@ -26,7 +32,7 @@ if [ $# -eq 0 ]; then
   # Ask whether to enable or disable
   echo ""
   echo "Audio splitter is currently: $CURRENT_STATUS"
-  read -p "Enable or disable audio splitter? ($STATUS_TEXT: $DEFAULT_ACTION) [enable/disable]: " action_input
+  read -r -p "Enable or disable audio splitter? ($STATUS_TEXT: $DEFAULT_ACTION) [enable/disable]: " action_input
   action_input="${action_input:-$DEFAULT_ACTION}"
   
   if [[ "$action_input" =~ ^[Dd] ]]; then
@@ -60,9 +66,9 @@ if [ $# -eq 0 ]; then
     done
     
     if [ -n "$DEFAULT_INDEX" ]; then
-      read -p "Select monitor sink by number [1-${#SINKS[@]}] (default: $DEFAULT_INDEX - $DEFAULT_SINK): " sink_input
+      read -r -p "Select monitor sink by number [1-${#SINKS[@]}] (default: $DEFAULT_INDEX - $DEFAULT_SINK): " sink_input
     else
-      read -p "Select monitor sink by number [1-${#SINKS[@]}]: " sink_input
+      read -r -p "Select monitor sink by number [1-${#SINKS[@]}]: " sink_input
     fi
     
     # Check if input is a number and within range
@@ -100,8 +106,9 @@ if [ "$ACTION" = "enable" ]; then
   fi
 
   mkdir -p "$PIPEWIRE_CONFIG_FOLDER"
-  # Replace template and write
-  sed "s|{{PW_TARGET}}|$PW_TARGET|g" "$TEMPLATE_FILE" > "$SPLIT_AUDIO_CONF"
+  # Escape sed replacement metacharacters: device names may contain '&' or '|'.
+  PW_TARGET_ESCAPED=$(printf '%s' "$PW_TARGET" | sed 's/[&|\\]/\\&/g')
+  sed "s|{{PW_TARGET}}|$PW_TARGET_ESCAPED|g" "$TEMPLATE_FILE" > "$SPLIT_AUDIO_CONF"
   echo "split-audio.conf written to $SPLIT_AUDIO_CONF with target $PW_TARGET."
 elif [ "$ACTION" = "disable" ]; then
   if [ -f "$SPLIT_AUDIO_CONF" ]; then
@@ -111,9 +118,11 @@ elif [ "$ACTION" = "disable" ]; then
 fi
 
 echo ""
-read -p "Restart PipeWire now? [y/N]: " restart_pw
+read -r -p "Restart PipeWire now? [y/N]: " restart_pw
 restart_pw="${restart_pw:-n}"
 if [[ "$restart_pw" =~ ^[Yy] ]]; then
   systemctl --user restart pipewire pipewire-pulse
+  # WirePlumber manages the audio nodes on most setups; restart it if present.
+  systemctl --user restart wireplumber 2>/dev/null || true
   echo "PipeWire restarted."
 fi
