@@ -91,7 +91,7 @@ handle_hermes_state() {
     # the wall usually follows another screen, so the transition rule below
     # would not catch it.
     if [ "$screen_class" = "me.contaria.seedqueue.gui.wall.SeedQueueWallScreen" ]; then
-        "$SCRIPT_DIR/toggle_mode.sh" normal
+        HYPRMCSR_FORCE_MODE=1 "$SCRIPT_DIR/toggle_mode.sh" normal
         "$SCRIPT_DIR/toggle_binds.sh" 0
         "$SCRIPT_DIR/../util/center_cursor.sh"
         LAST_SCREEN_CLASS="$screen_class"
@@ -105,7 +105,7 @@ handle_hermes_state() {
     if [ -n "$world" ]; then
         case "$screen_class" in
             *.class_435 | *.class_3928 | *.class_434 | *.ProgressScreen | *.LevelLoadingScreen | *.ReceivingLevelScreen)
-                "$SCRIPT_DIR/toggle_mode.sh" normal
+                HYPRMCSR_FORCE_MODE=1 "$SCRIPT_DIR/toggle_mode.sh" normal
                 "$SCRIPT_DIR/toggle_binds.sh" 1
             ;;
         esac
@@ -131,12 +131,12 @@ handle_legacy_state() {
     echo "[hyprmcsr] State changed to: $1"
     case "$1" in
         wall)
-            "$SCRIPT_DIR/toggle_mode.sh" normal
+            HYPRMCSR_FORCE_MODE=1 "$SCRIPT_DIR/toggle_mode.sh" normal
             "$SCRIPT_DIR/toggle_binds.sh" 0
             "$SCRIPT_DIR/../util/center_cursor.sh"
         ;;
         generating,0)
-            "$SCRIPT_DIR/toggle_mode.sh" normal
+            HYPRMCSR_FORCE_MODE=1 "$SCRIPT_DIR/toggle_mode.sh" normal
             "$SCRIPT_DIR/toggle_binds.sh" 1
         ;;
         inworld,paused | inworld,gamescreenopen)
