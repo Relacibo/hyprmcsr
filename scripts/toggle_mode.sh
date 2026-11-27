@@ -17,9 +17,9 @@ fi
 
 # The observer forces the mode on the wall/loading screens and must always win,
 # even while binds are already disabled. User keypresses go through the guard,
-# which also checks the live state to close the wall-transition race.
+# which checks the live state and the short wall lock.
 if [ "${HYPRMCSR_FORCE_MODE:-0}" != "1" ]; then
-  binds_allowed ingame || exit 0
+  binds_allowed || exit 0
 fi
 
 if [ -z "$MODE" ]; then

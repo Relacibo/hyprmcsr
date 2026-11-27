@@ -20,6 +20,7 @@ HERMES_STATE_FILE="$MINECRAFT_ROOT/hermes/state.json"
 LEGACY_STATE_FILE="$MINECRAFT_ROOT/wpstateout.txt"
 LAST_STATE=""
 LAST_SCREEN_CLASS=""
+LAST_WORLD=""
 
 # Detect the state source via the mods folder instead of racing the two
 # persistent files: if a hermes*.jar (excluding hermes-core) is installed,
@@ -87,13 +88,27 @@ handle_hermes_state() {
 
     echo "[hyprmcsr] State changed: world=${world:-none} screen=${screen_class:-none} pause=${is_pause:-false}"
 
-    # SeedQueue wall screen: normal mode, binds off. Centered explicitly -
-    # the wall usually follows another screen, so the transition rule below
-    # would not catch it.
-    if [ "$screen_class" = "me.contaria.seedqueue.gui.wall.SeedQueueWallScreen" ]; then
+    # A different world means a reset finished: return to normal so the next
+    # run starts from the default layout. Comparing the world path also covers
+    # wall -> world and world -> world transitions when rapid state updates
+    # collapse and the loading screen is never observed.
+    if [ "$world" != "$LAST_WORLD" ]; then
         HYPRMCSR_FORCE_MODE=1 "$SCRIPT_DIR/toggle_mode.sh" normal
-        "$SCRIPT_DIR/toggle_binds.sh" 0
-        "$SCRIPT_DIR/../util/center_cursor.sh"
+        [ -n "$world" ] && "$SCRIPT_DIR/toggle_binds.sh" 1
+    fi
+    LAST_WORLD="$world"
+
+    # SeedQueue wall screen: on entry, go to normal, disable binds and center
+    # the cursor. Binds stay off by default, but if the user turns them back on
+    # (toggle-binds key), mode switching becomes available again after the
+    # keybind guard's short wall lock. Later wall state updates must not undo
+    # that deliberate state, so this only runs on entry.
+    if [ "$screen_class" = "me.contaria.seedqueue.gui.wall.SeedQueueWallScreen" ]; then
+        if [ "$LAST_SCREEN_CLASS" != "$screen_class" ]; then
+            HYPRMCSR_FORCE_MODE=1 "$SCRIPT_DIR/toggle_mode.sh" normal
+            "$SCRIPT_DIR/toggle_binds.sh" 0
+            "$SCRIPT_DIR/../util/center_cursor.sh"
+        fi
         LAST_SCREEN_CLASS="$screen_class"
     fi
 
