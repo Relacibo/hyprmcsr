@@ -53,7 +53,7 @@ All binds are defined in your profile config under the `binds` section.
 ```
 
 - `toggleBinds`: Key to enable/disable all custom binds.
-- `modeSwitch`: Keys to switch between window modes (e.g. tall, boat-eye).
+- `modeSwitch`: Keys to switch between window modes (e.g. tall, boat-eye). Entering the SeedQueue wall disables binds and locks mode switching for about a second, so the muscle-memory press that follows a reset is ignored. After that, switching works again while binds are enabled (toggle them back on with the `toggleBinds` key). Entering a new world always resets the mode to `normal`.
 - `custom`: Your own keybinds. The key is the Hyprland bind (e.g. `",F1"`), the value is either a single command/script or an array of commands that are run in parallel.
 - `onToggleBinds`: Commands/scripts that run whenever binds are toggled (the variable `$BINDS_ENABLED` is set to `1` or `0`).
 - `onEnter`/`onExit`: Commands/scripts that run when entering or leaving a mode (can be set per mode or as default).

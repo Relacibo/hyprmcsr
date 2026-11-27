@@ -10,6 +10,7 @@
 - The state machine now matches loading screens by class (including `DownloadingTerrainScreen`/`class_434`), re-enables binds in-world as a safety net, and only centers the cursor on real gameplay-to-screen transitions.
 
 ### Fixed
+- The SeedQueue wall still disables binds on entry, but mode switching is now locked for about a second so the muscle-memory press that follows a reset is ignored; once binds are turned back on with the toggle-binds key, the wall is toggleable again. Entering a new world resets the mode to normal again, even when rapid Hermes updates skip the loading screen.
 - Hyprland 0.57 compatibility: use the Lua IPC (`hl.bind`, `hl.unbind`, `hl.config`, `hl.dsp.*`) when the compositor reports `configProvider: lua`, while keeping the legacy `hyprctl keyword`/string-dispatcher path for older versions
 - Custom binds: fixed `realname` typo, accept a single command or an array, and stop quoting command JSON into the Hyprland bind
 - State observer: use Bash (the script used Bash-only syntax), wait indefinitely for the instance, and re-arm the file watch after atomic replacements

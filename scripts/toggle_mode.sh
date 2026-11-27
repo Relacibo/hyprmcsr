@@ -5,15 +5,21 @@ source "$UTIL_DIR/env_core.sh"
 source "$UTIL_DIR/env_prism.sh"
 source "$UTIL_DIR/env_runtime.sh"
 source "$UTIL_DIR/hypr_compat.sh"
+source "$UTIL_DIR/binds_guard.sh"
 
 MODE="$1"
 STATE_FILE="$STATE_DIR/current_mode"
 
-[ "$BINDS_ENABLED" = "1" ] || exit 0
-
 if ! command -v jq >/dev/null; then
   echo "jq is required!"
   exit 1
+fi
+
+# The observer forces the mode on the wall/loading screens and must always win,
+# even while binds are already disabled. User keypresses go through the guard,
+# which checks the live state and the short wall lock.
+if [ "${HYPRMCSR_FORCE_MODE:-0}" != "1" ]; then
+  binds_allowed || exit 0
 fi
 
 if [ -z "$MODE" ]; then

@@ -4,8 +4,9 @@ export SCRIPT_DIR=$(realpath "$UTIL_DIR/../scripts")
 source "$UTIL_DIR/env_prism.sh"
 source "$UTIL_DIR/env_runtime.sh"
 source "$UTIL_DIR/export_env.sh"
+source "$UTIL_DIR/binds_guard.sh"
 
-[ "$BINDS_ENABLED" = "1" ] || exit 0
+binds_allowed || exit 0
 
 BIND="${1:-}"
 [ -z "$BIND" ] && exit 0
